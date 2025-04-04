@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class SIMPLESHOOTER_API AKillThemAllGameMode : public ASimpleShooterGameMode
+class SPM_API AKillThemAllGameMode : public ASimpleShooterGameMode
 {
 	GENERATED_BODY()
 	

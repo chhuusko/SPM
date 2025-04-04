@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class SIMPLESHOOTER_API UBTTask_Shoot : public UBTTaskNode
+class SPM_API UBTTask_Shoot : public UBTTaskNode
 {
 	GENERATED_BODY()
 	

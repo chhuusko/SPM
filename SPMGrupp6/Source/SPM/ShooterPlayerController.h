@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class SIMPLESHOOTER_API AShooterPlayerController : public APlayerController
+class SPM_API AShooterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
