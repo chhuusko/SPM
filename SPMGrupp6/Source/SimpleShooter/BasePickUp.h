@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "BasePickUp.generated.h"
 
@@ -19,6 +19,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* MeshComp;
 
 public:	
 	// Called every frame
@@ -26,5 +29,5 @@ public:
 private:
 
 	UPROPERTY(EditAnywhere)
-	UCapsuleComponent* Capsule;
+	USphereComponent* CollisionArea;
 };

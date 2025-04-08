@@ -10,7 +10,11 @@ ABasePickUp::ABasePickUp()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
+	CollisionArea = CreateDefaultSubobject<USphereComponent>(TEXT("collisionArea"));
+	RootComponent = CollisionArea;
+	CollisionArea->SetCollisionProfileName(TEXT("Trigger"));
+	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
+	MeshComp->SetupAttachment(CollisionArea);
 }
 
 // Called when the game starts or when spawned
