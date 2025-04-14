@@ -20,41 +20,47 @@ void AShooterPlayerController::BeginPlay()
 	InitializeHUD();
 }
 
+// Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
 	HUD = CreateWidget(this, HUDClass);
-    	if (HUD)
-    	{
-    		HUD->AddToViewport();
+	if (HUD)
+	{
+		HUD->AddToViewport();
+		PlaceUI(HUD);
+	}
+}
 
-    		// Get the current size of the screen.
-    		FVector2D ScreenSize;
-    		GEngine->GameViewport->GetViewportSize(ScreenSize);
+// Places the UI element in the correct players half of the screen.
+void AShooterPlayerController::PlaceUI(UUserWidget* Widget)
+{
+	// Get the current size of the screen.
+	FVector2D ScreenSize;
+	GEngine->GameViewport->GetViewportSize(ScreenSize);
 
-    		// Place the UI depending on which player is being controlled.
-    		if (GetLocalPlayer()->GetControllerId() == 0)
-    		{
-    			// Place the UI centered in the top half of the screen.
-    			HUD->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
+	// Place the UI depending on which player is being controlled.
+	if (GetLocalPlayer()->GetControllerId() == 0)
+	{
+		// Place the UI centered in the top half of the screen.
+		Widget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
     			
-    			// The center is placed three quarters down the screen.
-    			HUD->SetPositionInViewport(FVector2D(ScreenSize.X / 2, (ScreenSize.Y * 3) / 4), true);
+		// The center is placed three quarters down the screen.
+		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, (ScreenSize.Y * 3) / 4), true);
 
-    			// The UI takes up half the screen.
-    			HUD->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
-    		}
-    		else if (GetLocalPlayer()->GetControllerId() == 1)
-    		{
-    			// Place the UI centered in the lower half of the screen.
-    			HUD->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
-    			HUD->SetPositionInViewport(FVector2D(ScreenSize.X / 2, ScreenSize.Y / 4), true);
-    			HUD->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
-    		}
-    		else
-    		{
-    			UE_LOG(LogTemp, Warning, TEXT("Invalid Controller ID: %d"), GetLocalPlayer()->GetControllerId());
-    		}
-    	}
+		// The UI takes up half the screen.
+		Widget->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
+	}
+	else if (GetLocalPlayer()->GetControllerId() == 1)
+	{
+		// Place the UI centered in the lower half of the screen.
+		Widget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
+		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, ScreenSize.Y / 4), true);
+		Widget->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid Controller ID: %d"), GetLocalPlayer()->GetControllerId());
+	}
 }
 
 void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
@@ -63,22 +69,26 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 
 	HUD->RemoveFromParent();
 
+	UUserWidget* Widget;
+
 	if (bIsWinner)
 	{
-		UUserWidget* WinScreen = CreateWidget(this, WinScreenClass);
-		if (WinScreen)
+		Widget = CreateWidget(this, WinScreenClass);
+		if (Widget)
 		{
-			WinScreen->AddToViewport();
+			Widget->AddToViewport();
 		}
 	}
 	else
 	{
-		UUserWidget* LoseScreen = CreateWidget(this, LoseScreenClass);
-		if (LoseScreen)
+		Widget = CreateWidget(this, LoseScreenClass);
+		if (Widget)
 		{
-			LoseScreen->AddToViewport();
+			Widget->AddToViewport();
 		}
 	}
+	
+	PlaceUI(Widget);
 	
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 	UE_LOG(LogTemp, Warning, TEXT("Game Ended!"));
