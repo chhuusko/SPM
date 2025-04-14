@@ -21,6 +21,8 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+	void InitializeHUD();
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> LoseScreenClass;
 	UPROPERTY(EditAnywhere)
