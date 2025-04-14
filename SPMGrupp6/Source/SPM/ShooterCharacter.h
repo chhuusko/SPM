@@ -39,6 +39,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Shoot();
 	UFUNCTION(BlueprintCallable)
+	void StopShooting();
+	UFUNCTION(BlueprintCallable)
 	void MoveForward(float AxisValue);
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float AxisValue);
