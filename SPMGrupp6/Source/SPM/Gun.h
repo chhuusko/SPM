@@ -16,7 +16,7 @@ public:
 	AGun();
 
 	void PullTrigger();
-
+	void ReleaseTrigger();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,7 +50,30 @@ private:
 	UPROPERTY(EditAnywhere)
 	float Damage = 10;
 
-	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
+	UPROPERTY(EditAnywhere)
+	float RecoilAmount = 10;
 
+	UPROPERTY(EditAnywhere)
+	int MagazineSize = 30;
+
+	UPROPERTY(VisibleAnywhere)
+	int BulletsLeft;
+
+	UPROPERTY(EditAnywhere)
+	float FireRate = 1;
+
+	UPROPERTY(EditAnywhere)
+	bool bIsAutomatic = true;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bCanFire = true;
+	
+	FTimerHandle FireRateTimer;
+	FTimerHandle BetweenShotsTimer;
 	AController* GetOwnerController() const;
+	void Fire();
+	void ResetCanFire();
+	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
+	void AddRecoil(float Amount);
+
 };
