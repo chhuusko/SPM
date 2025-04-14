@@ -20,7 +20,7 @@ ADrone::ADrone()
 void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
-	Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+	
 	// bör lägga till player 2;
 }
 
@@ -33,8 +33,12 @@ void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ADrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RotateTurret(Player->GetActorLocation());
-	Elevate(Player->GetActorLocation());
+	if (Player != nullptr)
+	{
+		RotateTurret(Player->GetActorLocation());
+        Elevate(Player->GetActorLocation());
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -46,7 +50,7 @@ void ADrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ADrone::RotateTurret(FVector LookAtTarget)
 {
 	FVector ToTarget = LookAtTarget - TurretMesh->GetComponentLocation();
-	FRotator LookAtRotation = FRotator(0, ToTarget.Rotation().Yaw+90, 0.f);
+	FRotator LookAtRotation = FRotator(0, ToTarget.Rotation().Yaw+90, ToTarget.Rotation().Pitch+35);
 	TurretMesh->SetWorldRotation(FMath::RInterpTo(TurretMesh->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(this), 5.f));
 }
 
@@ -58,9 +62,9 @@ void ADrone::Elevate(FVector target)
 }
 float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	
+	Player = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
-	UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i"), DamageAmount, Health);
+	UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i : causer %s"), DamageAmount, Health, *DamageCauser->GetOwner()->GetActorNameOrLabel());
 	if (Health <= 0)
 	{
 		Destroy();
