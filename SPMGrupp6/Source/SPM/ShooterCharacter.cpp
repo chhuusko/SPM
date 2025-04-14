@@ -107,3 +107,8 @@ void AShooterCharacter::Shoot()
 {
 	Gun->PullTrigger();
 }
+void AShooterCharacter::StopShooting()
+{
+	Gun->ReleaseTrigger();
+}
+
