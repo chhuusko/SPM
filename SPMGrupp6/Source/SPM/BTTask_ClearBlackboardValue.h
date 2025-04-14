@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class SIMPLESHOOTER_API UBTTask_ClearBlackboardValue : public UBTTask_BlackboardBase
+class SPM_API UBTTask_ClearBlackboardValue : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
 

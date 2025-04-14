@@ -9,7 +9,7 @@
 class AGun;
 
 UCLASS()
-class SIMPLESHOOTER_API AShooterCharacter : public ACharacter
+class SPM_API AShooterCharacter : public ACharacter
 {
 	GENERATED_BODY()
 

@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class SimpleShooterTarget : TargetRules
+public class SPMEditorTarget : TargetRules
 {
-	public SimpleShooterTarget(TargetInfo Target) : base(Target)
+	public SPMEditorTarget( TargetInfo Target) : base(Target)
 	{
-		Type = TargetType.Game;
+		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
-		ExtraModuleNames.Add("SimpleShooter");
+		ExtraModuleNames.Add("SPM");
 	}
 }
