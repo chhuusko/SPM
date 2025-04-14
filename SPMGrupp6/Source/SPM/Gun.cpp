@@ -17,10 +17,14 @@ AGun::AGun()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+	BulletsLeft = MagazineSize;
 }
 
-void AGun::PullTrigger()
+void AGun::Fire()
 {
+	if (!bCanFire || BulletsLeft <= 0) return;
+	
+	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
 	
@@ -47,13 +51,47 @@ void AGun::PullTrigger()
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
+	AddRecoil(RecoilAmount);
+	BulletsLeft--;
+	bCanFire = false;
+	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+}
+
+void AGun::ResetCanFire()
+{
+	bCanFire = true;
+}
+
+void AGun::PullTrigger()
+{
+	if (!bCanFire || BulletsLeft <= 0) return;
+	
+	if (bIsAutomatic)
+	{
+		Fire();
+		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+	}
+	else
+	{
+		Fire();
+	}
+}
+
+void AGun::ReleaseTrigger()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+}
+
+void AGun::AddRecoil(float Amount)
+{
+	//Hämta springarm
+	//lägg till recoil
 }
 
 // Called when the game starts or when spawned
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
