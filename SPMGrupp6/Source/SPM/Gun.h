@@ -51,7 +51,7 @@ private:
 	float Damage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float RecoilAmount = 10;
+	float RecoilAmount = 1;
 
 	UPROPERTY(EditAnywhere)
 	int MagazineSize = 30;
@@ -67,6 +67,8 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	bool bCanFire = true;
+
+	
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
@@ -74,6 +76,6 @@ private:
 	void Fire();
 	void ResetCanFire();
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
-	void AddRecoil(float Amount);
+	void AddRecoil();
 
 };

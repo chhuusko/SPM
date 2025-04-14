@@ -2,8 +2,9 @@
 
 
 #include "Gun.h"
-
+#include "ShooterCharacter.h"
 #include "Engine/DamageEvents.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -51,7 +52,7 @@ void AGun::Fire()
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
-	AddRecoil(RecoilAmount);
+	AddRecoil();
 	BulletsLeft--;
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
@@ -82,10 +83,12 @@ void AGun::ReleaseTrigger()
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 }
 
-void AGun::AddRecoil(float Amount)
+void AGun::AddRecoil()
 {
-	//Hämta springarm
-	//lägg till recoil
+	if (AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner()))
+	{
+		Character->ApplyRecoil(RecoilAmount);
+	}
 }
 
 // Called when the game starts or when spawned
