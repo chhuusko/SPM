@@ -26,9 +26,9 @@ void AShotgun::Fire()
 		
 		if(bSuccess)
 		{
-			if (bDebugShotgun)
+			if (bDebugWeapon)
 			{
-				DrawDebugSphere(GetWorld(), Hit.Location, 8.f, 12, FColor::Green, false, 1.0f);
+				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 			}
 			AActor* HitActor = Hit.GetActor();
 			if(HitActor)
