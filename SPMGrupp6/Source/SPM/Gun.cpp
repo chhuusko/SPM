@@ -85,6 +85,21 @@ void AGun::ReleaseTrigger()
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 }
 
+void AGun::Reload()
+{
+	//starta animationer
+
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
+}
+void AGun::ResetAmmo()
+{
+	BulletsLeft = MagazineSize;
+}
+void AGun::StopReload()
+{
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
+}
+
 void AGun::AddRecoil()
 {
 	if (AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner()))

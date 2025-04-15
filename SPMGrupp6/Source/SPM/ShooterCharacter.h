@@ -45,6 +45,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopShooting();
 	UFUNCTION(BlueprintCallable)
+	void Reload();
+	UFUNCTION(BlueprintCallable)
+	void StopReload();
+	UFUNCTION(BlueprintCallable)
 	void MoveForward(float AxisValue);
 	UFUNCTION(BlueprintCallable)
 	void MoveRight(float AxisValue);
