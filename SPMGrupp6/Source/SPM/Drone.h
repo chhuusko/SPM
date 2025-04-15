@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DroneBullet.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
@@ -32,17 +33,28 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
+	float CooldownTime = 2.0f;
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
-	
-	AShooterCharacter* Player;
+	UPROPERTY(EditDefaultsOnly, Category="Combat")
+	TSubclassOf<class ADroneBullet> ProjectileClass;
 
+	FTimerHandle FireRateTimerHandle;
+	UPROPERTY(EditAnywhere)
+	float FireRate;
+	AShooterCharacter* Player;
+	
+	
 	UPROPERTY(EditAnywhere)
 	int32 Health;
+
+	
 	
 	void RotateTurret (FVector torwardsTarget);
 	void Elevate(FVector target);
+	void Shoot();
 };

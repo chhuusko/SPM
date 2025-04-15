@@ -2,7 +2,7 @@
 
 
 #include "Gun.h"
-
+#include "ShooterCharacter.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -33,7 +33,10 @@ void AGun::Fire()
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if(bSuccess)
 	{
-		
+		if (bDebugWeapon)
+		{
+			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
+		}
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ImpactParticles,
@@ -51,7 +54,7 @@ void AGun::Fire()
 			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 		}
 	}
-	AddRecoil(RecoilAmount);
+	AddRecoil();
 	BulletsLeft--;
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
@@ -82,10 +85,12 @@ void AGun::ReleaseTrigger()
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 }
 
-void AGun::AddRecoil(float Amount)
+void AGun::AddRecoil()
 {
-	//Hämta springarm
-	//lägg till recoil
+	if (AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner()))
+	{
+		Character->ApplyRecoil(RecoilAmount);
+	}
 }
 
 // Called when the game starts or when spawned

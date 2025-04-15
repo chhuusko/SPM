@@ -6,6 +6,7 @@
 #include "Gun.h"
 #include "SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -36,6 +37,15 @@ bool AShooterCharacter::IsDead() const
 float AShooterCharacter::GetHealthPercent() const
 {
 	return Health / MaxHealth;
+}
+
+void AShooterCharacter::ApplyRecoil(float RecoilAmount)
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+	{
+		PlayerController->AddPitchInput(-RecoilAmount); 
+	}
 }
 
 // Called every frame
@@ -82,6 +92,27 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	
 	return DamageToApply;
 }
+
+// Starts sprinting.
+void AShooterCharacter::Sprint()
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (MovementComponent)
+	{
+		MovementComponent->MaxWalkSpeed = SprintSpeed;
+	}
+}
+
+// Stops sprinting.
+void AShooterCharacter::StopSprint()
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (MovementComponent)
+	{
+		MovementComponent->MaxWalkSpeed = WalkSpeed;
+	}
+}
+
 
 void AShooterCharacter::MoveForward(float AxisValue)
 {
