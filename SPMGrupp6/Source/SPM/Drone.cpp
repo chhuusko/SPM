@@ -3,6 +3,8 @@
 
 #include "Drone.h"
 
+#include "DroneBullet.h"
+
 // Sets default values
 ADrone::ADrone()
 {
@@ -13,6 +15,8 @@ ADrone::ADrone()
 	RootComponent = Wings;
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
 	TurretMesh->SetupAttachment(Wings);
+	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
+	ProjectileSpawn->SetupAttachment(TurretMesh);
 
 }
 
@@ -36,7 +40,8 @@ void ADrone::Tick(float DeltaTime)
 	if (Player != nullptr)
 	{
 		RotateTurret(Player->GetActorLocation());
-        Elevate(Player->GetActorLocation());
+        //Elevate(Player->GetActorLocation());
+		
 	}
 	
 }
@@ -60,10 +65,21 @@ void ADrone::Elevate(FVector target)
 	SetActorLocation(NewLocation, true);
 	
 }
+void ADrone::Shoot()
+{
+	if (!ProjectileClass && !ProjectileSpawn){return;}
+	if (Player != nullptr)
+	{
+		
+		ADroneBullet* Bullet = GetWorld()->SpawnActor<ADroneBullet>(ProjectileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
+		Bullet->SetOwner(this);
+	}
+}
 float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	Player = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
+	Shoot();
 	UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i : causer %s"), DamageAmount, Health, *DamageCauser->GetOwner()->GetActorNameOrLabel());
 	if (Health <= 0)
 	{

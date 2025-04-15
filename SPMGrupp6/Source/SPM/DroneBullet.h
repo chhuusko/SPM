@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "DroneBullet.generated.h"
 
+class UProjectileMovementComponent;
+
 UCLASS()
 class SPM_API ADroneBullet : public AActor
 {
@@ -14,7 +16,8 @@ class SPM_API ADroneBullet : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ADroneBullet();
-
+	
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -22,5 +25,13 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+private:
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* ProjectileMesh;
+	
+	UPROPERTY(EditAnywhere)
+	UProjectileMovementComponent* ProjectileMovementComponent;
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
+
