@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DroneBullet.h"
+#include "HealthPickUp.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
@@ -43,9 +44,12 @@ private:
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
-
+	UPROPERTY(EditDefaultsOnly, Category="PickUp")
+	TSubclassOf<class AHealthPickUp> HealthPickUpClass;
+	
 	FTimerHandle FireRateTimerHandle;
 	UPROPERTY(EditAnywhere)
 	float FireRate;
