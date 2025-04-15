@@ -9,6 +9,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Drone.generated.h"
 
+class ADroneSpawn;
+
 UCLASS()
 class SPM_API ADrone : public APawn
 {
@@ -30,6 +32,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	void SetSpawner(ADroneSpawn* Spawn);
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -52,7 +55,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 Health;
 
-	
+	ADroneSpawn* Spawner;
 	
 	void RotateTurret (FVector torwardsTarget);
 	void Elevate(FVector target);
