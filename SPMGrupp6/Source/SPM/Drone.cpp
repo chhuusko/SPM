@@ -4,6 +4,7 @@
 #include "Drone.h"
 
 #include "DroneBullet.h"
+#include "DroneSpawn.h"
 
 // Sets default values
 ADrone::ADrone()
@@ -31,6 +32,7 @@ void ADrone::BeginPlay()
 void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+	Spawner->DroneDestroyed();
 }
 
 // Called every frame
@@ -79,13 +81,17 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 {
 	Player = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
-	Shoot();
-	UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i : causer %s"), DamageAmount, Health, *DamageCauser->GetOwner()->GetActorNameOrLabel());
+	//UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i : causer %s"), DamageAmount, Health, *DamageCauser->GetOwner()->GetActorNameOrLabel());
 	if (Health <= 0)
 	{
 		Destroy();
 	}
 	return NULL;
+}
+
+void ADrone::SetSpawner(ADroneSpawn* Spawn)
+{
+	Spawner = Spawn;
 }
 
 
