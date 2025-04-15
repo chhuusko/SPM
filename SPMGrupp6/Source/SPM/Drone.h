@@ -42,7 +42,10 @@ private:
 	USceneComponent* ProjectileSpawn;
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
-	
+
+	FTimerHandle FireRateTimerHandle;
+	UPROPERTY(EditAnywhere)
+	float FireRate;
 	AShooterCharacter* Player;
 	
 	

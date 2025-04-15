@@ -24,7 +24,7 @@ ADrone::ADrone()
 void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
 	// bör lägga till player 2;
 }
 
@@ -40,7 +40,7 @@ void ADrone::Tick(float DeltaTime)
 	if (Player != nullptr)
 	{
 		RotateTurret(Player->GetActorLocation());
-        //Elevate(Player->GetActorLocation());
+        Elevate(Player->GetActorLocation());
 		
 	}
 	

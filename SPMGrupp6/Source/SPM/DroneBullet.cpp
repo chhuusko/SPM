@@ -27,6 +27,7 @@ void ADroneBullet::BeginPlay()
 {
 	Super::BeginPlay();
 	ProjectileMesh->OnComponentHit.AddDynamic(this, &ADroneBullet::OnHit);
+	
 	UE_LOG(LogTemp, Warning, TEXT("Spawned"));
 }
 
@@ -41,7 +42,8 @@ void ADroneBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 	UE_LOG(LogTemp, Warning, TEXT("Hit"));
 	if (AShooterCharacter* player = Cast<AShooterCharacter>(OtherActor))
 	{
-		UGameplayStatics::ApplyDamage(OtherActor, 50.0f,nullptr, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(OtherActor, 50.0f,GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
 	}
+	Destroy();
 }
 
