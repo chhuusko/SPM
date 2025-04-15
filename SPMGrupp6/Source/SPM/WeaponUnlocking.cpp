@@ -186,27 +186,17 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(TSubclassOf<AGun> WeaponClass)
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	AGun* NewGun = World->SpawnActor<AGun>(WeaponClass);
-	if(!CurrentGun)
+	if (AGun* CurrentGun = CharacterOwner->GetGun())
 	{
-		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at CurrentGun"));
-	}
-	if(!NewGun)
-	{
-		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at NewGun"));
-	}
-	if (CurrentGun && NewGun)
-	{
-		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking Deleting weapon: %s (%p)"), *CurrentGun->GetName(), CurrentGun);
 		CurrentGun->Destroy();
 		CurrentGun = nullptr;
-	}
-	if (NewGun)
+	}else UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at CurrentGun"));
+
+	if (AGun* NewGun = World->SpawnActor<AGun>(WeaponClass))
 	{
-		CurrentGun = NewGun;
-		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking creating weapon: %s (%p)"), *CurrentGun->GetName(), CurrentGun);
 		CharacterOwner->GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
-		CurrentGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
-		CurrentGun->SetOwner(CharacterOwner);
-	}
+		NewGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
+		NewGun->SetOwner(CharacterOwner);
+		CharacterOwner->SetGun(NewGun);
+	} else UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at NewGun"));
 }

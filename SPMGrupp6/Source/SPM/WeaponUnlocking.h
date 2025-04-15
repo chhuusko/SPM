@@ -69,8 +69,6 @@ public:
 private:
 	UPROPERTY()
 	AShooterCharacter* CharacterOwner;
-	UPROPERTY()
-	AGun* CurrentGun;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 	TMap<EWeaponType, TSubclassOf<AGun>> WeaponClasses;
