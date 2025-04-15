@@ -5,6 +5,7 @@
 
 #include "EngineUtils.h"
 #include "ShooterAIController.h"
+#include "ShooterCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
@@ -31,7 +32,9 @@ void AKillThemAllGameMode::EndGame(bool bIsPlayerWinner)
 {
 	for (AController* Controller : TActorRange<AController>(GetWorld()))
 	{
-		bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
+		//bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
+		AShooterCharacter* Character = Cast<AShooterCharacter>(Controller->GetPawn());
+		bool bIsWinner = Controller->IsPlayerController() == !Character->IsDead();
 		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
 }
