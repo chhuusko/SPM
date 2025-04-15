@@ -22,11 +22,15 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	
+	void ApplyRecoil(float RecoilAmount);
+	
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 	
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
+	
 	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

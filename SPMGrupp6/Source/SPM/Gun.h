@@ -15,17 +15,10 @@ public:
 	// Sets default values for this actor's properties
 	AGun();
 
-	void PullTrigger();
-	void ReleaseTrigger();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-private:
+	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
 
@@ -51,7 +44,7 @@ private:
 	float Damage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float RecoilAmount = 10;
+	float RecoilAmount = 1;
 
 	UPROPERTY(EditAnywhere)
 	int MagazineSize = 30;
@@ -67,13 +60,26 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	bool bCanFire = true;
+
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
 	AController* GetOwnerController() const;
-	void Fire();
-	void ResetCanFire();
 	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
-	void AddRecoil(float Amount);
+	void AddRecoil();
+	
+public:	
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void Fire();
+	void ResetCanFire();
+	void PullTrigger();
+	void ReleaseTrigger();
+private:
+
+
+	
+	
 
 };
