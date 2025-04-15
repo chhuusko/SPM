@@ -22,11 +22,6 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	Health = MaxHealth;
-	
-	Gun = GetWorld()->SpawnActor<AGun>(GunClass);
-	GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
-	Gun->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, TEXT("WeaponSocket"));
-	Gun->SetOwner(this);
 }
 
 bool AShooterCharacter::IsDead() const
@@ -37,6 +32,16 @@ bool AShooterCharacter::IsDead() const
 float AShooterCharacter::GetHealthPercent() const
 {
 	return Health / MaxHealth;
+}
+
+AGun* AShooterCharacter::GetGun() const
+{
+	return Gun;
+}
+
+void AShooterCharacter::SetGun(AGun* NewGun)
+{
+	this->Gun = NewGun;
 }
 
 void AShooterCharacter::ApplyRecoil(float RecoilAmount)
@@ -52,7 +57,7 @@ void AShooterCharacter::ApplyRecoil(float RecoilAmount)
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input
@@ -136,19 +141,23 @@ void AShooterCharacter::LookRightRate(float AxisValue)
 
 void AShooterCharacter::Shoot()
 {
+	if(!Gun) return;
 	Gun->PullTrigger();
 }
 void AShooterCharacter::StopShooting()
 {
+	if(!Gun) return;
 	Gun->ReleaseTrigger();
 }
 
 void AShooterCharacter::Reload()
 {
+	if(!Gun) return;
 	Gun->Reload();
 }
 void AShooterCharacter::StopReload()
 {
+	if(!Gun) return;
 	Gun->StopReload();
 }
 

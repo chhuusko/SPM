@@ -21,8 +21,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	AGun* Gun;
+
 public:
-	
+	AGun* GetGun() const;
+	void SetGun(AGun* Gun);
+
 	void ApplyRecoil(float RecoilAmount);
 	
 	UFUNCTION(BlueprintPure)
@@ -78,6 +83,4 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
 
-	UPROPERTY()
-	AGun* Gun;
 };
