@@ -15,7 +15,6 @@ void AShooterPlayerController::BeginPlay()
 		// Only add the HUD if the player pawn is attached to the controller, otherwise wait.
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController does not have a LocalPlayer yet. Delaying HUD creation."));
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AShooterPlayerController::InitializeHUD);
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AShooterPlayerController::AssignController);
 		return;
 	}
 	InitializeHUD();
