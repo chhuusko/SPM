@@ -67,6 +67,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float ReloadTime = 2.5;
 
+	UPROPERTY(VisibleAnywhere)
+	bool bIsReloading = false;
+
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;

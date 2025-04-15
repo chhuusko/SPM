@@ -9,7 +9,13 @@
 
 void AShotgun::Fire()
 {
-	if (!bCanFire || BulletsLeft <= 0) return;
+	if (!bCanFire) return;
+
+	if (BulletsLeft <= 0)
+	{
+		Reload();
+		return;
+	}
 	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
@@ -56,6 +62,10 @@ void AShotgun::Fire()
 	
 	AddRecoil();
 	BulletsLeft--;
+	if (BulletsLeft <= 0)
+	{
+		Reload();
+	}
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 }

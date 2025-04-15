@@ -3,6 +3,7 @@
 
 #include "Drone.h"
 
+#include "HealthPickUp.h"
 #include "DroneBullet.h"
 #include "DroneSpawn.h"
 
@@ -34,6 +35,7 @@ void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 	if (Spawner != nullptr)
 	{
+		GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation(), GetActorRotation());
 		Spawner->DroneDestroyed();
 	}
 	
