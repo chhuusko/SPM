@@ -22,7 +22,13 @@ AGun::AGun()
 
 void AGun::Fire()
 {
-	if (!bCanFire || BulletsLeft <= 0) return;
+	if (!bCanFire) return;
+
+	if (BulletsLeft <= 0)
+	{
+		Reload();
+		return;
+	}
 	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
@@ -56,6 +62,12 @@ void AGun::Fire()
 	}
 	AddRecoil();
 	BulletsLeft--;
+
+	if (BulletsLeft <= 0)
+	{
+		Reload();
+	}
+	
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 }
@@ -83,6 +95,37 @@ void AGun::PullTrigger()
 void AGun::ReleaseTrigger()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+}
+
+void AGun::Reload()
+{
+	//Kolla om det går att ladda
+	if (BulletsLeft < MagazineSize && !bIsReloading)
+	{
+		bIsReloading = true;
+		//starta animationer
+		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
+		//Ska inte kunna skjuta medans man laddar
+		bCanFire = false;
+		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
+	}
+}
+void AGun::ResetAmmo()
+{
+	UE_LOG(LogTemp, Display, TEXT("Ammo got refilled"));
+	BulletsLeft = MagazineSize;
+	bCanFire = true;
+	bIsReloading = false;
+}
+void AGun::StopReload()
+{
+	if (bIsReloading)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
+		bIsReloading = false;
+		bCanFire = true;
+		UE_LOG(LogTemp, Display, TEXT("Reload got stopped"));
+	}
 }
 
 void AGun::AddRecoil()

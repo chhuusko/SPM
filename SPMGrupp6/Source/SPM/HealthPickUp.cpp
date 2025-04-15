@@ -5,6 +5,6 @@
 
 void AHealthPickUp::PlayerInteraction(AShooterCharacter* player)
 {
-	//player->Heal(HealAmount);
+	player->Heal(HealAmount);
 	Destroy();
 }

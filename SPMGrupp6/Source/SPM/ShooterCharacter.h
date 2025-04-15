@@ -21,8 +21,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	AGun* Gun;
+
 public:
-	
+	AGun* GetGun() const;
+	void SetGun(AGun* Gun);
+
 	void ApplyRecoil(float RecoilAmount);
 	
 	UFUNCTION(BlueprintPure)
@@ -31,7 +36,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 	
-	
+	void Heal(int HealAmount);
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -44,6 +49,10 @@ public:
 	void Shoot();
 	UFUNCTION(BlueprintCallable)
 	void StopShooting();
+	UFUNCTION(BlueprintCallable)
+	void Reload();
+	UFUNCTION(BlueprintCallable)
+	void StopReload();
 	UFUNCTION(BlueprintCallable)
 	void MoveForward(float AxisValue);
 	UFUNCTION(BlueprintCallable)
@@ -74,6 +83,4 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
 
-	UPROPERTY()
-	AGun* Gun;
 };
