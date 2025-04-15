@@ -64,11 +64,16 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bDebugWeapon = true;
 
+	UPROPERTY(EditAnywhere)
+	float ReloadTime = 2.5;
+
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
+	FTimerHandle ReloadTimer;
 	AController* GetOwnerController() const;
 	void AddRecoil();
+	void ResetAmmo();
 	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	
 public:	
@@ -79,6 +84,8 @@ public:
 	virtual void PullTrigger();
 	void ResetCanFire();
 	void ReleaseTrigger();
+	void Reload();
+	void StopReload();
 private:
 
 
