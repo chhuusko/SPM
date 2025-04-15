@@ -65,8 +65,8 @@ protected:
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
 	AController* GetOwnerController() const;
-	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	void AddRecoil();
+	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	
 public:	
 	// Called every frame

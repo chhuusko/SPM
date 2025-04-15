@@ -4,7 +4,6 @@
 #include "Gun.h"
 #include "ShooterCharacter.h"
 #include "Engine/DamageEvents.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
