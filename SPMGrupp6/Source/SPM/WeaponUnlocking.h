@@ -48,6 +48,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	void InitializeWeaponUnlockingSystem();
 	void testCTRL(const FInputActionInstance& Instance);
 
 	void EquipSlot1(const FInputActionInstance& Instance);

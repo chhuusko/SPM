@@ -8,6 +8,7 @@
 #include "ShooterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "ShooterPlayerController.h"
 
 // Sets default values for this component's properties
 UWeaponUnlocking::UWeaponUnlocking()
@@ -91,13 +92,33 @@ void UWeaponUnlocking::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking BeginPlay - Owner: %s | Controller: %s"),
+										*GetOwner()->GetName(),
+										*GetNameSafe(GetWorld()->GetFirstPlayerController()));
+	
 	CharacterOwner = Cast<AShooterCharacter>(GetOwner());
 	if (!CharacterOwner) return;
+	
+	UE_LOG(LogTemp, Log, TEXT("Is locally controlled: %s"),
+								CharacterOwner->IsLocallyControlled() ? TEXT("Yes") : TEXT("No"));
 	
 	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
 	if (!ResourceComponent) return;
 	
-	APlayerController* PC = Cast<APlayerController>(CharacterOwner->GetController());
+	APlayerController* PC = Cast<AShooterPlayerController>(CharacterOwner->GetController());
+	if (!PC) return;
+	
+	if (!PC->GetLocalPlayer())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PlayerController does not have a LocalPlayer yet. Delaying Weapon creation."));
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponUnlocking::InitializeWeaponUnlockingSystem);
+		return;
+	}
+	InitializeWeaponUnlockingSystem();
+}
+void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
+{
+	APlayerController* PC = Cast<AShooterPlayerController>(CharacterOwner->GetController());
 	if (!PC) return;
 	
 	// By default, unlock pistol
@@ -110,15 +131,15 @@ void UWeaponUnlocking::BeginPlay()
 	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
-		if (CombinationMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
+		if (CombinationMappingContext)
 		{
 			Subsystem->AddMappingContext(CombinationMappingContext, 1);
 		}
-		if (WeaponUpgradeMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
+		if (WeaponUpgradeMappingContext)
 		{
 			Subsystem->AddMappingContext(WeaponUpgradeMappingContext, 1);
 		}
-		if (WeaponEquipMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
+		if (WeaponEquipMappingContext)
 		{
 			Subsystem->AddMappingContext(WeaponEquipMappingContext, 0);
 		}
