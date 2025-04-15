@@ -61,6 +61,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bCanFire = true;
 
+	UPROPERTY(EditAnywhere)
+	bool bDebugWeapon = true;
+
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
@@ -73,8 +76,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Fire();
+	virtual void PullTrigger();
 	void ResetCanFire();
-	void PullTrigger();
 	void ReleaseTrigger();
 private:
 
