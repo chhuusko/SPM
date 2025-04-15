@@ -20,15 +20,15 @@ enum class EWeaponType : uint8
 	AssaultRifle UMETA(DisplayName = "Assault Rifle"),
 	SniperRifle UMETA(DisplayName = "Sniper Rifle")
 };
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FWeaponState
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bUnlocked = false;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Level = 1;
 };
 
@@ -48,7 +48,8 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	
+	void testCTRL(const FInputActionInstance& Instance);
+
 	void EquipSlot1(const FInputActionInstance& Instance);
 	void UpgradeSlot1(const FInputActionInstance& Instance);
 	
@@ -92,7 +93,12 @@ private:
 	class UResources* ResourceComponent;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputMappingContext* CharacterMappingContext;
+	UInputMappingContext* WeaponUpgradeMappingContext;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* WeaponEquipMappingContext;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* CombinationMappingContext;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* IA_EquipSlot1;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")

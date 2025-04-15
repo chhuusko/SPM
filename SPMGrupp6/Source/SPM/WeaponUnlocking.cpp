@@ -21,7 +21,6 @@ UWeaponUnlocking::UWeaponUnlocking()
 
 void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 {
-	UE_LOG(LogTemp, Log, TEXT("EquipWeapon  %d"), (int32)WeaponType);
 	if (!CharacterOwner || !IsWeaponUnlocked(WeaponType)) return;
 	
 	if (WeaponClasses.Contains(WeaponType))
@@ -33,10 +32,24 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 
 void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 {
-	UE_LOG(LogTemp, Log, TEXT("TryUnlockOrUpgradeWeapon  %d"), (int32)WeaponType);
-	if (!ResourceComponent || !WeaponClasses.Contains(WeaponType)) return;
+	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking trying to UnlockOrUpgradeWeapon weapon: %d"), (int32)WeaponType);
+	if (!ResourceComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking does not have a reference to ResourceComponent!"));
+		return;
+	}
+	if (!WeaponClasses.Contains(WeaponType))
+	{
+		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking WeaponClasses does not contain weapon type %d!"), (int32)WeaponType);
+		return;
+	}
 	
 	FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
+	
+	UE_LOG(LogTemp, Log, TEXT("Weapon: %d | Unlocked: %s | Level: %d"),
+		(int32)WeaponType,
+		State.bUnlocked ? TEXT("Yes") : TEXT("No"),
+		State.Level);
 	
 	if (!State.bUnlocked)
 	{
@@ -44,11 +57,11 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 
 		if (ResourceComponent->HasEnoughResources(Cost))
 		{
+			UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking checked for HasEnoughResources in UnlockWeapon weapon: %d"), (int32)WeaponType);
 			ResourceComponent->SpendResources(Cost);
 			State.bUnlocked = true;
 			State.Level = 1;
 
-			UE_LOG(LogTemp, Log, TEXT("Unlocked weapon: %d"), (int32)WeaponType);
 			EquipWeapon(WeaponType);
 		}
 	}
@@ -58,10 +71,9 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 
 		if (ResourceComponent->HasEnoughResources(UpgradeCost))
 		{
+			UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking checked for HasEnoughResources in UpgradeWeapon weapon: %d"), (int32)WeaponType);
 			ResourceComponent->SpendResources(UpgradeCost);
 			State.Level += 1;
-
-			UE_LOG(LogTemp, Log, TEXT("Upgraded weapon: %d to Level %d"), (int32)WeaponType, State.Level);
 			// ToDo: Upgrade weapon
 		}
 	}
@@ -69,7 +81,8 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 
 bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
 {
-	return UnlockedWeapons.Contains(WeaponType);
+	const FWeaponState* State = WeaponStates.Find(WeaponType);
+	return State && State->bUnlocked;
 }
 
 
@@ -79,25 +92,35 @@ void UWeaponUnlocking::BeginPlay()
 	Super::BeginPlay();
 	
 	CharacterOwner = Cast<AShooterCharacter>(GetOwner());
+	if (!CharacterOwner) return;
 	
 	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
-	
-	// By default, unlock pistol
-	UnlockedWeapons.Add(EWeaponType::Pistol);
-	
-	// Equip starting weapon
-	EquipWeapon(EWeaponType::Pistol);
-
+	if (!ResourceComponent) return;
 	
 	APlayerController* PC = Cast<APlayerController>(CharacterOwner->GetController());
 	if (!PC) return;
-
+	
+	// By default, unlock pistol
+	FWeaponState& State = WeaponStates.FindOrAdd(EWeaponType::Pistol);
+	State.bUnlocked = true;
+	State.Level = 1;
+	
+	// Equip starting weapon
+	EquipWeapon(EWeaponType::Pistol);
 	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
-		if (CharacterMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
+		if (CombinationMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
 		{
-			Subsystem->AddMappingContext(CharacterMappingContext, 0);
+			Subsystem->AddMappingContext(CombinationMappingContext, 1);
+		}
+		if (WeaponUpgradeMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
+		{
+			Subsystem->AddMappingContext(WeaponUpgradeMappingContext, 1);
+		}
+		if (WeaponEquipMappingContext) // Assign this via UPROPERTY(EditDefaultsOnly)
+		{
+			Subsystem->AddMappingContext(WeaponEquipMappingContext, 0);
 		}
 	}
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PC->InputComponent))
@@ -112,25 +135,22 @@ void UWeaponUnlocking::BeginPlay()
 		Input->BindAction(IA_UpgradeSlot3, ETriggerEvent::Triggered, this, &UWeaponUnlocking::UpgradeSlot3);
 		Input->BindAction(IA_UpgradeSlot4, ETriggerEvent::Triggered, this, &UWeaponUnlocking::UpgradeSlot4);
 	}
+	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking started successfully"));
 }
 void UWeaponUnlocking::EquipSlot1(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogTemp, Log, TEXT("EquipSlot1"));
 	EquipWeapon(EWeaponType::Pistol);
 }
 void UWeaponUnlocking::UpgradeSlot1(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogTemp, Log, TEXT("UpgradeSlot1"));
 	TryUnlockOrUpgradeWeapon(EWeaponType::Pistol);
 }
 void UWeaponUnlocking::EquipSlot2(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogTemp, Log, TEXT("EquipSlot2"));
 	EquipWeapon(EWeaponType::Shotgun);
 }
 void UWeaponUnlocking::UpgradeSlot2(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogTemp, Log, TEXT("UpgradeSlot2"));
 	TryUnlockOrUpgradeWeapon(EWeaponType::Shotgun);
 }
 void UWeaponUnlocking::EquipSlot3(const FInputActionInstance& Instance)
@@ -162,15 +182,29 @@ void UWeaponUnlocking::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UWeaponUnlocking::SpawnAndAttachWeapon(TSubclassOf<AGun> WeaponClass)
 {
 	if (!WeaponClass || !CharacterOwner) return;
-	
+
 	UWorld* World = GetWorld();
 	if (!World) return;
-	
+
 	AGun* NewGun = World->SpawnActor<AGun>(WeaponClass);
+	if(!CurrentGun)
+	{
+		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at CurrentGun"));
+	}
+	if(!NewGun)
+	{
+		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at NewGun"));
+	}
 	if (CurrentGun && NewGun)
 	{
+		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking Deleting weapon: %s (%p)"), *CurrentGun->GetName(), CurrentGun);
 		CurrentGun->Destroy();
+		CurrentGun = nullptr;
+	}
+	if (NewGun)
+	{
 		CurrentGun = NewGun;
+		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking creating weapon: %s (%p)"), *CurrentGun->GetName(), CurrentGun);
 		CharacterOwner->GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
 		CurrentGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
 		CurrentGun->SetOwner(CharacterOwner);
