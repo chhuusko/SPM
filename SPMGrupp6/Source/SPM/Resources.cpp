@@ -38,3 +38,13 @@ void UResources::ModifyResourceAmount(int ResourceModification)
 	this->ResourceAmount += ResourceModification;
 }
 
+bool UResources::HasEnoughResources(int Cost)
+{
+	return ResourceAmount >= Cost;
+}
+
+void UResources::SpendResources(int Cost)
+{
+	ResourceAmount -= Cost;
+}
+
