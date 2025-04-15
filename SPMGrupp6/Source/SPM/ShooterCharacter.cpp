@@ -165,3 +165,12 @@ void AShooterCharacter::Heal(int HealAmount)
 	Health += FMath::Min(HealAmount+Health, MaxHealth);
 }
 
+void AShooterCharacter::SetPlayerFOV(float Fov)
+{
+	FirstPersonCamera->SetFieldOfView(Fov);
+}
+float AShooterCharacter::GetPlayerFOV() const
+{
+	return FirstPersonCamera->FieldOfView;
+}
+
