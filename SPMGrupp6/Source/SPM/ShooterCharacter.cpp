@@ -143,3 +143,12 @@ void AShooterCharacter::StopShooting()
 	Gun->ReleaseTrigger();
 }
 
+void AShooterCharacter::Reload()
+{
+	Gun->Reload();
+}
+void AShooterCharacter::StopReload()
+{
+	Gun->StopReload();
+}
+
