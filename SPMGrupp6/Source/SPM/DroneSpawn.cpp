@@ -15,7 +15,7 @@ ADroneSpawn::ADroneSpawn()
 void ADroneSpawn::BeginPlay()
 {
 	Super::BeginPlay();
-	GetWorldTimerManager().SetTimer(DroneSpawnTimerHandle, this, &ADroneSpawn::Spawn, SpawnTime, false);
+	Spawn();
 }
 
 // Called every frame
