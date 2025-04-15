@@ -15,8 +15,8 @@ class SPM_API ASniper : public AGun
 {
 	GENERATED_BODY()
 public:
-	virtual void AimDownSights() override;
-	virtual void StopScoping() override;
+	//virtual void AimDownSight() override;
+	//virtual void StopAiming() override;
 protected:
 	virtual void BeginPlay() override;
 private:

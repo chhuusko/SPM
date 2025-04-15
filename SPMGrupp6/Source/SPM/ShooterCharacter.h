@@ -56,6 +56,11 @@ public:
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void StopReload();
+	/*
+	UFUNCTION(BlueprintCallable)
+	void AimDownSight();
+	UFUNCTION(BlueprintCallable)
+	void StopAiming();*/
 	UFUNCTION(BlueprintCallable)
 	void MoveForward(float AxisValue);
 	UFUNCTION(BlueprintCallable)
@@ -86,7 +91,5 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCamera;
 
 };

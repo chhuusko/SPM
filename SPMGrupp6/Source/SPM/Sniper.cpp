@@ -10,16 +10,19 @@ void ASniper::BeginPlay()
 	Character = Cast<AShooterCharacter>(GetOwner());
 	if (!Character) return;
 	
-	CharacterOriginalFOV= Character->GetPlayerFOV();
+	//CharacterOriginalFOV= Character->GetPlayerFOV();
 }
 
-
-void ASniper::AimDownSights()
+/*
+void ASniper::AimDownSight()
 {
 	Character->SetPlayerFOV(ZoomFOVAmount);
+	UE_LOG(LogTemp, Display, TEXT("AimDownSight"));
 }
 
-void ASniper::StopScoping()
+void ASniper::StopAiming()
 {
 	Character->SetPlayerFOV(CharacterOriginalFOV);
-}
+	UE_LOG(LogTemp, Display, TEXT("Stops aiming"));
+
+}*/

@@ -52,7 +52,18 @@ void AShooterCharacter::ApplyRecoil(float RecoilAmount)
 		PlayerController->AddPitchInput(-RecoilAmount); 
 	}
 }
-
+/*
+void AShooterCharacter::SetPlayerFOV(float Fov)
+{
+	if (FirstPersonCamera && !FMath::IsNaN(Fov))
+	{
+		FirstPersonCamera->SetFieldOfView(Fov);
+	}
+}
+float AShooterCharacter::GetPlayerFOV() const
+{
+	return FirstPersonCamera->FieldOfView;
+}*/
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {
@@ -165,12 +176,14 @@ void AShooterCharacter::Heal(int HealAmount)
 	Health += FMath::Min(HealAmount+Health, MaxHealth);
 }
 
-void AShooterCharacter::SetPlayerFOV(float Fov)
+/*
+void AShooterCharacter::AimDownSight()
 {
-	FirstPersonCamera->SetFieldOfView(Fov);
-}
-float AShooterCharacter::GetPlayerFOV() const
-{
-	return FirstPersonCamera->FieldOfView;
+	Gun->AimDownSight();
 }
 
+void AShooterCharacter::StopAiming()
+{
+	Gun->StopAiming();
+}
+*/

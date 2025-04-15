@@ -166,11 +166,11 @@ bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
 }
 
-void AGun::AimDownSights()
+void AGun::AimDownSight()
 {
 	// Gör inget än här än - ifall vi vill ha något gemensam aim-funktion för samtliga vapen implementerat senare så finns möjligheten öppen.
 }
-void AGun::StopScoping()
+void AGun::StopAiming()
 {
 	// Gör inget än här än - ifall vi vill ha något gemensam aim-funktion för samtliga vapen implementerat senare så finns möjligheten öppen.
 
