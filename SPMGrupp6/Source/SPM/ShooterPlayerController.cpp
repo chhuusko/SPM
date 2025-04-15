@@ -23,7 +23,6 @@ void AShooterPlayerController::BeginPlay()
 // Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
-	
 	HUD = CreateWidget(this, HUDClass);
 	if (HUD)
 	{
