@@ -4,7 +4,6 @@
 #include "Gun.h"
 #include "ShooterCharacter.h"
 #include "Engine/DamageEvents.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -34,7 +33,10 @@ void AGun::Fire()
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if(bSuccess)
 	{
-		
+		if (bDebugWeapon)
+		{
+			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
+		}
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ImpactParticles,
