@@ -16,9 +16,15 @@ class SPM_API AShotgun : public AGun
 
 public:
 	virtual void Fire() override;
+	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection) override;
 
 private:
 	UPROPERTY(EditAnywhere)
 	float ConeRadius = 10;
-	
+
+	UPROPERTY(EditAnywhere)
+	int numberOfPellets = 10;
+
+	UPROPERTY(EditAnywhere)
+	bool bDebugShotgun;
 };

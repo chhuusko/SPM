@@ -23,6 +23,7 @@ void AShooterPlayerController::BeginPlay()
 // Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
+	
 	HUD = CreateWidget(this, HUDClass);
 	if (HUD)
 	{
@@ -43,9 +44,9 @@ void AShooterPlayerController::PlaceUI(UUserWidget* Widget)
 	{
 		// Place the UI centered in the top half of the screen.
 		Widget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
-    			
-		// The center is placed three quarters down the screen.
-		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, (ScreenSize.Y * 3) / 4), true);
+
+		// The center is placed one quarter down the screen.
+		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, ScreenSize.Y / 4), true);
 
 		// The UI takes up half the screen.
 		Widget->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
@@ -54,7 +55,10 @@ void AShooterPlayerController::PlaceUI(UUserWidget* Widget)
 	{
 		// Place the UI centered in the lower half of the screen.
 		Widget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
-		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, ScreenSize.Y / 4), true);
+    			
+		// The center is placed three quarters down the screen.
+		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, (ScreenSize.Y * 3) / 4), true);
+		
 		Widget->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
 	}
 	else

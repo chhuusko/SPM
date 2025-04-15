@@ -52,12 +52,21 @@ public:
 	void LookUpRate(float AxisValue);
 	UFUNCTION(BlueprintCallable)
 	void LookRightRate(float AxisValue);
+	UFUNCTION(BlueprintCallable)
+	void Sprint();
+	UFUNCTION(BlueprintCallable)
+	void StopSprint();
 	
 private:
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
+
+	UPROPERTY(EditDefaultsOnly)
+	float WalkSpeed = 600;
+	UPROPERTY(EditDefaultsOnly)
+	float SprintSpeed = 1000;
 	
 	UPROPERTY(VisibleAnywhere)
 	float Health;

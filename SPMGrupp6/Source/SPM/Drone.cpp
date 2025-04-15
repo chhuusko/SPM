@@ -3,6 +3,8 @@
 
 #include "Drone.h"
 
+#include "DroneBullet.h"
+
 // Sets default values
 ADrone::ADrone()
 {
@@ -13,6 +15,8 @@ ADrone::ADrone()
 	RootComponent = Wings;
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
 	TurretMesh->SetupAttachment(Wings);
+	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
+	ProjectileSpawn->SetupAttachment(TurretMesh);
 
 }
 
@@ -20,7 +24,7 @@ ADrone::ADrone()
 void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
-	Player = Cast<AShooterCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
 	// bör lägga till player 2;
 }
 
@@ -33,8 +37,13 @@ void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void ADrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	RotateTurret(Player->GetActorLocation());
-	Elevate(Player->GetActorLocation());
+	if (Player != nullptr)
+	{
+		RotateTurret(Player->GetActorLocation());
+        Elevate(Player->GetActorLocation());
+		
+	}
+	
 }
 
 // Called to bind functionality to input
@@ -46,7 +55,7 @@ void ADrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void ADrone::RotateTurret(FVector LookAtTarget)
 {
 	FVector ToTarget = LookAtTarget - TurretMesh->GetComponentLocation();
-	FRotator LookAtRotation = FRotator(ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw, 0.f);
+	FRotator LookAtRotation = FRotator(0, ToTarget.Rotation().Yaw+90, ToTarget.Rotation().Pitch+35);
 	TurretMesh->SetWorldRotation(FMath::RInterpTo(TurretMesh->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(this), 5.f));
 }
 
@@ -56,11 +65,22 @@ void ADrone::Elevate(FVector target)
 	SetActorLocation(NewLocation, true);
 	
 }
+void ADrone::Shoot()
+{
+	if (!ProjectileClass && !ProjectileSpawn){return;}
+	if (Player != nullptr)
+	{
+		
+		ADroneBullet* Bullet = GetWorld()->SpawnActor<ADroneBullet>(ProjectileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
+		Bullet->SetOwner(this);
+	}
+}
 float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	
+	Player = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
-	UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i"), DamageAmount, Health);
+	Shoot();
+	UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i : causer %s"), DamageAmount, Health, *DamageCauser->GetOwner()->GetActorNameOrLabel());
 	if (Health <= 0)
 	{
 		Destroy();
