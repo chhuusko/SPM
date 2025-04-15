@@ -4,7 +4,6 @@
 #include "Gun.h"
 #include "ShooterCharacter.h"
 #include "Engine/DamageEvents.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -34,7 +33,10 @@ void AGun::Fire()
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if(bSuccess)
 	{
-		
+		if (bDebugWeapon)
+		{
+			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
+		}
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ImpactParticles,
@@ -81,6 +83,21 @@ void AGun::PullTrigger()
 void AGun::ReleaseTrigger()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+}
+
+void AGun::Reload()
+{
+	//starta animationer
+
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
+}
+void AGun::ResetAmmo()
+{
+	BulletsLeft = MagazineSize;
+}
+void AGun::StopReload()
+{
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
 }
 
 void AGun::AddRecoil()

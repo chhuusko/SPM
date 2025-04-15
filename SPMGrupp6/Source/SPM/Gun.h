@@ -61,21 +61,31 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bCanFire = true;
 
+	UPROPERTY(EditAnywhere)
+	bool bDebugWeapon = true;
+
+	UPROPERTY(EditAnywhere)
+	float ReloadTime = 2.5;
+
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
+	FTimerHandle ReloadTimer;
 	AController* GetOwnerController() const;
-	bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	void AddRecoil();
+	void ResetAmmo();
+	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Fire();
+	virtual void PullTrigger();
 	void ResetCanFire();
-	void PullTrigger();
 	void ReleaseTrigger();
+	void Reload();
+	void StopReload();
 private:
 
 

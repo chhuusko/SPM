@@ -17,23 +17,34 @@ void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
 		EndGame(false);
 	}
 
-	for (AShooterAIController* Controller : TActorRange<AShooterAIController>(GetWorld()))
-	{
-		if (!Controller->IsDead())
-		{
-			return;
-		}
-	}
-
-	EndGame(true);
+	// for (AShooterAIController* Controller : TActorRange<AShooterAIController>(GetWorld()))
+	// {
+	// 	if (!Controller->IsDead())
+	// 	{
+	// 		return;
+	// 	}
+	// }
+	//
+	// EndGame(true);
 }
 
 void AKillThemAllGameMode::EndGame(bool bIsPlayerWinner)
 {
+	UE_LOG(LogTemp, Display, TEXT("KillThemAllGameMode::EndGame"));
 	for (AController* Controller : TActorRange<AController>(GetWorld()))
 	{
-		//bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
+		if (!Controller)
+		{
+			continue;
+		}
+		
 		AShooterCharacter* Character = Cast<AShooterCharacter>(Controller->GetPawn());
+		if (!Character)
+		{
+			UE_LOG(LogTemp, Error, TEXT("No character"));
+			continue;
+		}
+		
 		bool bIsWinner = Controller->IsPlayerController() == !Character->IsDead();
 		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
