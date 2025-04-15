@@ -4,9 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Camera/CameraComponent.h"
 #include "ShooterCharacter.generated.h"
-
 
 class AGun;
 
@@ -18,6 +16,7 @@ class SPM_API AShooterCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -29,8 +28,6 @@ public:
 	AGun* GetGun() const;
 	void SetGun(AGun* Gun);
 
-	void SetPlayerFOV(float Fov);
-	float GetPlayerFOV() const;
 	void ApplyRecoil(float RecoilAmount);
 	
 	UFUNCTION(BlueprintPure)
@@ -85,8 +82,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCamera;
 
 };

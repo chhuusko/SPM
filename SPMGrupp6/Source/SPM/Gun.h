@@ -85,8 +85,6 @@ public:
 
 	virtual void Fire();
 	virtual void PullTrigger();
-	virtual void AimDownSights();
-	virtual void StopScoping();
 	void ResetCanFire();
 	void ReleaseTrigger();
 	void Reload();
