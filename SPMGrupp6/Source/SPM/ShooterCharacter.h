@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 	
-	
+	void Heal(int HealAmount);
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

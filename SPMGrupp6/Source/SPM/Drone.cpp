@@ -32,7 +32,11 @@ void ADrone::BeginPlay()
 void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	Spawner->DroneDestroyed();
+	if (Spawner != nullptr)
+	{
+		Spawner->DroneDestroyed();
+	}
+	
 }
 
 // Called every frame

@@ -151,4 +151,8 @@ void AShooterCharacter::StopReload()
 {
 	Gun->StopReload();
 }
+void AShooterCharacter::Heal(int HealAmount)
+{
+	Health += FMath::Min(HealAmount+Health, MaxHealth);
+}
 
