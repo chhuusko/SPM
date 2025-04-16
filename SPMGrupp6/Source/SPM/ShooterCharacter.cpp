@@ -162,6 +162,6 @@ void AShooterCharacter::StopReload()
 }
 void AShooterCharacter::Heal(int HealAmount)
 {
-	Health += FMath::Min(HealAmount+Health, MaxHealth);
+	Health = FMath::Min(HealAmount+Health, MaxHealth);
 }
 
