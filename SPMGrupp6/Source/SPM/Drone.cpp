@@ -33,7 +33,8 @@ void ADrone::BeginPlay()
 void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	AHealthPickUp* HPPickUp = GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation(), GetActorRotation());
+	GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 	if (Spawner != nullptr)
 	{
 		Spawner->DroneDestroyed();

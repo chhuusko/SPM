@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DroneBullet.h"
 #include "HealthPickUp.h"
+#include "ResourcePickUp.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
@@ -49,6 +50,8 @@ private:
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
 	TSubclassOf<class AHealthPickUp> HealthPickUpClass;
+	UPROPERTY(EditDefaultsOnly, Category="PickUp")
+	TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
 	
 	FTimerHandle FireRateTimerHandle;
 	UPROPERTY(EditAnywhere)
