@@ -93,10 +93,4 @@ public:
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
-private:
-	AShooterPlayerController* GetLocalPlayerController();
-
-	
-	
-
 };

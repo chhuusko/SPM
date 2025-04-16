@@ -66,7 +66,7 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 
-	AShooterPlayerController* PlayerController = GetLocalPlayerController();
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->HUDWidget)
 	{
 		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
@@ -128,7 +128,7 @@ void AGun::ResetAmmo()
 	bIsReloading = false;
 
 	// Update ammo text.
-	AShooterPlayerController* PlayerController = GetLocalPlayerController();
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->HUDWidget)
 	{
 		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
@@ -143,14 +143,6 @@ void AGun::StopReload()
 		bCanFire = true;
 		UE_LOG(LogTemp, Display, TEXT("Reload got stopped"));
 	}
-}
-
-// Gets the player controller controlling this player.
-AShooterPlayerController* AGun::GetLocalPlayerController()
-{
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	AShooterPlayerController* ShooterPlayerController = Cast<AShooterPlayerController>(PlayerController);
-	return ShooterPlayerController;
 }
 
 void AGun::AddRecoil()
