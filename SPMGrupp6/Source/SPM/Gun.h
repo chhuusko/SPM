@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
+class AShooterPlayerController;
+
 UCLASS()
 class SPM_API AGun : public AActor
 {
@@ -70,6 +72,8 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsReloading = false;
 
+	UPROPERTY()
+	class UHUDWidget* HUDWidget;
 	
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
@@ -90,7 +94,7 @@ public:
 	void Reload();
 	void StopReload();
 private:
-
+	AShooterPlayerController* GetLocalPlayerController();
 
 	
 	

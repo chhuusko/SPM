@@ -2,7 +2,10 @@
 
 
 #include "Gun.h"
+
+#include "HUDWidget.h"
 #include "ShooterCharacter.h"
+#include "ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -63,6 +66,12 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 
+	AShooterPlayerController* PlayerController = GetLocalPlayerController();
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+	}
+	
 	if (BulletsLeft <= 0)
 	{
 		Reload();
@@ -107,6 +116,13 @@ void AGun::Reload()
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		//Ska inte kunna skjuta medans man laddar
 		bCanFire = false;
+		
+		AShooterPlayerController* PlayerController = GetLocalPlayerController();
+		if (PlayerController && PlayerController->HUDWidget)
+		{
+			PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+		}
+		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
 	}
 }
@@ -126,6 +142,14 @@ void AGun::StopReload()
 		bCanFire = true;
 		UE_LOG(LogTemp, Display, TEXT("Reload got stopped"));
 	}
+}
+
+// Gets the player controller controlling this player.
+AShooterPlayerController* AGun::GetLocalPlayerController()
+{
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	AShooterPlayerController* ShooterPlayerController = Cast<AShooterPlayerController>(PlayerController);
+	return ShooterPlayerController;
 }
 
 void AGun::AddRecoil()
