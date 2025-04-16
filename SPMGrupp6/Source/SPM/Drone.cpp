@@ -33,7 +33,8 @@ void ADrone::BeginPlay()
 void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	AHealthPickUp* HPPickUp = GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation(), GetActorRotation());
+	GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 	if (Spawner != nullptr)
 	{
 		Spawner->DroneDestroyed();
@@ -64,7 +65,7 @@ void ADrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ADrone::RotateTurret(FVector LookAtTarget)
 {
-	if (LookAtTarget.Y > RootComponent->GetComponentLocation().Y-3.f) return;
+	if (LookAtTarget.Z > RootComponent->GetComponentLocation().Z-0.2f) return;
 	FVector ToTarget = LookAtTarget - TurretMesh->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(0, ToTarget.Rotation().Yaw+90, ToTarget.Rotation().Pitch+35);
 	TurretMesh->SetWorldRotation(FMath::RInterpTo(TurretMesh->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(this), 5.f));
