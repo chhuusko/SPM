@@ -23,6 +23,11 @@ AGun::AGun()
 	BulletsLeft = MagazineSize;
 }
 
+int AGun::GetMagazineSize() const
+{
+	return MagazineSize;
+}
+
 void AGun::Fire()
 {
 	if (!bCanFire) return;
