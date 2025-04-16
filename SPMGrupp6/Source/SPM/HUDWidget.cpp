@@ -5,6 +5,7 @@
 
 #include "Components/TextBlock.h"
 
+// Updates the ammo text in the HUD.
 void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 {
 	FString AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);

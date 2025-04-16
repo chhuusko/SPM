@@ -117,12 +117,6 @@ void AGun::Reload()
 		//Ska inte kunna skjuta medans man laddar
 		bCanFire = false;
 		
-		AShooterPlayerController* PlayerController = GetLocalPlayerController();
-		if (PlayerController && PlayerController->HUDWidget)
-		{
-			PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-		}
-		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
 	}
 }
@@ -132,6 +126,13 @@ void AGun::ResetAmmo()
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
+
+	// Update ammo text.
+	AShooterPlayerController* PlayerController = GetLocalPlayerController();
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+	}
 }
 void AGun::StopReload()
 {
