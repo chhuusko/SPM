@@ -64,7 +64,7 @@ void ADrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ADrone::RotateTurret(FVector LookAtTarget)
 {
-	if (LookAtTarget.Y > RootComponent->GetComponentLocation().Y-3.f) return;
+	if (LookAtTarget.Z > RootComponent->GetComponentLocation().Z-0.2f) return;
 	FVector ToTarget = LookAtTarget - TurretMesh->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(0, ToTarget.Rotation().Yaw+90, ToTarget.Rotation().Pitch+35);
 	TurretMesh->SetWorldRotation(FMath::RInterpTo(TurretMesh->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(this), 5.f));
