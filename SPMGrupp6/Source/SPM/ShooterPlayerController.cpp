@@ -3,6 +3,7 @@
 
 #include "ShooterPlayerController.h"
 
+#include "HUDWidget.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 
@@ -23,11 +24,11 @@ void AShooterPlayerController::BeginPlay()
 // Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
-	HUD = CreateWidget(this, HUDClass);
-	if (HUD)
+	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
+	if (HUDWidgetClass)
 	{
-		HUD->AddToViewport();
-		PlaceUI(HUD);
+		HUDWidget->AddToViewport();
+		PlaceUI(HUDWidget);
 	}
 }
 
@@ -70,7 +71,7 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
 
-	HUD->RemoveFromParent();
+	HUDWidget->RemoveFromParent();
 
 	UUserWidget* Widget;
 
