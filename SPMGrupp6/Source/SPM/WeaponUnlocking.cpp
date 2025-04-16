@@ -8,6 +8,7 @@
 #include "ShooterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "HUDWidget.h"
 #include "ShooterPlayerController.h"
 
 // Sets default values for this component's properties
@@ -28,6 +29,19 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	{
 		TSubclassOf<AGun> WeaponClass = WeaponClasses[WeaponType];
 		SpawnAndAttachWeapon(WeaponClass);
+
+		if (AGun* CurrentGun = CharacterOwner->GetGun())
+		{
+			// Update ammo text.
+			if (APawn* Player = Cast<APawn>(GetOwner()))
+			{
+				AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Player->GetController());
+				if (PlayerController && PlayerController->HUDWidget)
+				{
+					PlayerController->HUDWidget->UpdateAmmoText(CurrentGun->GetMagazineSize(), CurrentGun->GetMagazineSize());
+				}
+			}
+		}
 	}
 }
 

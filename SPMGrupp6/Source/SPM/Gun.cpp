@@ -2,7 +2,10 @@
 
 
 #include "Gun.h"
+
+#include "HUDWidget.h"
 #include "ShooterCharacter.h"
+#include "ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -18,6 +21,11 @@ AGun::AGun()
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 	BulletsLeft = MagazineSize;
+}
+
+int AGun::GetMagazineSize() const
+{
+	return MagazineSize;
 }
 
 void AGun::Fire()
@@ -63,6 +71,12 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+	}
+	
 	if (BulletsLeft <= 0)
 	{
 		Reload();
@@ -107,6 +121,7 @@ void AGun::Reload()
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		//Ska inte kunna skjuta medans man laddar
 		bCanFire = false;
+		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
 	}
 }
@@ -116,6 +131,13 @@ void AGun::ResetAmmo()
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
+
+	// Update ammo text.
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+	}
 }
 void AGun::StopReload()
 {
