@@ -20,6 +20,8 @@ public:
 	UPROPERTY()
 	class UHUDWidget* HUDWidget;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -39,4 +41,6 @@ private:
 	float RestartDelay = 5;
 
 	FTimerHandle RestartTimer;
+
+	FVector2D LastScreenSize;
 };
