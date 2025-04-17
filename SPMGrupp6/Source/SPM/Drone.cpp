@@ -73,7 +73,7 @@ void ADrone::RotateTurret(FVector LookAtTarget)
 
 void ADrone::Elevate(FVector target)
 {
-	FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), target + FVector(0, 0, 500), UGameplayStatics::GetWorldDeltaSeconds(this), 0.5f);
+	FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), target + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(this), 0.5f);
 	SetActorLocation(NewLocation, true);
 	
 }

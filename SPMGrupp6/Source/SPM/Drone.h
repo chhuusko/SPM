@@ -38,7 +38,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	float CooldownTime = 2.0f;
+	FVector DesiredElevation = FVector(0,0,500);
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
