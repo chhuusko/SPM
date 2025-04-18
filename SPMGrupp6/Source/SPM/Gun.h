@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
+
 class AShooterPlayerController;
 
 UCLASS()
@@ -48,8 +49,11 @@ protected:
 	float Damage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float RecoilAmount = 1;
+	float RecoilAmount = 0.5;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> RecoilCameraShake;
+	
 	UPROPERTY(EditAnywhere)
 	int MagazineSize = 30;
 
@@ -77,6 +81,8 @@ protected:
 	UPROPERTY()
 	class UHUDWidget* HUDWidget;
 	
+	FRotator RecoilTargetRotation;
+	bool bIsRecoiling = false;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
 	FTimerHandle ReloadTimer;
@@ -88,12 +94,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 	virtual void Fire();
 	virtual void PullTrigger();
+	virtual void WeaponAbility();
 	void ResetCanFire();
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
 	void UpdateAmmoText();
+	void CalculateDamageFalloff();
 };

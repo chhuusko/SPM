@@ -30,5 +30,4 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
 	void OverlapInteract(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 };
