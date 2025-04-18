@@ -45,7 +45,7 @@ void AShotgun::Fire()
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 			}
-			//Om något av skotten träffar något, spela effekter
+			//If any of the shots hits, play effects.
 			bShouldPlayEffects = true;
 		}
 	}
@@ -74,8 +74,7 @@ void AShotgun::Fire()
 
 bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 {
-	//Överskuggad GunTrace som skjuter ut en raycast från spelarens direction med en liten random offset i en cone radius.
-	
+	//Overshadowed GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
 	if (!OwnerController) return false;
 
@@ -84,7 +83,7 @@ bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 	OwnerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
 
 	ShotDirection = ViewRotation.Vector();
-	//Lägger till random direction
+	//Takes rotation vector and adds a random offset from within a cone.
 	FVector SpreadDir = FMath::VRandCone(ShotDirection, FMath::DegreesToRadians(ConeRadius));
 	FVector End = ViewLocation + SpreadDir * MaxRange;
 

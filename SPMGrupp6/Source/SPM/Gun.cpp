@@ -29,8 +29,10 @@ int AGun::GetMagazineSize() const
 
 void AGun::Fire()
 {
+	// Checks if weapon can fire.
 	if (!bCanFire) return;
 
+	// Reloads automatically if bullets are 0.
 	if (BulletsLeft <= 0)
 	{
 		Reload();
@@ -43,6 +45,7 @@ void AGun::Fire()
 	
 	FHitResult Hit;
 	FVector ShotDirection;
+	// Trace returns true if something is hit.
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if(bSuccess)
 	{
@@ -70,12 +73,14 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 	UpdateAmmoText();
-	
+
+	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
 		Reload();
 	}
-	
+
+	// Stops possibility to fire between shots.
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 }
@@ -87,8 +92,9 @@ void AGun::ResetCanFire()
 
 void AGun::PullTrigger()
 {
-	if (!bCanFire || BulletsLeft <= 0) return;
-	
+	if (!bCanFire) return;
+
+	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
 		Fire();
@@ -107,13 +113,12 @@ void AGun::ReleaseTrigger()
 
 void AGun::Reload()
 {
-	//Kolla om det går att ladda
+	// Check if reload is possible.
 	if (BulletsLeft < MagazineSize && !bIsReloading)
 	{
 		bIsReloading = true;
-		//starta animationer
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
-		//Ska inte kunna skjuta medans man laddar
+		// Can not shoot while reloading.
 		bCanFire = false;
 		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
