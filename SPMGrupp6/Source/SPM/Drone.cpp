@@ -52,7 +52,6 @@ void ADrone::Tick(float DeltaTime)
 	{
 		RotateTurret(Player->GetActorLocation());
         Elevate(Player->GetActorLocation());
-		
 	}
 	
 }
@@ -79,12 +78,14 @@ void ADrone::Elevate(FVector target)
 }
 void ADrone::Shoot()
 {
-	if (!ProjectileClass && !ProjectileSpawn){return;}
+	if (!ProjectileClass && !ProjectileSpawn && !MissileClass){return;}
 	if (Player != nullptr)
 	{
 		
-		ADroneBullet* Bullet = GetWorld()->SpawnActor<ADroneBullet>(ProjectileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
-		Bullet->SetOwner(this);
+		//ADroneBullet* Bullet = GetWorld()->SpawnActor<ADroneBullet>(ProjectileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
+		ADroneMissile* Missile = GetWorld()->SpawnActor<ADroneMissile>(MissileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
+		//Bullet->SetOwner(this);
+		Missile->SetOwner(this);
 	}
 }
 float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)

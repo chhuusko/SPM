@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DroneBullet.h"
+#include "DroneMissile.h"
 #include "HealthPickUp.h"
 #include "ResourcePickUp.h"
 #include "ShooterCharacter.h"
@@ -50,6 +51,8 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category="Combat")
+	TSubclassOf<class ADroneMissile> MissileClass;
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
 	TSubclassOf<class AHealthPickUp> HealthPickUpClass;
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
