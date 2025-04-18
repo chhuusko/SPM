@@ -20,7 +20,6 @@ AGun::AGun()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
-	BulletsLeft = MagazineSize;
 }
 
 int AGun::GetMagazineSize() const
@@ -163,6 +162,7 @@ void AGun::AddRecoil()
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
+	BulletsLeft = MagazineSize;
 }
 
 // Called every frame
