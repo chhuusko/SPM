@@ -45,19 +45,19 @@ void AShotgun::Fire()
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 			}
-			//If any of the shots hits, play effects.
+			// Play effects on every pellet hit
 			bShouldPlayEffects = true;
-		}
-	}
-	if (bShouldPlayEffects)
-	{
 			UGameplayStatics::SpawnEmitterAtLocation(
 				GetWorld(), 
 				ImpactParticles,
 				Hit.Location,
 				ShotDirection.Rotation()			
 			);
-
+		}
+	}
+	//If any of the shots hits, play effects.
+	if (bShouldPlayEffects)
+	{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
 	}
 	

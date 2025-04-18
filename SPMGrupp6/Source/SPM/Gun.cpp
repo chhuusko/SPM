@@ -22,6 +22,38 @@ AGun::AGun()
 	Mesh->SetupAttachment(Root);
 }
 
+// Called when the game starts or when spawned
+void AGun::BeginPlay()
+{
+	Super::BeginPlay();
+	BulletsLeft = MagazineSize;
+}
+
+// Called every frame
+void AGun::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	/*if (bIsRecoiling)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
+		if (PlayerController)
+		{
+			FRotator CurrentRotation = PlayerController->GetControlRotation();
+			FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RecoilTargetRotation, DeltaTime, RecoilInterpSpeed);
+			PlayerController->SetControlRotation(NewRotation);
+
+			// Stop when traget is close
+			if (NewRotation.Equals(RecoilTargetRotation, 0.001f))
+			{
+				bIsRecoiling = false;
+			}
+		}
+	}*/
+	
+	
+}
+
 int AGun::GetMagazineSize() const
 {
 	return MagazineSize;
@@ -146,30 +178,15 @@ void AGun::StopReload()
 
 void AGun::AddRecoil()
 {
-	AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner());
-	if (Character)
+	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
+	if (PlayerController && RecoilCameraShake)
 	{
-		APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
-		if (PlayerController)
-		{
-			PlayerController->AddPitchInput(-RecoilAmount); 
-		}
+		PlayerController->ClientStartCameraShake(RecoilCameraShake);
+		PlayerController->AddPitchInput(-RecoilAmount); 
+		UE_LOG(LogTemp, Display, TEXT("Recoil started"));
 	}
 }
 
-// Called when the game starts or when spawned
-void AGun::BeginPlay()
-{
-	Super::BeginPlay();
-	BulletsLeft = MagazineSize;
-}
-
-// Called every frame
-void AGun::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 {
@@ -204,4 +221,15 @@ void AGun::UpdateAmmoText()
 		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
 	}
 }
+
+void AGun::WeaponAbility()
+{
+	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
+}
+
+void AGun::CalculateDamageFalloff()
+{
+	
+}
+
 
