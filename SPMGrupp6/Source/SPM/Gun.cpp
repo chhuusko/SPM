@@ -146,9 +146,14 @@ void AGun::StopReload()
 
 void AGun::AddRecoil()
 {
-	if (AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner()))
+	AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner());
+	if (Character)
 	{
-		Character->ApplyRecoil(RecoilAmount);
+		APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+		if (PlayerController)
+		{
+			PlayerController->AddPitchInput(-RecoilAmount); 
+		}
 	}
 }
 
