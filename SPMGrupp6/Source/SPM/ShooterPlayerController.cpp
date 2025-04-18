@@ -18,7 +18,30 @@ void AShooterPlayerController::BeginPlay()
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AShooterPlayerController::InitializeHUD);
 		return;
 	}
+	
 	InitializeHUD();
+	GEngine->GameViewport->GetViewportSize(LastScreenSize);
+}
+
+void AShooterPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!HUDWidget)
+		return;
+
+	// Get the current size of the screen.
+	FVector2D CurrentScreenSize;
+	GEngine->GameViewport->GetViewportSize(CurrentScreenSize);
+
+	// If the screen has been resized.
+	if (!CurrentScreenSize.Equals(LastScreenSize, 0.01f))
+	{
+		LastScreenSize = CurrentScreenSize;
+
+		// Re-places the UI for the specific player.
+		PlaceUI(HUDWidget);
+	}
 }
 
 // Spawn player HUD.

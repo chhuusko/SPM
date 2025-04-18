@@ -20,7 +20,6 @@ AGun::AGun()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
-	BulletsLeft = MagazineSize;
 }
 
 int AGun::GetMagazineSize() const
@@ -30,8 +29,10 @@ int AGun::GetMagazineSize() const
 
 void AGun::Fire()
 {
+	// Checks if weapon can fire.
 	if (!bCanFire) return;
 
+	// Reloads automatically if bullets are 0.
 	if (BulletsLeft <= 0)
 	{
 		Reload();
@@ -44,6 +45,7 @@ void AGun::Fire()
 	
 	FHitResult Hit;
 	FVector ShotDirection;
+	// Trace returns true if something is hit.
 	bool bSuccess = GunTrace(Hit, ShotDirection);
 	if(bSuccess)
 	{
@@ -70,19 +72,15 @@ void AGun::Fire()
 	}
 	AddRecoil();
 	BulletsLeft--;
+	UpdateAmmoText();
 
-	// Update ammo text in players UI.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
-	
+	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
 		Reload();
 	}
-	
+
+	// Stops possibility to fire between shots.
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 }
@@ -94,8 +92,9 @@ void AGun::ResetCanFire()
 
 void AGun::PullTrigger()
 {
-	if (!bCanFire || BulletsLeft <= 0) return;
-	
+	if (!bCanFire) return;
+
+	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
 		Fire();
@@ -114,13 +113,12 @@ void AGun::ReleaseTrigger()
 
 void AGun::Reload()
 {
-	//Kolla om det går att ladda
+	// Check if reload is possible.
 	if (BulletsLeft < MagazineSize && !bIsReloading)
 	{
 		bIsReloading = true;
-		//starta animationer
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
-		//Ska inte kunna skjuta medans man laddar
+		// Can not shoot while reloading.
 		bCanFire = false;
 		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
@@ -133,12 +131,7 @@ void AGun::ResetAmmo()
 	bCanFire = true;
 	bIsReloading = false;
 
-	// Update players ammo text.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
+	UpdateAmmoText();
 }
 void AGun::StopReload()
 {
@@ -153,9 +146,14 @@ void AGun::StopReload()
 
 void AGun::AddRecoil()
 {
-	if (AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner()))
+	AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner());
+	if (Character)
 	{
-		Character->ApplyRecoil(RecoilAmount);
+		APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+		if (PlayerController)
+		{
+			PlayerController->AddPitchInput(-RecoilAmount); 
+		}
 	}
 }
 
@@ -163,6 +161,7 @@ void AGun::AddRecoil()
 void AGun::BeginPlay()
 {
 	Super::BeginPlay();
+	BulletsLeft = MagazineSize;
 }
 
 // Called every frame
@@ -194,5 +193,15 @@ AController* AGun::GetOwnerController() const
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if(OwnerPawn == nullptr) return nullptr;
 	return OwnerPawn->GetController();
+}
+
+void AGun::UpdateAmmoText()
+{
+	// Update players ammo text.
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+	}
 }
 

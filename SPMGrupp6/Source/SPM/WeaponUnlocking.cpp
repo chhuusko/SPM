@@ -27,11 +27,15 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	
 	if (WeaponClasses.Contains(WeaponType))
 	{
+		AGun* CurrentGun = CharacterOwner->GetGun();
+		if (CurrentGun && CurrentGun->GetClass() == WeaponClasses[WeaponType]) return; // Hoppa över, samma vapen redan utrustat
+		
 		TSubclassOf<AGun> WeaponClass = WeaponClasses[WeaponType];
 		SpawnAndAttachWeapon(WeaponClass);
 
 		// Update ammo text for this weapons player.
-		if (AGun* CurrentGun = CharacterOwner->GetGun())
+		CurrentGun = CharacterOwner->GetGun();
+		if (CurrentGun)
 		{
 			if (APawn* Player = Cast<APawn>(GetOwner()))
 			{
