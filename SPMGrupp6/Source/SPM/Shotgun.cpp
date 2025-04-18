@@ -4,6 +4,7 @@
 #include "Shotgun.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "ShooterPlayerController.h"
 
 
 
@@ -62,6 +63,7 @@ void AShotgun::Fire()
 	
 	AddRecoil();
 	BulletsLeft--;
+	UpdateAmmoText();
 	if (BulletsLeft <= 0)
 	{
 		Reload();

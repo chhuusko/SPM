@@ -95,4 +95,5 @@ public:
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
+	void UpdateAmmoText();
 };

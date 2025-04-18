@@ -69,13 +69,7 @@ void AGun::Fire()
 	}
 	AddRecoil();
 	BulletsLeft--;
-
-	// Update ammo text in players UI.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
+	UpdateAmmoText();
 	
 	if (BulletsLeft <= 0)
 	{
@@ -132,12 +126,7 @@ void AGun::ResetAmmo()
 	bCanFire = true;
 	bIsReloading = false;
 
-	// Update players ammo text.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
+	UpdateAmmoText();
 }
 void AGun::StopReload()
 {
@@ -194,5 +183,15 @@ AController* AGun::GetOwnerController() const
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if(OwnerPawn == nullptr) return nullptr;
 	return OwnerPawn->GetController();
+}
+
+void AGun::UpdateAmmoText()
+{
+	// Update players ammo text.
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+	}
 }
 
