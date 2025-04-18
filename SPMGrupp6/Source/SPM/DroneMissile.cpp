@@ -33,7 +33,7 @@ void ADroneMissile::Tick(float DeltaTime)
 void ADroneMissile::SetTarget(AShooterCharacter* NewTarget)
 {
 	Target = NewTarget;
-	ProjectileMovementComponent->HomingTargetComponent = Target;
+	//ProjectileMovementComponent->HomingTargetComponent = Target;
 }
 
 void ADroneMissile::RotateToTarget()
