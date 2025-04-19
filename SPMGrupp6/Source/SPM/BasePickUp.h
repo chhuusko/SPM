@@ -20,11 +20,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void PlayerInteraction(AShooterCharacter* player);
+	virtual void Remove();
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* MeshComp;
 	UPROPERTY(VisibleAnywhere)
 	USphereComponent* CollisionSphere;
-
+	UPROPERTY(EditAnywhere)
+	float RemoveTime = 20.0f;
+	FTimerHandle RemoveTimerHandle;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

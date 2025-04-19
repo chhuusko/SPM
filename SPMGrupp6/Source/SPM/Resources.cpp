@@ -19,7 +19,7 @@ UResources::UResources()
 void UResources::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// ...
 	
 }
