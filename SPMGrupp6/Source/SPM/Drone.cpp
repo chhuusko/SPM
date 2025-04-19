@@ -13,14 +13,12 @@ ADrone::ADrone()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	Wings = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
 	RootComponent = Wings;
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
 	TurretMesh->SetupAttachment(Wings);
 	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawn->SetupAttachment(TurretMesh);
-
 }
 
 // Called when the game starts or when spawned
@@ -38,7 +36,7 @@ void ADrone::Tick(float DeltaTime)
 	{
 		RotateTurret(Player->GetActorLocation());
         Elevate(Player->GetActorLocation());
-		if (FVector::Dist(GetActorLocation(), Spawner->GetActorLocation()) > Spawner->GetMaxDroneDistance())
+		if (Spawner && FVector::Dist(GetActorLocation(), Spawner->GetActorLocation()) > Spawner->GetMaxDroneDistance())
 		{
 			Player = nullptr;
 		}
