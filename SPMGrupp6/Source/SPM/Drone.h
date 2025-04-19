@@ -29,6 +29,7 @@ protected:
 	void RotateTurret (FVector torwardsTarget);
     void Elevate(FVector target);
     void Shoot();
+	void ReturnToSpawn();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

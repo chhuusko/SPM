@@ -6,6 +6,7 @@
 #include "HealthPickUp.h"
 #include "DroneBullet.h"
 #include "DroneSpawn.h"
+#include "EntitySystem/MovieSceneEntityManager.h"
 
 // Sets default values
 ADrone::ADrone()
@@ -37,6 +38,13 @@ void ADrone::Tick(float DeltaTime)
 	{
 		RotateTurret(Player->GetActorLocation());
         Elevate(Player->GetActorLocation());
+		if (FVector::Dist(GetActorLocation(), Spawner->GetActorLocation()) > Spawner->GetMaxDroneDistance())
+		{
+			Player = nullptr;
+		}
+	} else if (Spawner != nullptr)
+	{
+		ReturnToSpawn();
 	}
 	
 }
@@ -93,6 +101,11 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 void ADrone::SetSpawner(ADroneSpawn* Spawn)
 {
 	Spawner = Spawn;
+}
+void ADrone::ReturnToSpawn()
+{
+	FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), Spawner->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(this), 0.5f);
+	SetActorLocation(NewLocation, true);
 }
 
 

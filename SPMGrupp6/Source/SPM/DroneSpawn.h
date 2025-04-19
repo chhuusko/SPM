@@ -24,12 +24,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void DroneDestroyed();
+	float GetMaxDroneDistance(){return MaxDroneDistance;}
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ADrone> DroneClass;
 	UPROPERTY(EditAnywhere)
 	float SpawnTime;
-	
+	UPROPERTY(EditAnywhere)
+	float MaxDroneDistance;
 	FTimerHandle DroneSpawnTimerHandle;
 
 	
