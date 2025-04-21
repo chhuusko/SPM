@@ -49,7 +49,13 @@ protected:
 	float Damage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float RecoilAmount = 0.5;
+	float RecoilPerShot = 0.5;
+
+	UPROPERTY(EditAnywhere)
+	float RecoilMultiplier = 0.1;
+
+	UPROPERTY(EditAnywhere)
+	float MaxRecoil = 1;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> RecoilCameraShake;
@@ -81,11 +87,12 @@ protected:
 	UPROPERTY()
 	class UHUDWidget* HUDWidget;
 	
-	FRotator RecoilTargetRotation;
 	bool bIsRecoiling = false;
+	int TimesFired = 0;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
 	FTimerHandle ReloadTimer;
+	
 	AController* GetOwnerController() const;
 	void AddRecoil();
 	void ResetAmmo();

@@ -4,6 +4,7 @@
 #include "Gun.h"
 
 #include "HUDWidget.h"
+#include "MathUtil.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
@@ -104,6 +105,7 @@ void AGun::Fire()
 	}
 	AddRecoil();
 	BulletsLeft--;
+	TimesFired++;
 	UpdateAmmoText();
 
 	// Reloads automatically if bullets reach 0.
@@ -141,6 +143,7 @@ void AGun::PullTrigger()
 void AGun::ReleaseTrigger()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+	TimesFired = 0;
 }
 
 void AGun::Reload()
@@ -178,11 +181,14 @@ void AGun::StopReload()
 
 void AGun::AddRecoil()
 {
+	float Recoil = FMath::Min(RecoilPerShot + RecoilMultiplier*TimesFired, MaxRecoil);
+	
+	
 	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
 	if (PlayerController && RecoilCameraShake)
 	{
 		PlayerController->ClientStartCameraShake(RecoilCameraShake);
-		PlayerController->AddPitchInput(-RecoilAmount); 
+		PlayerController->AddPitchInput(-Recoil); 
 		UE_LOG(LogTemp, Display, TEXT("Recoil started"));
 	}
 }

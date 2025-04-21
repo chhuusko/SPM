@@ -62,6 +62,7 @@ void AShotgun::Fire()
 	}
 	
 	AddRecoil();
+	TimesFired++;
 	BulletsLeft--;
 	UpdateAmmoText();
 	if (BulletsLeft <= 0)
