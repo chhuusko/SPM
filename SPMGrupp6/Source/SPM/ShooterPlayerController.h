@@ -31,11 +31,9 @@ protected:
 private:
 	void InitializeHUD();
 	void PlaceUI(UUserWidget* Widget);
-	
+
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> LoseScreenClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> WinScreenClass;
+	TSubclassOf<UUserWidget> GameOverScreenClass;
 	
 	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5;
