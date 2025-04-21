@@ -96,26 +96,31 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 
 	HUDWidget->RemoveFromParent();
 
-	UUserWidget* Widget;
+	// UUserWidget* Widget;
+	//
+	// if (bIsWinner)
+	// {
+	// 	Widget = CreateWidget(this, WinScreenClass);
+	// 	if (Widget)
+	// 	{
+	// 		Widget->AddToViewport();
+	// 	}
+	// }
+	// else
+	// {
+	// 	Widget = CreateWidget(this, LoseScreenClass);
+	// 	if (Widget)
+	// 	{
+	// 		Widget->AddToViewport();
+	// 	}
+	// }
+	//
+	// PlaceUI(Widget);
 
-	if (bIsWinner)
+	if (UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(this, GameOverScreenClass))
 	{
-		Widget = CreateWidget(this, WinScreenClass);
-		if (Widget)
-		{
-			Widget->AddToViewport();
-		}
+		GameOverWidget->AddToViewport();
 	}
-	else
-	{
-		Widget = CreateWidget(this, LoseScreenClass);
-		if (Widget)
-		{
-			Widget->AddToViewport();
-		}
-	}
-	
-	PlaceUI(Widget);
 	
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 	UE_LOG(LogTemp, Warning, TEXT("Game Ended!"));
