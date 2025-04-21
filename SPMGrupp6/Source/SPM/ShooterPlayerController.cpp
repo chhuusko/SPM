@@ -96,30 +96,15 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 
 	HUDWidget->RemoveFromParent();
 
-	// UUserWidget* Widget;
-	//
-	// if (bIsWinner)
-	// {
-	// 	Widget = CreateWidget(this, WinScreenClass);
-	// 	if (Widget)
-	// 	{
-	// 		Widget->AddToViewport();
-	// 	}
-	// }
-	// else
-	// {
-	// 	Widget = CreateWidget(this, LoseScreenClass);
-	// 	if (Widget)
-	// 	{
-	// 		Widget->AddToViewport();
-	// 	}
-	// }
-	//
-	// PlaceUI(Widget);
-
 	if (UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(this, GameOverScreenClass))
 	{
 		GameOverWidget->AddToViewport();
+
+		// Check if player one won.
+		if (bIsWinner && this == GetWorld()->GetFirstPlayerController())
+		{
+			
+		}
 	}
 	
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
