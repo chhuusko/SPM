@@ -3,7 +3,27 @@
 
 #include "ShooterGameInstance.h"
 
-int32 UShooterGameInstance::IncrementRound()
+int32 UShooterGameInstance::GetIncrementedRound()
 {
-	return Round++;
+	return ++Round;
+}
+
+void UShooterGameInstance::IncrementBlueScore()
+{
+	++BlueScore;
+}
+
+void UShooterGameInstance::IncrementRedScore()
+{
+	++RedScore;
+}
+
+int32 UShooterGameInstance::GetBlueScore() const
+{
+	return BlueScore;
+}
+
+int32 UShooterGameInstance::GetRedScore() const
+{
+	return RedScore;
 }

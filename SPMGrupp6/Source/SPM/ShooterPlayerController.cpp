@@ -105,18 +105,7 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 		{
 			GameOverWidget->AddToViewport();
 			
-			GameOverWidget->UpdateGameOverScreen();
-			
-			// Check if player one won.
-			if (this == GetWorld()->GetFirstPlayerController())
-			{
-				
-			}
-			// Player two won.
-			else
-			{
-				
-			}
+			GameOverWidget->UpdateGameOverScreen(this == GetWorld()->GetFirstPlayerController());
 		}
 	}
 	

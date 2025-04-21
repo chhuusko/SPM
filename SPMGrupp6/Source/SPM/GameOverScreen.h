@@ -23,10 +23,14 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* RedScoreText;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* WinnerText;
+
 	UFUNCTION(BlueprintCallable)
-	void UpdateGameOverScreen();
+	void UpdateGameOverScreen(bool bBlueIsWinner);
 
 private:
-	void UpdateScoreText();
+	void UpdateScoreText(bool bBlueIsWinner);
+	void UpdateWinnerText(bool bBlueIsWinner);
 	void UpdateRound();
 };
