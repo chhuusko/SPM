@@ -3,7 +3,9 @@
 
 #include "ShooterPlayerController.h"
 
+#include "GameOverScreen.h"
 #include "HUDWidget.h"
+#include "KillThemAllGameMode.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 
@@ -96,14 +98,21 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 
 	HUDWidget->RemoveFromParent();
 
-	if (UUserWidget* GameOverWidget = CreateWidget<UUserWidget>(this, GameOverScreenClass))
+	// Only add game over screen once.
+	if (bIsWinner)
 	{
-		GameOverWidget->AddToViewport();
-
-		// Check if player one won.
-		if (bIsWinner && this == GetWorld()->GetFirstPlayerController())
+		if (UGameOverScreen* GameOverWidget = CreateWidget<UGameOverScreen>(this, GameOverScreenClass))
 		{
-			
+			GameOverWidget->AddToViewport();
+
+			// Update round text.
+			GameOverWidget->UpdateRound(Cast<AKillThemAllGameMode>(GetWorld()->GetAuthGameMode())->GetRound());
+
+			// Check if player one won.
+			if (bIsWinner && this == GetWorld()->GetFirstPlayerController())
+			{
+				
+			}
 		}
 	}
 	

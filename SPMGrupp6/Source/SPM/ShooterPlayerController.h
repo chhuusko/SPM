@@ -31,7 +31,7 @@ protected:
 private:
 	void InitializeHUD();
 	void PlaceUI(UUserWidget* Widget);
-	
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> GameOverScreenClass;
 	

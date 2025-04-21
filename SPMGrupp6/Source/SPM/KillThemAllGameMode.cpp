@@ -18,6 +18,11 @@ void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
 	}
 }
 
+int32 AKillThemAllGameMode::GetRound() const
+{
+	return Round;
+}
+
 void AKillThemAllGameMode::EndGame(bool bIsPlayerWinner)
 {
 	UE_LOG(LogTemp, Display, TEXT("KillThemAllGameMode::EndGame"));
