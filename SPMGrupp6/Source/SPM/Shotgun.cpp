@@ -5,7 +5,7 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShooterPlayerController.h"
-
+#include "Customizations/MathStructProxyCustomizations.h"
 
 
 void AShotgun::Fire()
@@ -23,13 +23,14 @@ void AShotgun::Fire()
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
 	FHitResult Hit;
 	FVector ShotDirection;
+	float TraceLength;
 	bool bShouldPlayEffects = false;
 
 	//Skjuter flera raycasts
 	for (int i = 0; i < numberOfPellets; i++)
 	{
 		// Random offset baserat på överskuggad GunTrace
-		bool bSuccess = GunTrace(Hit, ShotDirection);
+		bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 		
 		if(bSuccess)
 		{
@@ -40,10 +41,16 @@ void AShotgun::Fire()
 			AActor* HitActor = Hit.GetActor();
 			if(HitActor)
 			{
-				
+				float ActualDamage = CalculateDamageFalloff(TraceLength);
+
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+				
+				if (bDebugDamageFalloff)
+				{
+					UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
+				}
 			}
 			// Play effects on every pellet hit
 			bShouldPlayEffects = true;
@@ -73,23 +80,26 @@ void AShotgun::Fire()
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 }
 
-bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
+bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength)
 {
 	//Overshadowed GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
 	if (!OwnerController) return false;
 
-	FVector ViewLocation;
-	FRotator ViewRotation;
-	OwnerController->GetPlayerViewPoint(ViewLocation, ViewRotation);
+	FVector Location;
+	FRotator Rotation;
+	OwnerController->GetPlayerViewPoint(Location, Rotation);
 
-	ShotDirection = ViewRotation.Vector();
+	ShotDirection = Rotation.Vector();
 	//Takes rotation vector and adds a random offset from within a cone.
 	FVector SpreadDir = FMath::VRandCone(ShotDirection, FMath::DegreesToRadians(ConeRadius));
-	FVector End = ViewLocation + SpreadDir * MaxRange;
+	FVector End = Location + SpreadDir * MaxRange;
 
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
-	return GetWorld()->LineTraceSingleByChannel(Hit, ViewLocation, End, ECC_GameTraceChannel1, Params);
+	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
+	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
+	return bHit;
 }

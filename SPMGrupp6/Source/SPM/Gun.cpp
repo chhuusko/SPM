@@ -78,8 +78,9 @@ void AGun::Fire()
 	
 	FHitResult Hit;
 	FVector ShotDirection;
+	float TraceLength;
 	// Trace returns true if something is hit.
-	bool bSuccess = GunTrace(Hit, ShotDirection);
+	bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 	if(bSuccess)
 	{
 		if (bDebugWeapon)
@@ -98,9 +99,15 @@ void AGun::Fire()
 		AActor* HitActor = Hit.GetActor();
 		if(HitActor)
 		{
-			FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
+			float ActualDamage = CalculateDamageFalloff(TraceLength);
+			FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+			HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
+
+			if (bDebugDamageFalloff)
+			{
+				UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
+			}
 		}
 	}
 	AddRecoil();
@@ -189,12 +196,11 @@ void AGun::AddRecoil()
 	{
 		PlayerController->ClientStartCameraShake(RecoilCameraShake);
 		PlayerController->AddPitchInput(-Recoil); 
-		UE_LOG(LogTemp, Display, TEXT("Recoil started"));
 	}
 }
 
 
-bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
+bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength)
 {
 	AController* OwnerController = GetOwnerController();
 	if (OwnerController == nullptr) return false;
@@ -208,7 +214,10 @@ bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
+	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
+	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
+	return bHit;
 }
 
 AController* AGun::GetOwnerController() const
@@ -233,9 +242,16 @@ void AGun::WeaponAbility()
 	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
 }
 
-void AGun::CalculateDamageFalloff()
+float AGun::CalculateDamageFalloff(float TraceLength)
 {
+	// Returns calculated Damage based on distance to element hit.
 	
+	float FalloffPerCentemeter = FalloffPerMeter / 100.0f;
+	float FalloffStartCentimeter = FalloffStartMeter * 100.0f;
+	float CalculatedDamage = Damage - (TraceLength-FalloffStartCentimeter) * FalloffPerCentemeter;
+	
+	// Return Calculated damage between min damage and original damage
+	return FMath::RoundToInt(FMath::Clamp(CalculatedDamage, MinimumDamage, Damage));
 }
 
 

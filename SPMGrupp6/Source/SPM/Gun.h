@@ -49,6 +49,15 @@ protected:
 	float Damage = 10;
 
 	UPROPERTY(EditAnywhere)
+	float MinimumDamage = 10;
+
+	UPROPERTY(EditAnywhere)
+	float FalloffStartMeter = 10;
+	
+	UPROPERTY(EditAnywhere)
+	float FalloffPerMeter = 0.5;
+
+	UPROPERTY(EditAnywhere)
 	float RecoilPerShot = 0.5;
 
 	UPROPERTY(EditAnywhere)
@@ -79,6 +88,9 @@ protected:
 	bool bDebugWeapon = true;
 
 	UPROPERTY(EditAnywhere)
+	bool bDebugDamageFalloff = false;
+
+	UPROPERTY(EditAnywhere)
 	float ReloadTime = 2.5;
 
 	UPROPERTY(VisibleAnywhere)
@@ -96,7 +108,7 @@ protected:
 	AController* GetOwnerController() const;
 	void AddRecoil();
 	void ResetAmmo();
-	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
+	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength);
 	
 public:	
 	// Called every frame
@@ -110,5 +122,5 @@ public:
 	void Reload();
 	void StopReload();
 	void UpdateAmmoText();
-	void CalculateDamageFalloff();
+	float CalculateDamageFalloff(float TraceLength);
 };
