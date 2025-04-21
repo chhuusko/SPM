@@ -3,14 +3,28 @@
 
 #include "GameOverScreen.h"
 
+#include "ShooterGameInstance.h"
 #include "Components/TextBlock.h"
 
-void UGameOverScreen::UpdateRound(int32 Round)
+// Changes the current round displayed.
+void UGameOverScreen::UpdateRound()
 {
-	FString RoundString = FString::Printf(TEXT("Round: %d"), Round);
-	RoundText->SetText(FText::FromString(RoundString));
+	if (UShooterGameInstance* GameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+	{
+		FString RoundString = FString::Printf(TEXT("Round: %d"), GameInstance->IncrementRound());
+		RoundText->SetText(FText::FromString(RoundString));
+	}
 }
 
-void UGameOverScreen::UpdateScoreText(int32 Score)
+// Calls private helper functions to update the game over screen.
+void UGameOverScreen::UpdateGameOverScreen()
 {
+	UpdateRound();
+	UpdateScoreText();
+}
+
+// Changes the score for each player.
+void UGameOverScreen::UpdateScoreText()
+{
+	
 }

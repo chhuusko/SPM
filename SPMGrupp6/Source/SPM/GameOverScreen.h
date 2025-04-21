@@ -24,8 +24,9 @@ public:
 	class UTextBlock* RedScoreText;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateRound(int32 Round);
+	void UpdateGameOverScreen();
 
-	UFUNCTION(BlueprintCallable)
-	void UpdateScoreText(int32 Score);
+private:
+	void UpdateScoreText();
+	void UpdateRound();
 };

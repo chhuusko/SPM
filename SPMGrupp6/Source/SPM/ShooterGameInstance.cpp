@@ -1,0 +1,9 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "ShooterGameInstance.h"
+
+int32 UShooterGameInstance::IncrementRound()
+{
+	return Round++;
+}

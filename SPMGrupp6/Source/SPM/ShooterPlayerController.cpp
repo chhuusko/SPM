@@ -104,12 +104,16 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 		if (UGameOverScreen* GameOverWidget = CreateWidget<UGameOverScreen>(this, GameOverScreenClass))
 		{
 			GameOverWidget->AddToViewport();
-
-			// Update round text.
-			GameOverWidget->UpdateRound(Cast<AKillThemAllGameMode>(GetWorld()->GetAuthGameMode())->GetRound());
-
+			
+			GameOverWidget->UpdateGameOverScreen();
+			
 			// Check if player one won.
-			if (bIsWinner && this == GetWorld()->GetFirstPlayerController())
+			if (this == GetWorld()->GetFirstPlayerController())
+			{
+				
+			}
+			// Player two won.
+			else
 			{
 				
 			}
