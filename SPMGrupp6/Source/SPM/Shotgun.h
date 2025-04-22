@@ -6,6 +6,7 @@
 #include "Gun.h"
 #include "Shotgun.generated.h"
 
+
 /**
  * 
  */
@@ -16,7 +17,7 @@ class SPM_API AShotgun : public AGun
 
 public:
 	virtual void Fire() override;
-	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection) override;
+	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength) override;
 
 private:
 	UPROPERTY(EditAnywhere)

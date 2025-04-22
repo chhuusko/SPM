@@ -4,6 +4,7 @@
 #include "Gun.h"
 
 #include "HUDWidget.h"
+#include "MathUtil.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
@@ -20,7 +21,38 @@ AGun::AGun()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+}
+
+// Called when the game starts or when spawned
+void AGun::BeginPlay()
+{
+	Super::BeginPlay();
 	BulletsLeft = MagazineSize;
+}
+
+// Called every frame
+void AGun::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	/*if (bIsRecoiling)
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
+		if (PlayerController)
+		{
+			FRotator CurrentRotation = PlayerController->GetControlRotation();
+			FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RecoilTargetRotation, DeltaTime, RecoilInterpSpeed);
+			PlayerController->SetControlRotation(NewRotation);
+
+			// Stop when traget is close
+			if (NewRotation.Equals(RecoilTargetRotation, 0.001f))
+			{
+				bIsRecoiling = false;
+			}
+		}
+	}*/
+	
+	
 }
 
 int AGun::GetMagazineSize() const
@@ -30,8 +62,10 @@ int AGun::GetMagazineSize() const
 
 void AGun::Fire()
 {
+	// Checks if weapon can fire.
 	if (!bCanFire) return;
 
+	// Reloads automatically if bullets are 0.
 	if (BulletsLeft <= 0)
 	{
 		Reload();
@@ -44,7 +78,9 @@ void AGun::Fire()
 	
 	FHitResult Hit;
 	FVector ShotDirection;
-	bool bSuccess = GunTrace(Hit, ShotDirection);
+	float TraceLength;
+	// Trace returns true if something is hit.
+	bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 	if(bSuccess)
 	{
 		if (bDebugWeapon)
@@ -63,26 +99,29 @@ void AGun::Fire()
 		AActor* HitActor = Hit.GetActor();
 		if(HitActor)
 		{
-			FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
+			float ActualDamage = CalculateDamageFalloff(TraceLength);
+			FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
+			HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
+
+			if (bDebugDamageFalloff)
+			{
+				UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
+			}
 		}
 	}
 	AddRecoil();
 	BulletsLeft--;
+	TimesFired++;
+	UpdateAmmoText();
 
-	// Update ammo text in players UI.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
-	
+	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
 		Reload();
 	}
-	
+
+	// Stops possibility to fire between shots.
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 }
@@ -94,8 +133,9 @@ void AGun::ResetCanFire()
 
 void AGun::PullTrigger()
 {
-	if (!bCanFire || BulletsLeft <= 0) return;
-	
+	if (!bCanFire) return;
+
+	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
 		Fire();
@@ -110,17 +150,17 @@ void AGun::PullTrigger()
 void AGun::ReleaseTrigger()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+	TimesFired = 0;
 }
 
 void AGun::Reload()
 {
-	//Kolla om det går att ladda
+	// Check if reload is possible.
 	if (BulletsLeft < MagazineSize && !bIsReloading)
 	{
 		bIsReloading = true;
-		//starta animationer
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
-		//Ska inte kunna skjuta medans man laddar
+		// Can not shoot while reloading.
 		bCanFire = false;
 		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
@@ -133,12 +173,7 @@ void AGun::ResetAmmo()
 	bCanFire = true;
 	bIsReloading = false;
 
-	// Update players ammo text.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
+	UpdateAmmoText();
 }
 void AGun::StopReload()
 {
@@ -153,26 +188,19 @@ void AGun::StopReload()
 
 void AGun::AddRecoil()
 {
-	if (AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner()))
+	float Recoil = FMath::Min(RecoilPerShot + RecoilMultiplier*TimesFired, MaxRecoil);
+	
+	
+	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
+	if (PlayerController && RecoilCameraShake)
 	{
-		Character->ApplyRecoil(RecoilAmount);
+		PlayerController->ClientStartCameraShake(RecoilCameraShake);
+		PlayerController->AddPitchInput(-Recoil); 
 	}
 }
 
-// Called when the game starts or when spawned
-void AGun::BeginPlay()
-{
-	Super::BeginPlay();
-}
 
-// Called every frame
-void AGun::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
+bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength)
 {
 	AController* OwnerController = GetOwnerController();
 	if (OwnerController == nullptr) return false;
@@ -186,7 +214,10 @@ bool AGun::GunTrace(FHitResult& Hit, FVector& ShotDirection)
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
-	return GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
+	
+	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
+	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
+	return bHit;
 }
 
 AController* AGun::GetOwnerController() const
@@ -195,4 +226,32 @@ AController* AGun::GetOwnerController() const
 	if(OwnerPawn == nullptr) return nullptr;
 	return OwnerPawn->GetController();
 }
+
+void AGun::UpdateAmmoText()
+{
+	// Update players ammo text.
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize, GetOwnerController() == GetWorld()->GetFirstPlayerController());
+	}
+}
+
+void AGun::WeaponAbility()
+{
+	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
+}
+
+float AGun::CalculateDamageFalloff(float TraceLength)
+{
+	// Returns calculated Damage based on distance to element hit.
+	
+	float FalloffPerCentemeter = FalloffPerMeter / 100.0f;
+	float FalloffStartCentimeter = FalloffStartMeter * 100.0f;
+	float CalculatedDamage = Damage - (TraceLength-FalloffStartCentimeter) * FalloffPerCentemeter;
+	
+	// Return Calculated damage between min damage and original damage
+	return FMath::RoundToInt(FMath::Clamp(CalculatedDamage, MinimumDamage, Damage));
+}
+
 

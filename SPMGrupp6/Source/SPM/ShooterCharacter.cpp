@@ -44,15 +44,6 @@ void AShooterCharacter::SetGun(AGun* NewGun)
 	this->Gun = NewGun;
 }
 
-void AShooterCharacter::ApplyRecoil(float RecoilAmount)
-{
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (PlayerController)
-	{
-		PlayerController->AddPitchInput(-RecoilAmount); 
-	}
-}
-
 // Called every frame
 void AShooterCharacter::Tick(float DeltaTime)
 {

@@ -6,20 +6,19 @@
 #include "HealthPickUp.h"
 #include "DroneBullet.h"
 #include "DroneSpawn.h"
+#include "EntitySystem/MovieSceneEntityManager.h"
 
 // Sets default values
 ADrone::ADrone()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	Wings = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
 	RootComponent = Wings;
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
 	TurretMesh->SetupAttachment(Wings);
 	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawn->SetupAttachment(TurretMesh);
-
 }
 
 // Called when the game starts or when spawned
@@ -29,21 +28,6 @@ void ADrone::BeginPlay()
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
 	// bör lägga till player 2;
 }
-
-void ADrone::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-	GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
-	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
-	if (Spawner != nullptr)
-	{
-		Spawner->DroneDestroyed();
-	}
-	
-	
-	
-}
-
 // Called every frame
 void ADrone::Tick(float DeltaTime)
 {
@@ -52,11 +36,16 @@ void ADrone::Tick(float DeltaTime)
 	{
 		RotateTurret(Player->GetActorLocation());
         Elevate(Player->GetActorLocation());
-		
+		if (Spawner && FVector::Dist(GetActorLocation(), Spawner->GetActorLocation()) > Spawner->GetMaxDroneDistance())
+		{
+			Player = nullptr;
+		}
+	} else if (Spawner != nullptr)
+	{
+		ReturnToSpawn();
 	}
 	
 }
-
 // Called to bind functionality to input
 void ADrone::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -79,12 +68,14 @@ void ADrone::Elevate(FVector target)
 }
 void ADrone::Shoot()
 {
-	if (!ProjectileClass && !ProjectileSpawn){return;}
+	if (!ProjectileClass && !ProjectileSpawn && !MissileClass){return;}
 	if (Player != nullptr)
 	{
 		
 		ADroneBullet* Bullet = GetWorld()->SpawnActor<ADroneBullet>(ProjectileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
+		//ADroneMissile* Missile = GetWorld()->SpawnActor<ADroneMissile>(MissileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
 		Bullet->SetOwner(this);
+		//Missile->SetOwner(this);
 	}
 }
 float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -94,6 +85,12 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	//UE_LOG(LogTemp, Warning, TEXT("Drone Take Damage: %f : Remaining health %i : causer %s"), DamageAmount, Health, *DamageCauser->GetOwner()->GetActorNameOrLabel());
 	if (Health <= 0)
 	{
+		if (Spawner != nullptr)
+		{
+			Spawner->DroneDestroyed();
+		}
+		GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+		GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 		Destroy();
 	}
 	return NULL;
@@ -102,6 +99,11 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 void ADrone::SetSpawner(ADroneSpawn* Spawn)
 {
 	Spawner = Spawn;
+}
+void ADrone::ReturnToSpawn()
+{
+	FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), Spawner->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(this), 0.5f);
+	SetActorLocation(NewLocation, true);
 }
 
 

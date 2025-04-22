@@ -15,9 +15,23 @@ class SPM_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	static const float DELTATIME;
+	
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* AmmoText;
+	class UTextBlock* BlueAmmoText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* RedAmmoText;
+
+	UPROPERTY(meta = (BindWidget))
+	class URadialSlider* BlueDashCooldown;
+	
+	UPROPERTY(meta = (BindWidget))
+	class URadialSlider* RedDashCooldown;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
+	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer);
+	
+	UFUNCTION(BlueprintCallable)
+	void StartDashTimer();
 };

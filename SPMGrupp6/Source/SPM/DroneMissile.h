@@ -3,40 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Drone.h"
+#include "DroneBullet.h"
 #include "GameFramework/Actor.h"
-#include "DroneSpawn.generated.h"
+#include "DroneMissile.generated.h"
+
+class AShooterCharacter;
+class UProjectileMovementComponent;
 
 UCLASS()
-class SPM_API ADroneSpawn : public AActor
+class SPM_API ADroneMissile : public ADroneBullet
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ADroneSpawn();
-
+	ADroneMissile();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void DroneDestroyed();
-	float GetMaxDroneDistance(){return MaxDroneDistance;}
+	void SetTarget(AShooterCharacter* NewTarget);
+	void RotateToTarget();
 private:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<ADrone> DroneClass;
-	UPROPERTY(EditAnywhere)
-	float SpawnTime;
-	UPROPERTY(EditAnywhere)
-	float MaxDroneDistance;
-	FTimerHandle DroneSpawnTimerHandle;
+	float TurnRate = 0;
 
-	
-	void Spawn();
-	
+	FVector movingDirection = FVector(0, 0, 1);
+	AShooterCharacter* Target;
 };
-
-
