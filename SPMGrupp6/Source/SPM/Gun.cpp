@@ -241,6 +241,11 @@ void AGun::WeaponAbility()
 {
 	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
 }
+void AGun::StopWeaponAbility()
+{
+	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
+}
+
 
 float AGun::CalculateDamageFalloff(float TraceLength)
 {
