@@ -28,10 +28,19 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* RedDashCooldown;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* BlueHealthBar;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* RedHealthBar;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartDashTimer();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateHealth(AShooterCharacter* Player);
 };

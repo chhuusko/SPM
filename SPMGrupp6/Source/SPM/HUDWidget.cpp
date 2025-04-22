@@ -3,6 +3,8 @@
 
 #include "HUDWidget.h"
 
+#include "ShooterCharacter.h"
+#include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/TimelineComponent.h"
 
@@ -28,4 +30,19 @@ void UHUDWidget::StartDashTimer()
 {
 	FTimeline Timeline = FTimeline{};
 	//Timeline->
+}
+
+// Update health bar value.
+void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
+{
+	// Player 1.
+	if (Player->Controller == GetWorld()->GetFirstPlayerController())
+	{
+		BlueHealthBar->SetPercent(Player->GetHealthPercent());
+	}
+	// Player 2.
+	else
+	{
+		RedHealthBar->SetPercent(Player->GetHealthPercent());
+	}
 }

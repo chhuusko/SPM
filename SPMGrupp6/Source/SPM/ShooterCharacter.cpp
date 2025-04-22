@@ -4,6 +4,8 @@
 #include "ShooterCharacter.h"
 
 #include "Gun.h"
+#include "HUDWidget.h"
+#include "ShooterPlayerController.h"
 #include "SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -74,6 +76,16 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 
 	DamageToApply = FMath::Min(Health, DamageToApply);
 	Health -= DamageToApply;
+
+	// The hud exists.
+	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController()))
+	{
+		if (PlayerController->HUDWidget)
+		{
+			// Update player's health.
+			PlayerController->HUDWidget->UpdateHealth(this);
+		}
+	}
 
 	if(IsDead())
 	{
