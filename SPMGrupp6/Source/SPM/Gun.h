@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
+
+class AShooterPlayerController;
+
 UCLASS()
 class SPM_API AGun : public AActor
 {
@@ -14,6 +17,8 @@ class SPM_API AGun : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AGun();
+
+	int GetMagazineSize() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,8 +49,26 @@ protected:
 	float Damage = 10;
 
 	UPROPERTY(EditAnywhere)
-	float RecoilAmount = 1;
+	float MinimumDamage = 10;
 
+	UPROPERTY(EditAnywhere)
+	float FalloffStartMeter = 10;
+	
+	UPROPERTY(EditAnywhere)
+	float FalloffPerMeter = 0.5;
+
+	UPROPERTY(EditAnywhere)
+	float RecoilPerShot = 0.5;
+
+	UPROPERTY(EditAnywhere)
+	float RecoilMultiplier = 0.1;
+
+	UPROPERTY(EditAnywhere)
+	float MaxRecoil = 1;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> RecoilCameraShake;
+	
 	UPROPERTY(EditAnywhere)
 	int MagazineSize = 30;
 
@@ -65,34 +88,39 @@ protected:
 	bool bDebugWeapon = true;
 
 	UPROPERTY(EditAnywhere)
+	bool bDebugDamageFalloff = false;
+
+	UPROPERTY(EditAnywhere)
 	float ReloadTime = 2.5;
 
 	UPROPERTY(VisibleAnywhere)
 	bool bIsReloading = false;
 
+	UPROPERTY()
+	class UHUDWidget* HUDWidget;
 	
+	bool bIsRecoiling = false;
+	int TimesFired = 0;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
 	FTimerHandle ReloadTimer;
+	
 	AController* GetOwnerController() const;
 	void AddRecoil();
 	void ResetAmmo();
-	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection);
+	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength);
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 	virtual void Fire();
 	virtual void PullTrigger();
+	virtual void WeaponAbility();
 	void ResetCanFire();
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
-private:
-
-
-	
-	
-
+	void UpdateAmmoText();
+	float CalculateDamageFalloff(float TraceLength);
 };

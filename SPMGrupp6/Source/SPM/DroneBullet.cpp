@@ -39,7 +39,7 @@ void ADroneBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 {
 	if (AShooterCharacter* player = Cast<AShooterCharacter>(OtherActor))
 	{
-		UGameplayStatics::ApplyDamage(player, 50.0f,GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(player,  BaseDamage,GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
 	}
 	Destroy();
 }

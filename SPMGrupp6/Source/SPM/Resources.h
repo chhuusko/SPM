@@ -26,7 +26,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
 	void ModifyResourceAmount(int ResourceAmount);
 	bool HasEnoughResources(int Cost);
 	void SpendResources(int Cost);

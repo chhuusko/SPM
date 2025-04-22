@@ -17,25 +17,25 @@ class SPM_API AShooterPlayerController : public APlayerController
 public:
 	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
 
+	UPROPERTY()
+	class UHUDWidget* HUDWidget;
+
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	virtual void BeginPlay() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<class UHUDWidget> HUDWidgetClass;
 	
 private:
 	void InitializeHUD();
-	void PlaceUI(UUserWidget* Widget);
-	
+
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> LoseScreenClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> WinScreenClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> HUDClass;
+	TSubclassOf<UUserWidget> GameOverScreenClass;
 	
 	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5;
 
 	FTimerHandle RestartTimer;
-
-	UPROPERTY()
-	UUserWidget* HUD;
 };

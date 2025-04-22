@@ -3,6 +3,9 @@
 
 #include "ShooterPlayerController.h"
 
+#include "GameOverScreen.h"
+#include "HUDWidget.h"
+#include "KillThemAllGameMode.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 
@@ -17,52 +20,27 @@ void AShooterPlayerController::BeginPlay()
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AShooterPlayerController::InitializeHUD);
 		return;
 	}
+	
 	InitializeHUD();
+}
+
+void AShooterPlayerController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
 }
 
 // Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
-	HUD = CreateWidget(this, HUDClass);
-	if (HUD)
+	// Only place HUD once.
+	if (this != GetWorld()->GetFirstPlayerController())
+		return;
+	
+	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
+	if (HUDWidgetClass)
 	{
-		HUD->AddToViewport();
-		PlaceUI(HUD);
-	}
-}
-
-// Places the UI element in the correct players half of the screen.
-void AShooterPlayerController::PlaceUI(UUserWidget* Widget)
-{
-	// Get the current size of the screen.
-	FVector2D ScreenSize;
-	GEngine->GameViewport->GetViewportSize(ScreenSize);
-
-	// Place the UI depending on which player is being controlled.
-	if (GetLocalPlayer()->GetControllerId() == 0)
-	{
-		// Place the UI centered in the top half of the screen.
-		Widget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
-
-		// The center is placed one quarter down the screen.
-		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, ScreenSize.Y / 4), true);
-
-		// The UI takes up half the screen.
-		Widget->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
-	}
-	else if (GetLocalPlayer()->GetControllerId() == 1)
-	{
-		// Place the UI centered in the lower half of the screen.
-		Widget->SetAlignmentInViewport(FVector2D(0.5f, 0.5f));
-    			
-		// The center is placed three quarters down the screen.
-		Widget->SetPositionInViewport(FVector2D(ScreenSize.X / 2, (ScreenSize.Y * 3) / 4), true);
-		
-		Widget->SetDesiredSizeInViewport(FVector2D(ScreenSize.X, ScreenSize.Y / 2));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid Controller ID: %d"), GetLocalPlayer()->GetControllerId());
+		HUDWidget->AddToViewport();
 	}
 }
 
@@ -70,28 +48,18 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
 
-	HUD->RemoveFromParent();
+	HUDWidget->RemoveFromParent();
 
-	UUserWidget* Widget;
-
+	// Only add game over screen once.
 	if (bIsWinner)
 	{
-		Widget = CreateWidget(this, WinScreenClass);
-		if (Widget)
+		if (UGameOverScreen* GameOverWidget = CreateWidget<UGameOverScreen>(this, GameOverScreenClass))
 		{
-			Widget->AddToViewport();
+			// Add, and update the information within, the game over screen.
+			GameOverWidget->AddToViewport();
+			GameOverWidget->UpdateGameOverScreen(this == GetWorld()->GetFirstPlayerController());
 		}
 	}
-	else
-	{
-		Widget = CreateWidget(this, LoseScreenClass);
-		if (Widget)
-		{
-			Widget->AddToViewport();
-		}
-	}
-	
-	PlaceUI(Widget);
 	
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 	UE_LOG(LogTemp, Warning, TEXT("Game Ended!"));

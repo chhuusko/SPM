@@ -30,6 +30,8 @@ ABasePickUp::ABasePickUp()
 void ABasePickUp::BeginPlay()
 {
 	Super::BeginPlay();
+	GetWorldTimerManager().SetTimer(RemoveTimerHandle, this, &ABasePickUp::Remove, RemoveTime, false);
+
 	//UE_LOG(LogTemp, Warning, TEXT("ABasePickUp::BeginPlay"));
 }
 
@@ -44,7 +46,7 @@ void ABasePickUp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-//Handles collision.. Yes it does need all of these parameters, because of OnComponentBeginOverlap
+//Handles collision. Yes it does need all of these parameters, because of OnComponentBeginOverlap
 void ABasePickUp::OverlapInteract (UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this)
@@ -54,5 +56,9 @@ void ABasePickUp::OverlapInteract (UPrimitiveComponent* OverlappedComp, AActor* 
 			PlayerInteraction(player);
 		}
 	}
+}
+void ABasePickUp::Remove()
+{
+	Destroy();
 }
 

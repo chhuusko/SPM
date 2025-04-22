@@ -16,16 +16,11 @@ void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
 	{
 		EndGame(false);
 	}
+}
 
-	// for (AShooterAIController* Controller : TActorRange<AShooterAIController>(GetWorld()))
-	// {
-	// 	if (!Controller->IsDead())
-	// 	{
-	// 		return;
-	// 	}
-	// }
-	//
-	// EndGame(true);
+int32 AKillThemAllGameMode::GetRound() const
+{
+	return Round;
 }
 
 void AKillThemAllGameMode::EndGame(bool bIsPlayerWinner)

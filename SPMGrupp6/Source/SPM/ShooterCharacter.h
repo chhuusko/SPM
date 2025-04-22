@@ -27,8 +27,6 @@ protected:
 public:
 	AGun* GetGun() const;
 	void SetGun(AGun* Gun);
-
-	void ApplyRecoil(float RecoilAmount);
 	
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;

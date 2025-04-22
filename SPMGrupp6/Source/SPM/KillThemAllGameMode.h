@@ -16,7 +16,13 @@ class SPM_API AKillThemAllGameMode : public ASimpleShooterGameMode
 	
 public:
 	virtual void PawnKilled(APawn* PawnKilled) override;
+	int32 GetRound() const;
 
 private:
 	void EndGame(bool bIsPlayerWinner);
+	UPROPERTY(VisibleAnywhere)
+	int32 Round = 1;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UUserWidget> GameOverScreenClass;
 };

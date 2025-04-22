@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "DroneBullet.h"
+#include "DroneMissile.h"
 #include "HealthPickUp.h"
+#include "ResourcePickUp.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
@@ -24,8 +26,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
+	void RotateTurret (FVector torwardsTarget);
+    void Elevate(FVector target);
+    void Shoot();
+	void ReturnToSpawn();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,7 +41,7 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere)
-	float CooldownTime = 2.0f;
+	FVector DesiredElevation = FVector(0,0,500);
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
@@ -47,8 +51,12 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category="Combat")
+	TSubclassOf<class ADroneMissile> MissileClass;
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
 	TSubclassOf<class AHealthPickUp> HealthPickUpClass;
+	UPROPERTY(EditDefaultsOnly, Category="PickUp")
+	TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
 	
 	FTimerHandle FireRateTimerHandle;
 	UPROPERTY(EditAnywhere)
@@ -61,7 +69,5 @@ private:
 
 	ADroneSpawn* Spawner;
 	
-	void RotateTurret (FVector torwardsTarget);
-	void Elevate(FVector target);
-	void Shoot();
+	
 };
