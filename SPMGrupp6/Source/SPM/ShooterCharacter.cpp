@@ -167,4 +167,15 @@ void AShooterCharacter::Heal(int HealAmount)
 {
 	Health = FMath::Min(HealAmount+Health, MaxHealth);
 }
+void AShooterCharacter::WeaponAbility()
+{
+	if (!Gun) return;
+	Gun->WeaponAbility();
+}
+void AShooterCharacter::StopWeaponAbility()
+{
+	if (!Gun) return;
+	Gun->StopWeaponAbility();
+}
+
 
