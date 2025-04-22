@@ -16,8 +16,11 @@ class SPM_API UHUDWidget : public UUserWidget
 
 public:
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* AmmoText;
+	class UTextBlock* BlueAmmoText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* RedAmmoText;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
+	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer);
 };

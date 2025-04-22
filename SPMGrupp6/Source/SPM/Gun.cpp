@@ -230,10 +230,10 @@ AController* AGun::GetOwnerController() const
 void AGun::UpdateAmmoText()
 {
 	// Update players ammo text.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController());
 	if (PlayerController && PlayerController->HUDWidget)
 	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize, GetOwnerController() == GetWorld()->GetFirstPlayerController());
 	}
 }
 

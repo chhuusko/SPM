@@ -39,10 +39,10 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 		{
 			if (APawn* Player = Cast<APawn>(GetOwner()))
 			{
-				AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Player->GetController());
+				AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController());
 				if (PlayerController && PlayerController->HUDWidget)
 				{
-					PlayerController->HUDWidget->UpdateAmmoText(CurrentGun->GetMagazineSize(), CurrentGun->GetMagazineSize());
+					PlayerController->HUDWidget->UpdateAmmoText(CurrentGun->GetMagazineSize(), CurrentGun->GetMagazineSize(), Player->GetController() == GetWorld()->GetFirstPlayerController());
 				}
 			}
 		}
