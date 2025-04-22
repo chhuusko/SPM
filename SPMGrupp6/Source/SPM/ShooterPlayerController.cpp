@@ -103,8 +103,8 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 	{
 		if (UGameOverScreen* GameOverWidget = CreateWidget<UGameOverScreen>(this, GameOverScreenClass))
 		{
+			// Add, and update the information within, the game over screen.
 			GameOverWidget->AddToViewport();
-			
 			GameOverWidget->UpdateGameOverScreen(this == GetWorld()->GetFirstPlayerController());
 		}
 	}

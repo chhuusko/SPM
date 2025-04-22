@@ -57,6 +57,8 @@ void UGameOverScreen::UpdateScoreText(bool bBlueIsWinner)
 void UGameOverScreen::UpdateWinnerText(bool bBlueIsWinner)
 {
 	FString WinnerString;
+
+	// Change text content and color to display winning player. 
 	if (bBlueIsWinner)
 	{
 		WinnerString = FString::Printf(TEXT("Blue player wins!"));
