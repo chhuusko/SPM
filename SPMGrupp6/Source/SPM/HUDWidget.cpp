@@ -4,6 +4,9 @@
 #include "HUDWidget.h"
 
 #include "Components/TextBlock.h"
+#include "Components/TimelineComponent.h"
+
+const float UHUDWidget::DELTATIME = 0.1f;
 
 // Updates the ammo text in the HUD.
 void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer)
@@ -19,4 +22,10 @@ void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsB
 		AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
 		RedAmmoText->SetText(FText::FromString(AmmoString));
 	}
+}
+
+void UHUDWidget::StartDashTimer()
+{
+	FTimeline Timeline = FTimeline{};
+	//Timeline->
 }
