@@ -48,6 +48,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopShooting();
 	UFUNCTION(BlueprintCallable)
+	void WeaponAbility();
+	UFUNCTION(BlueprintCallable)
+	void StopWeaponAbility();
+	UFUNCTION(BlueprintCallable)
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void StopReload();
