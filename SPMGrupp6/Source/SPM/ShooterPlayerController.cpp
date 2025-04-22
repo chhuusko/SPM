@@ -48,8 +48,11 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
 
-	HUDWidget->RemoveFromParent();
-
+	if (HUDWidget)
+	{
+		HUDWidget->RemoveFromParent();
+	}
+	
 	// Only add game over screen once.
 	if (bIsWinner)
 	{
