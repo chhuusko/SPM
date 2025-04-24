@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Drone.generated.h"
 
+class FDroneState;
 class ADroneSpawn;
 
 UCLASS()
@@ -22,14 +23,10 @@ class SPM_API ADrone : public APawn
 public:
 	// Sets default values for this pawn's properties
 	ADrone();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	void RotateTurret (FVector torwardsTarget);
-    void Elevate(FVector target);
     void Shoot();
-	void ReturnToSpawn();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -38,10 +35,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetSpawner(ADroneSpawn* Spawn);
-
+	void ChangeState(FDroneState* newState);
+	
+	UStaticMeshComponent* GetTurret() {return TurretMesh;}
+	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
+	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 private:
-	UPROPERTY(EditAnywhere)
-	FVector DesiredElevation = FVector(0,0,500);
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
@@ -57,17 +56,15 @@ private:
 	TSubclassOf<class AHealthPickUp> HealthPickUpClass;
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
 	TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
-	
+
+	FDroneState* State;
+	ADroneSpawn* Spawner;
 	FTimerHandle FireRateTimerHandle;
 	UPROPERTY(EditAnywhere)
 	float FireRate;
 	AShooterCharacter* Player;
 	
-	
 	UPROPERTY(EditAnywhere)
 	int32 Health;
-
-	ADroneSpawn* Spawner;
-	
 	
 };
