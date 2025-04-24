@@ -174,7 +174,7 @@ void AShooterCharacter::StopWeaponAbility()
 void AShooterCharacter::UpdatePlayerHealth()
 {
 	// The hud exists.
-	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController()))
+	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetController()))
 	{
 		if (PlayerController->HUDWidget)
 		{
