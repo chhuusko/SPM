@@ -69,6 +69,7 @@ public:
 	void StopSprint();
 	
 private:
+	void UpdatePlayerHealth();
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10;
 	UPROPERTY(EditDefaultsOnly)

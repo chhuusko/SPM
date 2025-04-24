@@ -77,15 +77,8 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	DamageToApply = FMath::Min(Health, DamageToApply);
 	Health -= DamageToApply;
 
-	// The hud exists.
-	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController()))
-	{
-		if (PlayerController->HUDWidget)
-		{
-			// Update player's health.
-			PlayerController->HUDWidget->UpdateHealth(this);
-		}
-	}
+	
+	UpdatePlayerHealth();
 
 	if(IsDead())
 	{
@@ -166,6 +159,7 @@ void AShooterCharacter::StopReload()
 void AShooterCharacter::Heal(int HealAmount)
 {
 	Health = FMath::Min(HealAmount+Health, MaxHealth);
+	UpdatePlayerHealth();
 }
 void AShooterCharacter::WeaponAbility()
 {
@@ -177,5 +171,16 @@ void AShooterCharacter::StopWeaponAbility()
 	if (!Gun) return;
 	Gun->StopWeaponAbility();
 }
-
+void AShooterCharacter::UpdatePlayerHealth()
+{
+	// The hud exists.
+	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetController()))
+	{
+		if (PlayerController->HUDWidget)
+		{
+			// Update player's health.
+			PlayerController->HUDWidget->UpdateHealth(this);
+		}
+	}
+}
 
