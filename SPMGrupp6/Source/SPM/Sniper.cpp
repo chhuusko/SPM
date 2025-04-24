@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Sniper.h"
 
 void ASniper::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// Save the DefaultFOV of the camera.
 	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->PlayerCameraManager)
 	{
@@ -15,14 +16,19 @@ void ASniper::BeginPlay()
 
 void ASniper::WeaponAbility()
 {
+	// Start weapon to eye animation here
+
+	// Starts timer to zoom in.
 	GetWorld()->GetTimerManager().SetTimer(AimTimerHandle, this, &ASniper::ZoomIn, ScopeToEyeDuration, false);
 }
 
 void ASniper::StopWeaponAbility()
 {
+	// Stop scoping or stop the character trying to scope.
 	if (bIsAimingDownSight)
 	{
 		SetCameraFOV(OriginalPLayerFOV);
+		// Deactivate UI here
 	}
 	else
 	{
@@ -35,10 +41,13 @@ void ASniper::ZoomIn()
 {
 	SetCameraFOV(ZoomInFOV);
 	bIsAimingDownSight = true;
+
+	// Activate UI here
 }
 
 void ASniper::SetCameraFOV(float amount)
 {
+	// Set new camera FOV.
 	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->PlayerCameraManager)
 	{
