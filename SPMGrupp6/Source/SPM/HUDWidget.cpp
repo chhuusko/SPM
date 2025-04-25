@@ -31,9 +31,16 @@ void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 	AmmoText->SetText(FText::FromString(AmmoString));
 }
 
-void UHUDWidget::StartDashTimer()
+void UHUDWidget::StartDashTimer(float CooldownTime)
 {
-	FTimeline Timeline = FTimeline{};
+	FRuntimeFloatCurve SliderRangeCurve;
+	FRichCurve* Curve = SliderRangeCurve.GetRichCurve();
+
+	if (!Curve) return;
+	Curve->AddKey(0.f, 0.f);
+	Curve->AddKey(1.f, CooldownTime);
+	
+	DashCooldown->SetSliderRange(SliderRangeCurve);
 
 	FOnTimelineFloat ProgressUpdate;
 	ProgressUpdate.BindUFunction(this, FName("UpdateDashCooldownTimer"));
@@ -44,22 +51,22 @@ void UHUDWidget::StartDashTimer()
 	Timeline.AddInterpFloat(DashCooldownCurve, ProgressUpdate);
 	Timeline.SetTimelineFinishedFunc(FinishedEvent);
 
-	// Timeline.SetTimelineLength(Time);
-	//
-	// FOnTimelineFloat TimelineTick;
-	// TimelineTick.BindUFunction(this, "OnTimelineTick");
-	//
-	// UCurveFloat CurveFloat = Time;
-	// Timeline.AddInterpFloat(Time, TimelineTick);
-	//
-	// Timeline.Play();
+	Timeline.SetTimelineLength(CooldownTime);
+	Timeline.Play();
+	UE_LOG(LogTemp, Display, TEXT("Dash Timeline Play"));
 }
 
-void UHUDWidget::UpdateDashCooldownTimer(float Time)
+void UHUDWidget::UpdateDashCooldownTimer(float ElapsedTime)
 {
-	DashCooldown->Value = Time;
+	UE_LOG(LogTemp, Warning, TEXT("Update Dash Cooldown Timer, Time Elapsed: %f"), ElapsedTime);
+	DashCooldown->Value = ElapsedTime;
 }
 
+void UHUDWidget::DashCooldownFinished()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Dash cooldown finished"));
+	DashCooldown->Value = 0.f;
+}
 
 // Update health bar value.
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
@@ -76,4 +83,15 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 	// }
 
 	HealthBar->SetPercent(Player->GetHealthPercent());
+}
+
+void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (Timeline.IsPlaying())
+	{
+		UE_LOG(LogTemp, Display, TEXT("Timeline ticking"));
+		Timeline.TickTimeline(InDeltaTime);
+	}
 }
