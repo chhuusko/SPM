@@ -28,6 +28,7 @@ class SPM_API FDroneStateIdle : public FDroneState
 public:
 	FDroneStateIdle(ADrone* Drone, AActor* Spawner) : FDroneState(Drone, Spawner) {};
 	virtual void Move() override;
+	
 private:
 	FVector IdleHoverDist = FVector(0, 0, 50);
 	bool IsIdleGoingUp = false;

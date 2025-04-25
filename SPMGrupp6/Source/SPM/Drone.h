@@ -60,6 +60,7 @@ private:
 	FDroneState* State;
 	ADroneSpawn* Spawner;
 	FTimerHandle FireRateTimerHandle;
+	FTimerHandle AggroTimerHandle;
 	UPROPERTY(EditAnywhere)
 	float FireRate;
 	AShooterCharacter* Player;
