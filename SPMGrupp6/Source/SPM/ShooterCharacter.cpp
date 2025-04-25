@@ -7,6 +7,7 @@
 #include "HUDWidget.h"
 #include "ShooterPlayerController.h"
 #include "SimpleShooterGameMode.h"
+#include "SWarningOrErrorBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -50,7 +51,17 @@ void AShooterCharacter::SetGun(AGun* NewGun)
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	//Todo, doesn't start the recharge if you hold space while at zero charge, but 
+	if (bCanRechargeJetpack)
+	{
+		JetpackCharge++;
+		if (JetpackCharge >= JetpackChargeMax)
+		{
+			JetpackCharge = JetpackChargeMax;
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
+	}
 }
 
 // Called to bind functionality to input
@@ -114,6 +125,30 @@ void AShooterCharacter::StopSprint()
 	}
 }
 
+void AShooterCharacter::UseJetpack()
+{
+	if (JetpackCharge > 0)
+	{
+		if (bCanRechargeJetpack)
+		{
+			bCanRechargeJetpack = false;
+		}
+		LaunchCharacter(FVector(0, 0, JetpackPower), false, true);
+	}
+
+	JetpackCharge--;
+	if (JetpackCharge < 0)
+		JetpackCharge = 0;
+	
+	GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
+
+	UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
+}
+
+void AShooterCharacter::SetCanRechargeJetpack()
+{
+	bCanRechargeJetpack = true;
+}
 
 void AShooterCharacter::MoveForward(float AxisValue)
 {
