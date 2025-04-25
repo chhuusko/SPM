@@ -15,73 +15,46 @@ const float UHUDWidget::DELTATIME = 0.1f;
 // Updates the ammo text in the HUD.
 void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 {
-	// FString AmmoString;
-	// if (bIsBluePlayer)
-	// {
-	// 	AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
-	// 	BlueAmmoText->SetText(FText::FromString(AmmoString));
-	// }
-	// else
-	// {
-	// 	AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
-	// 	RedAmmoText->SetText(FText::FromString(AmmoString));
-	// }
-
 	FString AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
 	AmmoText->SetText(FText::FromString(AmmoString));
 }
 
 void UHUDWidget::StartDashTimer(float CooldownTime)
 {
-	FRuntimeFloatCurve SliderRangeCurve;
-	FRichCurve* Curve = SliderRangeCurve.GetRichCurve();
+	// Reset dash cooldown element.
+	DashCooldown->SetValue(0.f);
 
-	if (!Curve) return;
-	Curve->AddKey(0.f, 0.f);
-	Curve->AddKey(1.f, CooldownTime);
+	TotalCooldownTime = CooldownTime;
+	ElapsedTime = 0;
 	
-	DashCooldown->SetSliderRange(SliderRangeCurve);
-
-	FOnTimelineFloat ProgressUpdate;
-	ProgressUpdate.BindUFunction(this, FName("UpdateDashCooldownTimer"));
-
-	FOnTimelineEvent FinishedEvent;
-	FinishedEvent.BindUFunction(this, FName("DashCooldownFinished"));
-
-	Timeline.AddInterpFloat(DashCooldownCurve, ProgressUpdate);
-	Timeline.SetTimelineFinishedFunc(FinishedEvent);
-
-	Timeline.SetTimelineLength(CooldownTime);
-	Timeline.Play();
-	UE_LOG(LogTemp, Display, TEXT("Dash Timeline Play"));
+	bHasDashCooldown = true;
 }
 
-void UHUDWidget::UpdateDashCooldownTimer(float ElapsedTime)
+void UHUDWidget::UpdateDashCooldownTimer(float DeltaTime)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Update Dash Cooldown Timer, Time Elapsed: %f"), ElapsedTime);
-	DashCooldown->Value = ElapsedTime;
+	ElapsedTime += DeltaTime;
+
+	// Set the value representing the slider's progress.
+	float Progress = ElapsedTime / TotalCooldownTime;
+	DashCooldown->SetValue(Progress);
+
+	// Cooldown is done.
+	if (Progress >= 1.f)
+	{
+		DashCooldownFinished();
+	}
 }
 
 void UHUDWidget::DashCooldownFinished()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Dash cooldown finished"));
-	DashCooldown->Value = 0.f;
+	// Reset indicator.
+	DashCooldown->SetValue(0.f);
+	bHasDashCooldown = false;
 }
 
 // Update health bar value.
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 {
-	// // Player 1.
-	// if (Player->Controller == GetWorld()->GetFirstPlayerController())
-	// {
-	// 	BlueHealthBar->SetPercent(Player->GetHealthPercent());
-	// }
-	// // Player 2.
-	// else
-	// {
-	// 	RedHealthBar->SetPercent(Player->GetHealthPercent());
-	// }
-
 	HealthBar->SetPercent(Player->GetHealthPercent());
 }
 
@@ -89,9 +62,8 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (Timeline.IsPlaying())
+	if (bHasDashCooldown)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Timeline ticking"));
-		Timeline.TickTimeline(InDeltaTime);
+		UpdateDashCooldownTimer(InDeltaTime);
 	}
 }

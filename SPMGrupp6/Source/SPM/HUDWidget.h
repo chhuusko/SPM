@@ -43,8 +43,19 @@ public:
 
 private:
 	UPROPERTY()
-	FTimeline Timeline = FTimeline{};
-	
+	FTimeline Timeline;
+
+	UFUNCTION()
 	void UpdateDashCooldownTimer(float ElapsedTime);
+
+	UFUNCTION()
 	void DashCooldownFinished();
+
+	UPROPERTY()
+	float ElapsedTime;
+	
+	UPROPERTY()
+	float TotalCooldownTime;
+
+	bool bHasDashCooldown;
 };
