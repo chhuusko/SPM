@@ -33,14 +33,10 @@ void AShooterPlayerController::Tick(float DeltaSeconds)
 // Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
-	// Only place HUD once.
-	if (this != GetWorld()->GetFirstPlayerController())
-		return;
-	
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
 	if (HUDWidgetClass)
 	{
-		HUDWidget->AddToViewport();
+		HUDWidget->AddToPlayerScreen();
 	}
 }
 

@@ -18,29 +18,27 @@ public:
 	static const float DELTATIME;
 	
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* BlueAmmoText;
+	class UTextBlock* AmmoText;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* RedAmmoText;
+	class URadialSlider* DashCooldown;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HealthBar;
 
-	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* BlueDashCooldown;
-	
-	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* RedDashCooldown;
-	
-	UPROPERTY(meta = (BindWidget))
-	class UProgressBar* BlueHealthBar;
-	
-	UPROPERTY(meta = (BindWidget))
-	class UProgressBar* RedHealthBar;
+	UPROPERTY(BlueprintReadOnly)
+	UCurveFloat* DashCooldownCurve;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer);
+	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartDashTimer();
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
+
+private:
+	void UpdateDashCooldownTimer(float Time);
+	void DashCooldownFinished();
 };

@@ -17,7 +17,7 @@ class SPM_API AShooterPlayerController : public APlayerController
 public:
 	virtual void GameHasEnded(class AActor* EndGameFocus = nullptr, bool bIsWinner = false) override;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	class UHUDWidget* HUDWidget;
 
 	virtual void Tick(float DeltaSeconds) override;
