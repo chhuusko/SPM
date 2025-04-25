@@ -5,8 +5,10 @@
 
 #include "ShooterCharacter.h"
 #include "Components/ProgressBar.h"
+#include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "Components/TimelineComponent.h"
+#include "Math/UnitConversion.h"
 
 const float UHUDWidget::DELTATIME = 0.1f;
 
@@ -32,8 +34,32 @@ void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 void UHUDWidget::StartDashTimer()
 {
 	FTimeline Timeline = FTimeline{};
-	//Timeline->
+
+	FOnTimelineFloat ProgressUpdate;
+	ProgressUpdate.BindUFunction(this, FName("UpdateDashCooldownTimer"));
+
+	FOnTimelineEvent FinishedEvent;
+	FinishedEvent.BindUFunction(this, FName("DashCooldownFinished"));
+
+	Timeline.AddInterpFloat(DashCooldownCurve, ProgressUpdate);
+	Timeline.SetTimelineFinishedFunc(FinishedEvent);
+
+	// Timeline.SetTimelineLength(Time);
+	//
+	// FOnTimelineFloat TimelineTick;
+	// TimelineTick.BindUFunction(this, "OnTimelineTick");
+	//
+	// UCurveFloat CurveFloat = Time;
+	// Timeline.AddInterpFloat(Time, TimelineTick);
+	//
+	// Timeline.Play();
 }
+
+void UHUDWidget::UpdateDashCooldownTimer(float Time)
+{
+	DashCooldown->Value = Time;
+}
+
 
 // Update health bar value.
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)

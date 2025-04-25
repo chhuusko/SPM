@@ -26,6 +26,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
 
+	UPROPERTY(BlueprintReadOnly)
+	UCurveFloat* DashCooldownCurve;
+
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
 	
@@ -34,4 +37,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
+
+private:
+	void UpdateDashCooldownTimer(float Time);
+	void DashCooldownFinished();
 };
