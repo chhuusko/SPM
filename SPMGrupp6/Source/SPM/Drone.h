@@ -27,6 +27,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
     void Shoot();
+	UPROPERTY(EditDefaultsOnly, Category="PickUp")
+    TSubclassOf<class AHealthPickUp> HealthPickUpClass;
+    UPROPERTY(EditDefaultsOnly, Category="PickUp")
+    TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -41,6 +45,7 @@ public:
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 private:
+	virtual void LootDrop();
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
@@ -52,10 +57,7 @@ private:
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneMissile> MissileClass;
-	UPROPERTY(EditDefaultsOnly, Category="PickUp")
-	TSubclassOf<class AHealthPickUp> HealthPickUpClass;
-	UPROPERTY(EditDefaultsOnly, Category="PickUp")
-	TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
+	
 
 	FDroneState* State;
 	ADroneSpawn* Spawner;
