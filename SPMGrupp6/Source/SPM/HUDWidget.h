@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TimelineComponent.h"
 #include "HUDWidget.generated.h"
 
 /**
@@ -26,19 +27,35 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCurveFloat* DashCooldownCurve;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
 	
 	UFUNCTION(BlueprintCallable)
-	void StartDashTimer();
+	void StartDashTimer(float CooldownTime);
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 private:
-	void UpdateDashCooldownTimer(float Time);
+	UPROPERTY()
+	FTimeline Timeline;
+
+	UFUNCTION()
+	void UpdateDashCooldownTimer(float ElapsedTime);
+
+	UFUNCTION()
 	void DashCooldownFinished();
+
+	UPROPERTY()
+	float ElapsedTime;
+	
+	UPROPERTY()
+	float TotalCooldownTime;
+
+	bool bHasDashCooldown;
 };
