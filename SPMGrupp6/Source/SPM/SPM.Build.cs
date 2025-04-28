@@ -10,7 +10,7 @@ public class SPM : ModuleRules
 	
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AdvancedWidgets", "AdvancedWidgets" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AdvancedWidgets", "AdvancedWidgets", "Paper2D" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
