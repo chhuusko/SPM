@@ -27,9 +27,13 @@ protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
+	UFUNCTION(BlueprintCallable, Category="Radar")
 	void Pulse();
-	void RevealPosition(float DotFadeTime);
+	UFUNCTION(BlueprintCallable, Category="Radar")
+	void RevealPosition();
+	UFUNCTION(BlueprintCallable, Category="Radar")
 	void ShowIconOnRadar(AActor* Target);
+	UFUNCTION(BlueprintCallable, Category="Radar")
 	AActor* CreateRedDotOnTarget(AActor* Target);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")

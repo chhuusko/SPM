@@ -230,14 +230,40 @@ void URadarComponent::ShowIconOnRadar(AActor* Target)
 	SceneIconsCapture->ShowOnlyActorComponents(Target);
 }
 
-void URadarComponent::RevealPosition(float DotFadeTime)
+void URadarComponent::RevealPosition()
 {
+	if (!Owner)
+	{
+		Owner = GetOwner();
+		if (!Owner) return;
+	}
+	if (!SceneIconsCapture)
+	{
+		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+		if (!SceneIconsCapture) return;
+	}
+	
+    AActor* RedDot = CreateRedDotOnTarget(GetOwner());
+	SceneIconsCapture->HideActorComponents(RedDot);
+	
+	TArray<AActor*> EnemyActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), EnemyActors);
+	
+	for (AActor* Enemy : EnemyActors)
+	{
+		if (Enemy == Owner) continue;
+		
+		if (USceneCaptureComponent2D* EnemyCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture")))
+		{
+			EnemyCapture->ShowOnlyActorComponents(RedDot);
+		}
+	}
+	
 	if (PrintDebug)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Radar %s: Reveals self character position!"),
 									*GetOwner()->GetName());
 	}
-    AActor* Dot = CreateRedDotOnTarget(GetOwner());
 }
 
 AActor* URadarComponent::CreateRedDotOnTarget(AActor* Target)
@@ -282,16 +308,16 @@ void URadarComponent::ResetCooldown()
 }
 void URadarComponent::SetMiniMapTexture()
 {
-	if (!PC)
-	{
-		PC = GetPlayerController();
-		if (!PC) return;
-	}
-
 	if (!Owner)
 	{
 		Owner = GetOwner();
 		if (!Owner) return;
+	}
+	
+	if (!PC)
+	{
+		PC = GetPlayerController();
+		if (!PC) return;
 	}
 
 	if (!SceneMapCapture)
