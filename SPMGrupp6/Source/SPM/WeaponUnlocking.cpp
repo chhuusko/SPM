@@ -37,14 +37,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 		CurrentGun = CharacterOwner->GetGun();
 		if (CurrentGun)
 		{
-			if (APawn* Player = Cast<APawn>(GetOwner()))
-			{
-				AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(Player->GetController());
-				if (PlayerController && PlayerController->HUDWidget)
-				{
-					PlayerController->HUDWidget->UpdateAmmoText(CurrentGun->GetMagazineSize(), CurrentGun->GetMagazineSize());
-				}
-			}
+			CurrentGun->UpdateAmmoText();
 		}
 	}
 }
@@ -130,23 +123,17 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
 	if (!ResourceComponent) return;
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 2"));
-	
 	APlayerController* PC = Cast<AShooterPlayerController>(CharacterOwner->GetController());
 	if (!PC) return;
-	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 3"));
 	
 	// By default, unlock pistol
 	FWeaponState& State = WeaponStates.FindOrAdd(EWeaponType::Pistol);
 	State.bUnlocked = true;
 	State.Level = 1;
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 4"));
 	// Equip starting weapon
 	EquipWeapon(EWeaponType::Pistol);
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 5"));
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
 		if (CombinationMappingContext)
@@ -218,24 +205,48 @@ void UWeaponUnlocking::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	// ...
 }
 
-void UWeaponUnlocking::SpawnAndAttachWeapon(TSubclassOf<AGun> WeaponClass)
+void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass)
 {
 	if (!WeaponClass || !CharacterOwner) return;
 
 	UWorld* World = GetWorld();
 	if (!World) return;
 
+	const EWeaponType* FoundType = WeaponClasses.FindKey(WeaponClass);
+	if (!FoundType)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking: WeaponClass not found in WeaponClasses map."));
+		return;
+	}
+	EWeaponType WeaponType = *FoundType;
+	
+	AGun* PooledGun = nullptr;
+	if (WeaponPool.Contains(WeaponType))
+	{
+		PooledGun = WeaponPool[WeaponType];
+	}
+	if (!PooledGun || !IsValid(PooledGun))
+	{
+		PooledGun = World->SpawnActor<AGun>(WeaponClass);
+		if (PooledGun)
+		{
+			WeaponPool.Add(WeaponType, PooledGun);
+			PooledGun->SetOwner(CharacterOwner);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking: Failed to spawn weapon for pooling."));
+			return;
+		}
+	}
+
 	if (AGun* CurrentGun = CharacterOwner->GetGun())
 	{
-		CurrentGun->Destroy();
-		CurrentGun = nullptr;
-	}else UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at CurrentGun"));
+		CurrentGun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		CurrentGun->SetActorHiddenInGame(true);
+	}
 
-	if (AGun* NewGun = World->SpawnActor<AGun>(WeaponClass))
-	{
-		CharacterOwner->GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
-		NewGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, WeaponSocketName);
-		NewGun->SetOwner(CharacterOwner);
-		CharacterOwner->SetGun(NewGun);
-	} else UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking SpawnAndAttachWeapon failed at NewGun"));
+	PooledGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
+	PooledGun->SetActorHiddenInGame(false);
+	CharacterOwner->SetGun(PooledGun);
 }
