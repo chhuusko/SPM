@@ -123,23 +123,17 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
 	if (!ResourceComponent) return;
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 2"));
-	
 	APlayerController* PC = Cast<AShooterPlayerController>(CharacterOwner->GetController());
 	if (!PC) return;
-	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 3"));
 	
 	// By default, unlock pistol
 	FWeaponState& State = WeaponStates.FindOrAdd(EWeaponType::Pistol);
 	State.bUnlocked = true;
 	State.Level = 1;
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 4"));
 	// Equip starting weapon
 	EquipWeapon(EWeaponType::Pistol);
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking test 5"));
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
 	{
 		if (CombinationMappingContext)
