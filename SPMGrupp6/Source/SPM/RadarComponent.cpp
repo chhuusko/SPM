@@ -294,9 +294,9 @@ AShooterPlayerController* URadarComponent::GetPlayerController() const
 {
 	if (const AShooterCharacter* OwnerPawn = Cast<AShooterCharacter>(GetOwner()))
 	{
-		if (AShooterPlayerController* PC = Cast<AShooterPlayerController>(OwnerPawn->GetLocalViewingPlayerController()))
+		if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(OwnerPawn->GetLocalViewingPlayerController()))
 		{
-			return PC;
+			return PlayerController;
 		}
 	}
 	return nullptr;
