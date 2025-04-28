@@ -78,7 +78,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	FName WeaponSocketName = TEXT("WeaponSocket");
 	
-	void SpawnAndAttachWeapon(TSubclassOf<AGun> WeaponClass);
+	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
 	
 	UPROPERTY(EditDefaultsOnly, Category="Costs")
 	TMap<EWeaponType, int32> UnlockCosts;
@@ -90,6 +90,8 @@ private:
 	
 	UPROPERTY()
 	class UResources* ResourceComponent;
+	UPROPERTY()
+	TMap<EWeaponType, AGun*> WeaponPool;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* WeaponUpgradeMappingContext;
