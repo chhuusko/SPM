@@ -27,6 +27,11 @@ protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
+	void Pulse();
+	void RevealPosition(float DotFadeTime);
+	void ShowIconOnRadar(AActor* Target);
+	AActor* CreateRedDotOnTarget(AActor* Target);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
 	UTextureRenderTarget2D* Player1MiniMapTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
@@ -80,10 +85,6 @@ private:
 	void CreateMiniMap();
 	void UpdateMap();
 	void HideEnemyDefaultIcon();
-	void Pulse();
-	void RevealPosition(float DotFadeTime);
-	void ShowIconOnRadar(AActor* Target);
-	AActor* CreateRedDotOnTarget(AActor* Target);
 	AShooterPlayerController* GetPlayerController() const;
 
 	// Utilities
