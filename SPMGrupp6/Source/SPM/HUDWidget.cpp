@@ -3,29 +3,67 @@
 
 #include "HUDWidget.h"
 
+#include "ShooterCharacter.h"
+#include "Components/ProgressBar.h"
+#include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "Components/TimelineComponent.h"
+#include "Math/UnitConversion.h"
 
 const float UHUDWidget::DELTATIME = 0.1f;
 
 // Updates the ammo text in the HUD.
-void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer)
+void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 {
-	FString AmmoString;
-	if (bIsBluePlayer)
+	FString AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
+	AmmoText->SetText(FText::FromString(AmmoString));
+}
+
+void UHUDWidget::StartDashTimer(float CooldownTime)
+{
+	// Reset dash cooldown element.
+	DashCooldown->SetValue(0.f);
+
+	TotalCooldownTime = CooldownTime;
+	ElapsedTime = 0;
+	
+	bHasDashCooldown = true;
+}
+
+void UHUDWidget::UpdateDashCooldownTimer(float DeltaTime)
+{
+	ElapsedTime += DeltaTime;
+
+	// Set the value representing the slider's progress.
+	float Progress = ElapsedTime / TotalCooldownTime;
+	DashCooldown->SetValue(Progress);
+
+	// Cooldown is done.
+	if (Progress >= 1.f)
 	{
-		AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
-		BlueAmmoText->SetText(FText::FromString(AmmoString));
-	}
-	else
-	{
-		AmmoString = FString::Printf(TEXT("%d/%d"), BulletsLeft, MagazineSize);
-		RedAmmoText->SetText(FText::FromString(AmmoString));
+		DashCooldownFinished();
 	}
 }
 
-void UHUDWidget::StartDashTimer()
+void UHUDWidget::DashCooldownFinished()
 {
-	FTimeline Timeline = FTimeline{};
-	//Timeline->
+	// Reset indicator.
+	DashCooldown->SetValue(0.f);
+	bHasDashCooldown = false;
+}
+
+// Update health bar value.
+void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
+{
+	HealthBar->SetPercent(Player->GetHealthPercent());
+}
+
+void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (bHasDashCooldown)
+	{
+		UpdateDashCooldownTimer(InDeltaTime);
+	}
 }

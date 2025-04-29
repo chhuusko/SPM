@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TimelineComponent.h"
 #include "HUDWidget.generated.h"
 
 /**
@@ -18,20 +19,43 @@ public:
 	static const float DELTATIME;
 	
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* BlueAmmoText;
+	class UTextBlock* AmmoText;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* RedAmmoText;
-
-	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* BlueDashCooldown;
+	class URadialSlider* DashCooldown;
 	
 	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* RedDashCooldown;
+	class UProgressBar* HealthBar;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCurveFloat* DashCooldownCurve;
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize, bool bIsBluePlayer);
+	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
 	
 	UFUNCTION(BlueprintCallable)
-	void StartDashTimer();
+	void StartDashTimer(float CooldownTime);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateHealth(AShooterCharacter* Player);
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
+private:
+	UPROPERTY()
+	FTimeline Timeline;
+
+	UFUNCTION()
+	void UpdateDashCooldownTimer(float ElapsedTime);
+
+	UFUNCTION()
+	void DashCooldownFinished();
+
+	UPROPERTY()
+	float ElapsedTime;
+	
+	UPROPERTY()
+	float TotalCooldownTime;
+
+	bool bHasDashCooldown;
 };

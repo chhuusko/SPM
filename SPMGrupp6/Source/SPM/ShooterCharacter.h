@@ -48,6 +48,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopShooting();
 	UFUNCTION(BlueprintCallable)
+	void WeaponAbility();
+	UFUNCTION(BlueprintCallable)
+	void StopWeaponAbility();
+	UFUNCTION(BlueprintCallable)
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void StopReload();
@@ -63,8 +67,12 @@ public:
 	void Sprint();
 	UFUNCTION(BlueprintCallable)
 	void StopSprint();
+
+	UFUNCTION(BlueprintCallable)
+	void UseJetpack();
 	
 private:
+	void UpdatePlayerHealth();
 	UPROPERTY(EditAnywhere)
 	float RotationRate = 10;
 	UPROPERTY(EditDefaultsOnly)
@@ -81,4 +89,23 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AGun> GunClass;
 
+	UPROPERTY(EditDefaultsOnly)
+	float JetpackPower = 500;
+	UPROPERTY(EditDefaultsOnly)
+	float JetpackChargeMax = 50;
+	UPROPERTY(EditDefaultsOnly)
+	float JetpackCharge = 50;
+	//Delay from stopping using jetpack to start of recharging
+	UPROPERTY(EditDefaultsOnly)
+	float JetpackDelayUntilRecharge = 1;
+	//Delay between the jetpack recharging 1 charge
+	UPROPERTY(EditDefaultsOnly)
+	float JetpackRechargeRate = 0.1;
+	
+	void SetCanRechargeJetpack();
+	bool bCanRechargeJetpack = false;
+	
+	FTimerHandle JetpackRechargeAfterSecondsTimerHandle;
+	FTimerHandle JetpackRechargeNextIterationHandle;
+	FTimerHandle JetpackTimerUntilConsideredNotUsingJetpack;
 };

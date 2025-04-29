@@ -33,14 +33,10 @@ void AShooterPlayerController::Tick(float DeltaSeconds)
 // Spawn player HUD.
 void AShooterPlayerController::InitializeHUD()
 {
-	// Only place HUD once.
-	if (this != GetWorld()->GetFirstPlayerController())
-		return;
-	
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
 	if (HUDWidgetClass)
 	{
-		HUDWidget->AddToViewport();
+		HUDWidget->AddToPlayerScreen();
 	}
 }
 
@@ -48,8 +44,11 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
 
-	HUDWidget->RemoveFromParent();
-
+	if (HUDWidget)
+	{
+		HUDWidget->RemoveFromParent();
+	}
+	
 	// Only add game over screen once.
 	if (bIsWinner)
 	{

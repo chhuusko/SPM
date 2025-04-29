@@ -98,6 +98,15 @@ void AGun::Fire()
 
 		AActor* HitActor = Hit.GetActor();
 		if(HitActor)
+			if (HitActor->ActorHasTag("Button"))
+			{
+				// Call the ActivateButton event in the Blueprint
+				if (HitActor->FindFunction(FName("ActivateButton")))
+				{
+					HitActor->ProcessEvent(HitActor->FindFunction(FName("ActivateButton")), nullptr);
+				}
+			}
+			else
 		{
 			float ActualDamage = CalculateDamageFalloff(TraceLength);
 			FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
@@ -230,10 +239,10 @@ AController* AGun::GetOwnerController() const
 void AGun::UpdateAmmoText()
 {
 	// Update players ammo text.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetWorld()->GetFirstPlayerController());
+	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->HUDWidget)
 	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize, GetOwnerController() == GetWorld()->GetFirstPlayerController());
+		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
 	}
 }
 
@@ -241,6 +250,11 @@ void AGun::WeaponAbility()
 {
 	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
 }
+void AGun::StopWeaponAbility()
+{
+	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
+}
+
 
 float AGun::CalculateDamageFalloff(float TraceLength)
 {
