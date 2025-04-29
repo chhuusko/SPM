@@ -132,6 +132,7 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 	State.Level = 1;
 	
 	// Equip starting weapon
+	CharacterOwner->GetMesh()->HideBoneByName(TEXT("weapon_r"), PBO_None);
 	EquipWeapon(EWeaponType::Pistol);
 	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
