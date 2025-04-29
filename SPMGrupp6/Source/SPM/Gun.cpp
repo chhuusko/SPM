@@ -98,6 +98,15 @@ void AGun::Fire()
 
 		AActor* HitActor = Hit.GetActor();
 		if(HitActor)
+			if (HitActor->ActorHasTag("Button"))
+			{
+				// Call the ActivateButton event in the Blueprint
+				if (HitActor->FindFunction(FName("ActivateButton")))
+				{
+					HitActor->ProcessEvent(HitActor->FindFunction(FName("ActivateButton")), nullptr);
+				}
+			}
+			else
 		{
 			float ActualDamage = CalculateDamageFalloff(TraceLength);
 			FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
