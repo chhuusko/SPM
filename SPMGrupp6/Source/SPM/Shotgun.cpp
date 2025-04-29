@@ -5,7 +5,7 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "ShooterPlayerController.h"
-#include "Customizations/MathStructProxyCustomizations.h"
+
 
 
 void AShotgun::Fire()
