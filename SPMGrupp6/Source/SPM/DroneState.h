@@ -4,6 +4,7 @@
 
 #include "Drone.h"
 #include "CoreMinimal.h"
+#include <vector>
 #include "Kismet/GameplayStatics.h"
 
 class ADrone;
@@ -19,6 +20,8 @@ public:
 	
 	virtual ~FDroneState();
 protected:
+	FVector NewLocation = FVector::ZeroVector;
+	std::vector<FVector> PreviousPositions;
 	ADrone* Drone;
     AActor* Spawner;
 };
@@ -51,6 +54,7 @@ class SPM_API FDroneStateReturn : public FDroneState
 {
 public:
 	FDroneStateReturn(ADrone* Drone, AActor* Spawner) : FDroneState(Drone, Spawner) {};
+	FDroneStateReturn(ADrone* Drone, AActor* Spawner, std::vector<FVector> PositionList) : FDroneState(Drone, Spawner){ PreviousPositions = PositionList; }
 	virtual void Move() override;
 	
 };
