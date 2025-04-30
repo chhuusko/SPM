@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "RadarComponent.generated.h"
 
+class URadarEnemyIcon;
+class UCanvasPanel;
 class AShooterPlayerController;
 class USceneCaptureComponent2D;
 class UTextureRenderTarget2D;
@@ -19,7 +21,27 @@ class SPM_API URadarComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	URadarComponent();
+	
+	FVector2D GetMinimapPosition(
+		FVector PlayerLocation,
+		FVector TargetLocation,
+		float MinimapSize,
+		FVector2D ActualSize
+	);
+	
+	void UpdateMinimapIconPosition(
+		UWidget* IconWidget,
+		const FVector& ActorLocation,
+		const FVector& MapCenterLocation,
+		float MapWorldSize,
+		const FVector2D MinimapSize
+	);
 
+	UPROPERTY(EditAnywhere)
+	bool PrintDebug = false;
+	UPROPERTY()
+	TMap<AActor*, URadarEnemyIcon*> TrackedIcons;
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -34,20 +56,16 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="Radar")
 	void ShowIconOnRadar(AActor* Target);
 	UFUNCTION(BlueprintCallable, Category="Radar")
-	AActor* CreateRedDotOnTarget(AActor* Target);
+	UUserWidget* CreateRedDotOnTarget(AActor* Target);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
 	UTextureRenderTarget2D* Player1MiniMapTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
-	UTextureRenderTarget2D* Player1MiniMapIconsTexture;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
 	UTextureRenderTarget2D* Player2MiniMapTexture;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
-	UTextureRenderTarget2D* Player2MiniMapIconsTexture;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
-	TSubclassOf<AActor> EnemyIconClass;
+	TSubclassOf<UUserWidget> EnemyIconClass;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
 	TSubclassOf<class UUserWidget> Player1MiniMapWidget;
@@ -55,9 +73,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="MiniMap")
 	TSubclassOf<class UUserWidget> Player2MiniMapWidget;
 	
-private:	
-	UPROPERTY(EditAnywhere)
-	bool PrintDebug = false;
+private:
 	
 	UPROPERTY(EditAnywhere)
 	float MiniMapSize = 2048.f;
@@ -77,6 +93,9 @@ private:
 	UPROPERTY()
 	UUserWidget* CreatedWidget;
 	
+	UPROPERTY()
+	UUserWidget* CreatedRadarWidget;
+	
 	UPROPERTY(EditAnywhere)
 	float PulseCooldown = 5.0f;
 
@@ -85,10 +104,16 @@ private:
 
 	float CooldownProgress = 0.0f;
 	
+	UPROPERTY(EditAnywhere)
+	int MapCaptureFrequency = 10;
+	int MapFrameCounter = 0;
+	UPROPERTY(EditAnywhere)
+	int IconsCaptureFrequency = 10;
+	int IconsFrameCounter = 0;
+	
 	// Functions
 	void CreateMiniMap();
 	void UpdateMap();
-	void HideEnemyDefaultIcon();
 	AShooterPlayerController* GetPlayerController() const;
 
 	// Utilities
@@ -102,5 +127,5 @@ private:
 	UPROPERTY()
 	USceneCaptureComponent2D* SceneMapCapture;
 	UPROPERTY()
-	USceneCaptureComponent2D* SceneIconsCapture;
+	UCanvasPanel* IconsCanvas;
 };
