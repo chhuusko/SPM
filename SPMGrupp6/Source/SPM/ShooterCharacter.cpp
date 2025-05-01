@@ -123,8 +123,15 @@ void AShooterCharacter::Sprint()
 	}
 }
 
-// Stops sprinting.
+// Stops sprinting after the specified delay.
 void AShooterCharacter::StopSprint()
+{
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AShooterCharacter::ResetWalkSpeed, SprintStopDelay);
+}
+
+// Stops sprinting.
+void AShooterCharacter::ResetWalkSpeed()
 {
 	if (MovementComponent)
 	{
@@ -132,6 +139,7 @@ void AShooterCharacter::StopSprint()
 		bSprinting = false;
 	}
 }
+
 
 void AShooterCharacter::UseJetpack()
 {

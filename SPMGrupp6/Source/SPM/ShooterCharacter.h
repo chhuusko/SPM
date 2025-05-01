@@ -67,9 +67,14 @@ public:
 	void Sprint();
 	UFUNCTION(BlueprintCallable)
 	void StopSprint();
+	UFUNCTION()
+	void ResetWalkSpeed();
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SprintStopDelay = 0.5f;
 	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();
