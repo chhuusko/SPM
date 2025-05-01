@@ -23,7 +23,11 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	MovementComponent = GetCharacterMovement();
+	
 	Health = MaxHealth;
+
+	SetCrouch((false));
 }
 
 bool AShooterCharacter::IsDead() const
@@ -60,6 +64,11 @@ void AShooterCharacter::Tick(float DeltaTime)
 			JetpackCharge = JetpackChargeMax;
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
+	}
+
+	if (bSliding)
+	{
+		AddMovementInput(GetActorForwardVector() * 1);
 	}
 }
 
@@ -107,22 +116,30 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 // Starts sprinting.
 void AShooterCharacter::Sprint()
 {
-	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = SprintSpeed;
+		bSprinting = true;
 	}
 }
 
-// Stops sprinting.
+// Stops sprinting after the specified delay.
 void AShooterCharacter::StopSprint()
 {
-	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AShooterCharacter::ResetWalkSpeed, SprintStopDelay);
+}
+
+// Stops sprinting.
+void AShooterCharacter::ResetWalkSpeed()
+{
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
+		bSprinting = false;
 	}
 }
+
 
 void AShooterCharacter::UseJetpack()
 {
@@ -144,6 +161,61 @@ void AShooterCharacter::UseJetpack()
 	UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 }
 
+void AShooterCharacter::SetCrouch(bool value)
+{
+	if (!MovementComponent->IsMovingOnGround()) return;
+	
+	bCrouching = value;
+	if (bCrouching)
+	{
+		UCapsuleComponent* Capsule = GetCapsuleComponent();
+		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
+		MovementComponent->MaxWalkSpeed = CrouchSpeed;
+		
+		if (bSprinting)
+		{
+			StartSlide();
+		}
+	}
+	else
+	{
+		UCapsuleComponent* Capsule = GetCapsuleComponent();
+		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+		if (bSprinting)
+		{
+			MovementComponent->MaxWalkSpeed = SprintSpeed;
+		}
+		else
+		{
+			MovementComponent->MaxWalkSpeed = WalkSpeed;
+		}
+		
+		//Check for obstacles immeditaely above player so they don't get stuck 
+	}
+}
+
+void AShooterCharacter::StartSlide()
+{
+	bCanMove = false;
+	bSliding = true;
+
+	//Set friction?
+}
+
+void AShooterCharacter::StopSlide()
+{
+	SetCrouch(false);
+	bCanMove = true;
+	bSliding = false;
+}
+
+//Timer until the slide is stopped
+void AShooterCharacter::StopSlideTimer()
+{
+	GetWorld()->GetTimerManager().SetTimer(StopSprintTimerHandle, this, &AShooterCharacter::StopSlide, SlideDuration, false);
+}
+
 void AShooterCharacter::SetCanRechargeJetpack()
 {
 	bCanRechargeJetpack = true;
@@ -151,12 +223,18 @@ void AShooterCharacter::SetCanRechargeJetpack()
 
 void AShooterCharacter::MoveForward(float AxisValue)
 {
-	AddMovementInput(GetActorForwardVector() * AxisValue);
+	if (bCanMove)
+	{
+		AddMovementInput(GetActorForwardVector() * AxisValue);
+	}
 }
 
 void AShooterCharacter::MoveRight(float AxisValue)
 {
-	AddMovementInput(GetActorRightVector() * AxisValue);
+	if (bCanMove)
+	{
+		AddMovementInput(GetActorRightVector() * AxisValue);
+	}
 }
 
 void AShooterCharacter::LookUpRate(float AxisValue)
