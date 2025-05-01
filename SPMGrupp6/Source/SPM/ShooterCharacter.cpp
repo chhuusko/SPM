@@ -23,7 +23,11 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	MovementComponent = GetCharacterMovement();
+	
 	Health = MaxHealth;
+
+	SetCrouch((false));
 }
 
 bool AShooterCharacter::IsDead() const
@@ -107,20 +111,21 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 // Starts sprinting.
 void AShooterCharacter::Sprint()
 {
-	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = SprintSpeed;
+		bSprinting = true;
 	}
 }
 
 // Stops sprinting.
 void AShooterCharacter::StopSprint()
 {
-	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
+		bSprinting = false;
 	}
 }
 
@@ -142,6 +147,55 @@ void AShooterCharacter::UseJetpack()
 	GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
 
 	UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
+}
+
+void AShooterCharacter::SetCrouch(bool value)
+{
+	bCrouching = value;
+	if (bCrouching)
+	{
+		UCapsuleComponent* Capsule = GetCapsuleComponent();
+		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
+		MovementComponent->MaxWalkSpeed = CrouchSpeed;
+		
+		if (bSprinting)
+		{
+			StartSlide();
+		}
+	}
+	else
+	{
+		UCapsuleComponent* Capsule = GetCapsuleComponent();
+		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+		if (bSprinting)
+		{
+			MovementComponent->MaxWalkSpeed = SprintSpeed;
+		}
+		else
+		{
+			MovementComponent->MaxWalkSpeed = WalkSpeed;
+		}
+		
+		//Check for obstacles immeditaely above player so they don't get stuck 
+	}
+}
+
+void AShooterCharacter::StartSlide()
+{
+	bCanMove = false;
+}
+
+void AShooterCharacter::StopSlide()
+{
+	bCanMove = true;
+	SetCrouch(false);
+}
+
+//Timer until the slide is stopped
+void AShooterCharacter::StopSlideTimer()
+{
+	GetWorld()->GetTimerManager().SetTimer(StopSprintTimerHandle, this, &AShooterCharacter::StopSlide, SlideDuration, false);
 }
 
 void AShooterCharacter::SetCanRechargeJetpack()
