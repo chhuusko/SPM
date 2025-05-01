@@ -65,6 +65,11 @@ void AShooterCharacter::Tick(float DeltaTime)
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
 	}
+
+	if (bSliding)
+	{
+		AddMovementInput(GetActorForwardVector() * 1);
+	}
 }
 
 // Called to bind functionality to input
@@ -121,7 +126,6 @@ void AShooterCharacter::Sprint()
 // Stops sprinting.
 void AShooterCharacter::StopSprint()
 {
-	
 	if (MovementComponent)
 	{
 		MovementComponent->MaxWalkSpeed = WalkSpeed;
@@ -151,6 +155,8 @@ void AShooterCharacter::UseJetpack()
 
 void AShooterCharacter::SetCrouch(bool value)
 {
+	if (!MovementComponent->IsMovingOnGround()) return;
+	
 	bCrouching = value;
 	if (bCrouching)
 	{
@@ -184,12 +190,16 @@ void AShooterCharacter::SetCrouch(bool value)
 void AShooterCharacter::StartSlide()
 {
 	bCanMove = false;
+	bSliding = true;
+
+	//Set friction?
 }
 
 void AShooterCharacter::StopSlide()
 {
-	bCanMove = true;
 	SetCrouch(false);
+	bCanMove = true;
+	bSliding = false;
 }
 
 //Timer until the slide is stopped
@@ -205,12 +215,18 @@ void AShooterCharacter::SetCanRechargeJetpack()
 
 void AShooterCharacter::MoveForward(float AxisValue)
 {
-	AddMovementInput(GetActorForwardVector() * AxisValue);
+	if (bCanMove)
+	{
+		AddMovementInput(GetActorForwardVector() * AxisValue);
+	}
 }
 
 void AShooterCharacter::MoveRight(float AxisValue)
 {
-	AddMovementInput(GetActorRightVector() * AxisValue);
+	if (bCanMove)
+	{
+		AddMovementInput(GetActorRightVector() * AxisValue);
+	}
 }
 
 void AShooterCharacter::LookUpRate(float AxisValue)

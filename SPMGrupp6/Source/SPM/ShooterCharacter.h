@@ -87,6 +87,8 @@ public:
 	bool bCrouching = false;
 	UPROPERTY(BlueprintReadOnly)
 	bool bCanMove = true;
+	UPROPERTY(BlueprintReadOnly)
+	bool bSliding = false;
 	
 private:
 	void UpdatePlayerHealth();
