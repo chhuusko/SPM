@@ -69,14 +69,10 @@ public:
 	void StopSprint();
 
 	UPROPERTY(BlueprintReadWrite)
-<<<<<<< Updated upstream
-	bool bSprinting = false;
-=======
 	bool bSprinting;
 
 	UPROPERTY(EditDefaultsOnly)
 	float SprintStopDelay = 0.5f;
->>>>>>> Stashed changes
 	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();

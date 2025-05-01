@@ -123,17 +123,6 @@ void AShooterCharacter::Sprint()
 	}
 }
 
-<<<<<<< Updated upstream
-=======
-// Stops sprinting after the specified delay.
-void AShooterCharacter::StopSprint()
-{
-	//FTimerHandle TimerHandle;
-	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AShooterCharacter::ResetWalkSpeed, SprintStopDelay);
-	ResetWalkSpeed();
-}
-
->>>>>>> Stashed changes
 // Stops sprinting.
 void AShooterCharacter::StopSprint()
 {
