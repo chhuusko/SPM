@@ -123,6 +123,17 @@ void AShooterCharacter::Sprint()
 	}
 }
 
+<<<<<<< Updated upstream
+=======
+// Stops sprinting after the specified delay.
+void AShooterCharacter::StopSprint()
+{
+	//FTimerHandle TimerHandle;
+	//GetWorldTimerManager().SetTimer(TimerHandle, this, &AShooterCharacter::ResetWalkSpeed, SprintStopDelay);
+	ResetWalkSpeed();
+}
+
+>>>>>>> Stashed changes
 // Stops sprinting.
 void AShooterCharacter::StopSprint()
 {
@@ -192,20 +203,40 @@ void AShooterCharacter::StartSlide()
 	bCanMove = false;
 	bSliding = true;
 
+	MovementComponent->MaxWalkSpeed = SlideSpeed;
+
+	//UE_LOG(LogTemp, Warning, TEXT("Sliding"));
 	//Set friction?
 }
 
 void AShooterCharacter::StopSlide()
 {
 	SetCrouch(false);
+	StopSlideKeepCrouching();
+}
+
+void AShooterCharacter::StopSlideKeepCrouching()
+{
 	bCanMove = true;
 	bSliding = false;
+
+	//Maybe store PrevSpeed or something?
+	if (bSprinting)
+	{
+		MovementComponent->MaxWalkSpeed = SprintSpeed;
+	}
+	else
+	{
+		MovementComponent->MaxWalkSpeed = WalkSpeed;
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Stopped Sliding"));
 }
 
 //Timer until the slide is stopped
 void AShooterCharacter::StopSlideTimer()
 {
-	GetWorld()->GetTimerManager().SetTimer(StopSprintTimerHandle, this, &AShooterCharacter::StopSlide, SlideDuration, false);
+	GetWorld()->GetTimerManager().SetTimer(StopSlideTimerHandle, this, &AShooterCharacter::StopSlide, SlideDuration, false);
 }
 
 void AShooterCharacter::SetCanRechargeJetpack()

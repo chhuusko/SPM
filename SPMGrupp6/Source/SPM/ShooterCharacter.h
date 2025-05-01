@@ -69,7 +69,14 @@ public:
 	void StopSprint();
 
 	UPROPERTY(BlueprintReadWrite)
+<<<<<<< Updated upstream
 	bool bSprinting = false;
+=======
+	bool bSprinting;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SprintStopDelay = 0.5f;
+>>>>>>> Stashed changes
 	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();
@@ -80,6 +87,8 @@ public:
 	void StartSlide();
 	UFUNCTION(BlueprintCallable)
 	void StopSlide();
+	UFUNCTION(BlueprintCallable)
+	void StopSlideKeepCrouching();
 	UFUNCTION(BlueprintCallable)
 	void StopSlideTimer();
 
@@ -101,6 +110,9 @@ private:
 	float WalkSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)
 	float SprintSpeed = 1000;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SlideSpeed = 900;
 
 	UCharacterMovementComponent* MovementComponent;
 	
@@ -135,5 +147,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	float SlideDuration = 0.3;
-	FTimerHandle StopSprintTimerHandle;
+	FTimerHandle StopSlideTimerHandle;
 };
