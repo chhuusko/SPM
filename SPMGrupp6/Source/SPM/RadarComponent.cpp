@@ -27,6 +27,7 @@ void URadarComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateMiniMap();
+	SetMiniMapTexture();
 	HideEnemyDefaultIcon();
 
 	if (PrintDebug)
@@ -56,11 +57,10 @@ void URadarComponent::CreateMiniMap()
 {
 	if (Created) return;
 
-	if (!PC)
-	{
-		PC = GetPlayerController();
-		if (!PC) return;
-	}
+	Owner = GetOwner();
+	if (!Owner) return;
+	PC = GetPlayerController();
+	if (!PC) return;
 	
 	if (const int ID = PC->GetLocalPlayer()->GetControllerId(); ID == 0 && Player1MiniMapWidget)
 	{
@@ -110,7 +110,7 @@ void URadarComponent::UpdateMap()
 		}
 		if (!SceneIconsCapture)
 		{
-			SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+			SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture"));
 			if (!SceneIconsCapture) return;
 		}
 		
@@ -168,7 +168,7 @@ void URadarComponent::Pulse()
 
 	if (!SceneIconsCapture)
 	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture"));
 		if (!SceneIconsCapture) return;
 	}
 	
@@ -203,7 +203,7 @@ void URadarComponent::Pulse()
 			}
 			if(AActor* RedDot = CreateRedDotOnTarget(Enemy))
 			{
-				if (USceneCaptureComponent2D* EnemySceneCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture")))
+				if (USceneCaptureComponent2D* EnemySceneCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture")))
 				{
 					EnemySceneCapture->HideActorComponents(RedDot);
 				}
@@ -223,7 +223,7 @@ void URadarComponent::ShowIconOnRadar(AActor* Target)
 
 	if (!SceneIconsCapture)
 	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture"));
 		if (!SceneIconsCapture) return;
 	}
 	
@@ -239,7 +239,7 @@ void URadarComponent::RevealPosition()
 	}
 	if (!SceneIconsCapture)
 	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture"));
 		if (!SceneIconsCapture) return;
 	}
 	
@@ -253,7 +253,7 @@ void URadarComponent::RevealPosition()
 	{
 		if (Enemy == Owner) continue;
 		
-		if (USceneCaptureComponent2D* EnemyCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture")))
+		if (USceneCaptureComponent2D* EnemyCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture")))
 		{
 			EnemyCapture->ShowOnlyActorComponents(RedDot);
 		}
@@ -308,28 +308,14 @@ void URadarComponent::ResetCooldown()
 }
 void URadarComponent::SetMiniMapTexture()
 {
-	if (!Owner)
-	{
-		Owner = GetOwner();
-		if (!Owner) return;
-	}
-	
-	if (!PC)
-	{
-		PC = GetPlayerController();
-		if (!PC) return;
-	}
-
-	if (!SceneMapCapture)
-	{
-		SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneMapCapture) return;
-	}
-	if (!SceneIconsCapture)
-	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneIconsCapture) return;
-	}
+	Owner = GetOwner();
+	if (!Owner) return;
+	PC = GetPlayerController();
+	if (!PC) return;
+	SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+	if (!SceneMapCapture) return;
+	SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneIconsCapture"));
+	if (!SceneIconsCapture) return;
 
 	if (const int ID = PC->GetLocalPlayer()->GetControllerId(); ID == 0 && Player1MiniMapTexture && Player1MiniMapIconsTexture)
 	{

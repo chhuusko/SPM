@@ -7,7 +7,6 @@
 #include "HUDWidget.h"
 #include "ShooterPlayerController.h"
 #include "SimpleShooterGameMode.h"
-#include "SWarningOrErrorBox.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
