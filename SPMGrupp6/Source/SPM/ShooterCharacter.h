@@ -68,8 +68,27 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopSprint();
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bSprinting = false;
+	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();
+
+	UFUNCTION(BlueprintCallable)
+	void SetCrouch(bool value);
+	UFUNCTION(BlueprintCallable)
+	void StartSlide();
+	UFUNCTION(BlueprintCallable)
+	void StopSlide();
+	UFUNCTION(BlueprintCallable)
+	void StopSlideTimer();
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bCrouching = false;
+	UPROPERTY(BlueprintReadOnly)
+	bool bCanMove = true;
+	UPROPERTY(BlueprintReadOnly)
+	bool bSliding = false;
 	
 private:
 	void UpdatePlayerHealth();
@@ -82,6 +101,8 @@ private:
 	float WalkSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)
 	float SprintSpeed = 1000;
+
+	UCharacterMovementComponent* MovementComponent;
 	
 	UPROPERTY(VisibleAnywhere)
 	float Health;
@@ -108,4 +129,11 @@ private:
 	FTimerHandle JetpackRechargeAfterSecondsTimerHandle;
 	FTimerHandle JetpackRechargeNextIterationHandle;
 	FTimerHandle JetpackTimerUntilConsideredNotUsingJetpack;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float CrouchSpeed = 300;
+
+	UPROPERTY(EditDefaultsOnly)
+	float SlideDuration = 0.3;
+	FTimerHandle StopSprintTimerHandle;
 };
