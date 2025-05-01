@@ -61,8 +61,7 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 		{
 			Spawner->DroneDestroyed();
 		}
-		GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
-		GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+		LootDrop();
 		Destroy();
 	}
 	ChangeState(new FDroneStateAttack(this, Spawner, DamageCauser));
@@ -78,6 +77,12 @@ void ADrone::SetSpawner(ADroneSpawn* Spawn)
 void ADrone::ChangeState(FDroneState* newState)
 {
 	State = newState;
+}
+
+void ADrone::LootDrop()
+{
+	GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 }
 
 
