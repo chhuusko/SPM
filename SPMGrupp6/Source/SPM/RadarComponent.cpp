@@ -3,6 +3,7 @@
 
 #include "RadarComponent.h"
 
+#include "RadarEnemyIcon.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,7 +12,9 @@
 #include "Engine/World.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "GameFramework/PlayerController.h"
-#include "PaperSpriteComponent.h"
+#include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
+#include "Engine/TextureRenderTarget2D.h"
 
 // Sets default values for this component's properties
 URadarComponent::URadarComponent()
@@ -21,26 +24,95 @@ URadarComponent::URadarComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+void URadarComponent::UpdateMinimapIconPosition(UWidget* IconWidget, const FVector& ActorLocation,
+	const FVector& MapCenterLocation, float MapWorldSize, const FVector2D MinimapSize)
+{
+	if (!IconWidget) return;
+
+	FVector2D MinimapPos = GetMinimapPosition(MapCenterLocation, ActorLocation, MapWorldSize, MinimapSize);
+
+	if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(IconWidget->Slot))
+	{
+		MinimapPos.X = FMath::Clamp(MinimapPos.X, 0.0f, MinimapSize.X);
+		MinimapPos.Y = FMath::Clamp(MinimapPos.Y, 0.0f, MinimapSize.Y);
+
+		CanvasSlot->SetPosition(MinimapPos);
+	}
+}
 
 // Called when the game starts
 void URadarComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	CreateMiniMap();
-	HideEnemyDefaultIcon();
+	SetMiniMapTexture();
 
-	if (PrintDebug)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Radar %s Initialized"),
+	if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s Initialized"),
 									*GetOwner()->GetName());
-	}
 }
 
+FVector2D URadarComponent::GetMinimapPosition(FVector PlayerLocation, FVector TargetLocation, float MinimapSize, FVector2D ActualSize)
+{
+	// 1. Calculate 2D offset (ignore Z, since camera looks straight down)
+	FVector2D Offset2D = FVector2D(TargetLocation.X - PlayerLocation.X, TargetLocation.Y - PlayerLocation.Y);
+
+	// 2. Get player's yaw and apply inverse rotation to offset
+	float Yaw = Owner->GetActorRotation().Yaw;
+	float Radians = FMath::DegreesToRadians(-Yaw - 90.0f);
+	float Cos = FMath::Cos(Radians);
+	float Sin = FMath::Sin(Radians);
+	
+	FVector2D RotatedOffset;
+	RotatedOffset.X = Offset2D.X * Cos - Offset2D.Y * Sin;
+	RotatedOffset.Y = Offset2D.X * Sin + Offset2D.Y * Cos;
+	
+    // 3. Normalize relative to minimap size (OrthoWidth)
+	float HalfMinimapSize = MinimapSize / 2.0f;
+	FVector2D Normalized = RotatedOffset / HalfMinimapSize;
+	
+	
+	// 4. Convert to 0-1 UV range and then to UI pixel coordinates
+	FVector2D UV = (Normalized + FVector2D(1.0f, 1.0f)) * 0.5f;
+	FVector2D UIPosition = UV * ActualSize;
+
+	return UIPosition;
+}
 
 // Called every frame
 void URadarComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (++MapFrameCounter % MapCaptureFrequency == 0)
+	{
+		if(SceneMapCapture) SceneMapCapture->CaptureScene();
+		MapFrameCounter=0;
+	}
+	if (++IconsFrameCounter % IconsCaptureFrequency == 0)
+	{
+		IconsFrameCounter=0;
+		for (const TPair<AActor*, URadarEnemyIcon*>& Pair : TrackedIcons)
+		{
+			AActor* TargetActor = Pair.Key;
+			URadarEnemyIcon* IconWidget = Pair.Value;
+			if (!IsValid(TargetActor) || !IsValid(IconWidget)) continue;
+
+			if (!IconsCanvas) {
+				IconsCanvas = Cast<UCanvasPanel>(CreatedWidget->GetWidgetFromName(TEXT("MinimapCanvas")));
+				if (!IconsCanvas) continue;
+			}
+
+			FVector2D ActualSize = IconsCanvas->GetCachedGeometry().GetLocalSize();
+
+			UpdateMinimapIconPosition(
+				IconWidget,
+				TargetActor->GetActorLocation(),
+				Owner->GetActorLocation(),
+				SceneMapCapture->OrthoWidth,
+				ActualSize
+			);
+		}
+	}
 
 	UpdateMap();
 
@@ -56,11 +128,10 @@ void URadarComponent::CreateMiniMap()
 {
 	if (Created) return;
 
-	if (!PC)
-	{
-		PC = GetPlayerController();
-		if (!PC) return;
-	}
+	Owner = GetOwner();
+	if (!Owner) return;
+	PC = GetPlayerController();
+	if (!PC) return;
 	
 	if (const int ID = PC->GetLocalPlayer()->GetControllerId(); ID == 0 && Player1MiniMapWidget)
 	{
@@ -77,12 +148,9 @@ void URadarComponent::CreateMiniMap()
 		Created = true;
 	}
 
-	if (PrintDebug)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Radar %s: %s in Creation of MiniMap"),
+	if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("Radar %s: %s in Creation of MiniMap"),
 									*GetOwner()->GetName(),
 									Created ? TEXT("Succeeded") : TEXT("Failed"));
-	}
 }
 
 void URadarComponent::UpdateMap()
@@ -108,53 +176,12 @@ void URadarComponent::UpdateMap()
 			SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
 			if (!SceneMapCapture) return;
 		}
-		if (!SceneIconsCapture)
-		{
-			SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-			if (!SceneIconsCapture) return;
-		}
 		
 		SceneMapCapture->OrthoWidth = MiniMapSize;
-		SceneIconsCapture->OrthoWidth = MiniMapSize;
 		UpdateMiniMapSize = false;
-	}
-}
-
-void URadarComponent::HideEnemyDefaultIcon()
-{
-	if (!Owner)
-	{
-		Owner = GetOwner();
-		if (!Owner) return;
-	}
-	
-	UPaperSpriteComponent* PaperSprite = nullptr;
-	{
-		if (UActorComponent* FoundComponent = Owner->FindComponentByTag(UPaperSpriteComponent::StaticClass(), TEXT("MiniMapPlayerSprite")))
-		{
-			PaperSprite = Cast<UPaperSpriteComponent>(FoundComponent);
-		}
-	}
-	if (!PaperSprite) return; 
-	
-	TArray<AActor*> EnemyActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), EnemyActors);
-	
-	for (AActor* Enemy : EnemyActors)
-	{
-		if (Enemy == Owner) continue;
 		
-		if (USceneCaptureComponent2D* Capture = Enemy->FindComponentByClass<USceneCaptureComponent2D>())
-		{
-			Capture->HideComponent(PaperSprite);
-			
-			if (PrintDebug)
-			{
-				UE_LOG(LogTemp, Log, TEXT("Radar %s: Hides DefaultIcon of %s"),
-											*GetOwner()->GetName(),
-											*Enemy->GetName());
-			}
-		}
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Succeeded in updating the mini map values"),
+										*GetOwner()->GetName());
 	}
 }
 
@@ -166,17 +193,7 @@ void URadarComponent::Pulse()
 		if (!Owner) return;
 	}
 
-	if (!SceneIconsCapture)
-	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneIconsCapture) return;
-	}
-	
-	if (PrintDebug)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Radar %s: Tries to do Pulse"),
-									*GetOwner()->GetName());
-	}
+	if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Tries to do Pulse"), *GetOwner()->GetName());
 
 	TArray<AActor*> Enemies;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Enemies);
@@ -184,31 +201,10 @@ void URadarComponent::Pulse()
 	for (AActor* Enemy : Enemies)
 	{
 		if (Enemy == Owner) continue;
-		
-		if (PrintDebug)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Radar %s: Found %s Enemy"),
-										*GetOwner()->GetName(),
-										*Enemy->GetName());
-		}
-		
+
 		if (FVector::Dist(Enemy->GetActorLocation(), Owner->GetActorLocation()) <= TrackingDistance)
 		{
-			if (PrintDebug)
-			{
-				UE_LOG(LogTemp, Log, TEXT("Radar %s: Found %s Enemy withing tracking distance of %f!"),
-											*GetOwner()->GetName(),
-											*Enemy->GetName(),
-											TrackingDistance);
-			}
-			if(AActor* RedDot = CreateRedDotOnTarget(Enemy))
-			{
-				if (USceneCaptureComponent2D* EnemySceneCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture")))
-				{
-					EnemySceneCapture->HideActorComponents(RedDot);
-				}
-				SceneIconsCapture->ShowOnlyActorComponents(RedDot);
-			}
+			CreateRedDotOnTarget(Enemy);
 		}
 	}
 }
@@ -221,13 +217,22 @@ void URadarComponent::ShowIconOnRadar(AActor* Target)
 		if (!Owner) return;
 	}
 
-	if (!SceneIconsCapture)
-	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneIconsCapture) return;
-	}
+	if (!CreatedWidget || !Target || TrackedIcons.Contains(Target)) return;
 	
-	SceneIconsCapture->ShowOnlyActorComponents(Target);
+	URadarEnemyIcon* IconWidget = CreateWidget<URadarEnemyIcon>(PC, EnemyIconClass);
+	if (!IconWidget) return;
+	IconWidget->InitializeIcon(this, Target);
+	
+	if (UCanvasPanel* Canvas = Cast<UCanvasPanel>(CreatedWidget->GetWidgetFromName(TEXT("MinimapCanvas"))))
+	{
+		Canvas->AddChild(IconWidget);
+		if (UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(IconWidget->Slot))
+		{
+			Slot->SetAutoSize(true);
+			Slot->SetAlignment(FVector2D(0.5f, 0.5f));
+		}
+		TrackedIcons.Add(Target, IconWidget);
+	}
 }
 
 void URadarComponent::RevealPosition()
@@ -237,57 +242,58 @@ void URadarComponent::RevealPosition()
 		Owner = GetOwner();
 		if (!Owner) return;
 	}
-	if (!SceneIconsCapture)
+	
+	TArray<AActor*> Enemies;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Enemies);
+
+	for (AActor* Enemy : Enemies)
 	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneIconsCapture) return;
-	}
-	
-    AActor* RedDot = CreateRedDotOnTarget(GetOwner());
-	SceneIconsCapture->HideActorComponents(RedDot);
-	
-	TArray<AActor*> EnemyActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), EnemyActors);
-	
-	for (AActor* Enemy : EnemyActors)
-	{
-		if (Enemy == Owner) continue;
-		
-		if (USceneCaptureComponent2D* EnemyCapture = Enemy->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture")))
+		if (Enemy == Owner) continue; // Don't show on your own radar
+
+		// Get that character's RadarComponent
+		if (URadarComponent* EnemyRadar = Enemy->FindComponentByClass<URadarComponent>())
 		{
-			EnemyCapture->ShowOnlyActorComponents(RedDot);
+			EnemyRadar->CreateRedDotOnTarget(Owner); // 'Owner' is the revealing player
+			if (EnemyRadar->PrintDebug)
+			{
+				UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Shows position of %s on radar"),
+					*Enemy->GetName(), *Owner->GetName());
+			}
 		}
-	}
-	
-	if (PrintDebug)
-	{
-		UE_LOG(LogTemp, Log, TEXT("Radar %s: Reveals self character position!"),
-									*GetOwner()->GetName());
 	}
 }
 
-AActor* URadarComponent::CreateRedDotOnTarget(AActor* Target)
+UUserWidget* URadarComponent::CreateRedDotOnTarget(AActor* Target)
 {
-	if (!Target) return nullptr;
+	if (!Target || !CreatedWidget || TrackedIcons.Contains(Target)) return nullptr;
+	if (!EnemyIconClass) return nullptr;
+	if (!PC) PC = GetPlayerController();
+	if (!PC) return nullptr;
 
-	FVector SpawnLocation(Target->GetActorLocation().X, Target->GetActorLocation().Y, MiniMapIconSpawnZ);
-	FRotator SpawnRotation = FRotator::ZeroRotator;
+	URadarEnemyIcon* IconWidget = CreateWidget<URadarEnemyIcon>(PC, EnemyIconClass);
+	if (!IconWidget) return nullptr;
+	IconWidget->InitializeIcon(this, Target);
 	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = Target;
-	SpawnParams.Instigator = Target->GetInstigator();
-
-	AActor* RedDot = GetWorld()->SpawnActor<AActor>(EnemyIconClass, SpawnLocation, SpawnRotation, SpawnParams);
-
-	if (PrintDebug)
+	if (UCanvasPanel* Canvas = Cast<UCanvasPanel>(CreatedWidget->GetWidgetFromName(TEXT("MinimapCanvas"))))
 	{
-		UE_LOG(LogTemp, Log, TEXT("Radar %s: Creates Enemy Icon for %s at %s"),
-									*GetOwner()->GetName(),
-									*Target->GetName(),
-									*SpawnLocation.ToString());
+		Canvas->AddChild(IconWidget);
+
+		if (UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(IconWidget->Slot))
+		{
+			Slot->SetAutoSize(true);
+			Slot->SetAlignment(FVector2D(0.5f, 0.5f));
+		}
+		
+		TrackedIcons.Add(Target, IconWidget);
+
+		if (PrintDebug)
+		{
+			UE_LOG(LogTemp, Log, TEXT("Radar %s: Created UMG Icon for %s"), *GetOwner()->GetName(), *Target->GetName());
+		}
+		return IconWidget;
 	}
-	
-	return RedDot;
+
+	return nullptr;
 }
 
 AShooterPlayerController* URadarComponent::GetPlayerController() const
@@ -302,46 +308,34 @@ AShooterPlayerController* URadarComponent::GetPlayerController() const
 	return nullptr;
 }
 
+
 void URadarComponent::ResetCooldown()
 {
     CooldownProgress = 0.0f;
 }
 void URadarComponent::SetMiniMapTexture()
 {
-	if (!Owner)
-	{
-		Owner = GetOwner();
-		if (!Owner) return;
-	}
-	
-	if (!PC)
-	{
-		PC = GetPlayerController();
-		if (!PC) return;
-	}
+	Owner = GetOwner();
+	if (!Owner) return;
+	PC = GetPlayerController();
+	if (!PC) return;
+	SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+	if (!SceneMapCapture) return;
 
-	if (!SceneMapCapture)
-	{
-		SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneMapCapture) return;
-	}
-	if (!SceneIconsCapture)
-	{
-		SceneIconsCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
-		if (!SceneIconsCapture) return;
-	}
-
-	if (const int ID = PC->GetLocalPlayer()->GetControllerId(); ID == 0 && Player1MiniMapTexture && Player1MiniMapIconsTexture)
+	if (const int ID = PC->GetLocalPlayer()->GetControllerId(); ID == 0 && Player1MiniMapTexture)
 	{
 		SceneMapCapture->TextureTarget = Player1MiniMapTexture;
-		SceneIconsCapture->TextureTarget = Player1MiniMapIconsTexture;
 		TextureSet = true;
 	}
-	else if (ID == 1 && Player2MiniMapTexture && Player2MiniMapIconsTexture)
+	else if (ID == 1 && Player2MiniMapTexture)
 	{
 		SceneMapCapture->TextureTarget = Player2MiniMapTexture;
-		SceneIconsCapture->TextureTarget = Player2MiniMapIconsTexture;
 		TextureSet = true;
+	}
+
+	if (TextureSet)
+	{
+		SceneMapCapture->TextureTarget->InitAutoFormat(256,256);
 	}
 	
 	if (PrintDebug)
