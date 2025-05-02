@@ -56,7 +56,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float Damage = 25;
 	
-	virtual void Explode() PURE_VIRTUAL(AExplosiveProjectile::Explode);
+	virtual void Explode();
 	
 public:	
 	// Called every frame

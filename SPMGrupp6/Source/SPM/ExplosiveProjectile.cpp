@@ -25,3 +25,8 @@ void AExplosiveProjectile::Tick(float DeltaTime)
 
 }
 
+void AExplosiveProjectile::Explode()
+{
+	// Implemented by subclass.
+}
+

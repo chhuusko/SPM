@@ -14,9 +14,8 @@ class SPM_API APulseGrenade : public AExplosiveProjectile
 {
 	GENERATED_BODY()
 	
-	protected:
-	void Explode() override;
-private:
+	public:
+	virtual void Explode() override;
 	
 
 	
