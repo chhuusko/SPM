@@ -27,4 +27,13 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
+
+	UPROPERTY(EditAnywhere)
+	float AbilityCooldown = 5.0f;
+
+	void ResetAbilityCooldown();
+	bool bCanUseAbility = true;
+
+	FTimerHandle AbilityCooldownTimerHandle;
+
 };

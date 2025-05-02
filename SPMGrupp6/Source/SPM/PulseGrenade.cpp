@@ -122,3 +122,5 @@ void APulseGrenade::PlayBeepSound()
 		GetWorldTimerManager().SetTimer(BeepSoundTimer, this, &APulseGrenade::PlayBeepSound, CurrentBeepInterval, false);
 	}
 }
+
+

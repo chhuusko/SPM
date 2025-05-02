@@ -7,8 +7,16 @@
 
 void AUpgradedShotgun::WeaponAbility()
 {
-	if (PulseGrenadeClass)
-	{
+	if (!bCanUseAbility || !PulseGrenadeClass) return;
+
+	bCanUseAbility = false;
+	GetWorldTimerManager().SetTimer(
+		AbilityCooldownTimerHandle, 
+		this, 
+		&AUpgradedShotgun::ResetAbilityCooldown, 
+		AbilityCooldown, 
+		false
+	);
 		FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * ProjectileSpawnOffset;
 		 
 		AController* OwnerController = GetOwnerController();
@@ -27,6 +35,10 @@ void AUpgradedShotgun::WeaponAbility()
 			SpawnParams
 			);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
+}
 
-	}
+
+void AUpgradedShotgun::ResetAbilityCooldown()
+{
+	bCanUseAbility = true;
 }
