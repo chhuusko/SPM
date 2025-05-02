@@ -49,12 +49,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere)
 	float MaxRange = 1000;
-
-	UPROPERTY(EditAnywhere)
-	float ExplosionRadius = 300;
-
-	UPROPERTY(EditAnywhere)
-	float Damage = 25;
 	
 	virtual void Explode();
 	
