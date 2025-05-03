@@ -8,6 +8,7 @@
 #include "KillThemAllGameMode.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
+#include "SniperScopeWidget.h"
 
 void AShooterPlayerController::BeginPlay()
 {
@@ -28,6 +29,25 @@ void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
+}
+
+// Adds sniper scope to screen.
+void AShooterPlayerController::AddSniperScope()
+{
+	ScopeWidget = CreateWidget<USniperScopeWidget>(this, ScopeWidgetClass);
+	if (ScopeWidget)
+	{
+		ScopeWidget->AddToPlayerScreen();
+	}
+}
+
+// Removes sniper scope from player screen.
+void AShooterPlayerController::RemoveSniperScope()
+{
+	if (ScopeWidget)
+	{
+		ScopeWidget->RemoveFromParent();
+	}
 }
 
 // Spawn player HUD.

@@ -22,6 +22,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	void AddSniperScope();
+	void RemoveSniperScope();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,6 +36,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> GameOverScreenClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class USniperScopeWidget> ScopeWidgetClass;
+	
+	UPROPERTY()
+	USniperScopeWidget* ScopeWidget;
 	
 	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5;

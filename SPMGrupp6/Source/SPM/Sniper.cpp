@@ -2,6 +2,9 @@
 
 #include "Sniper.h"
 
+#include "ShooterPlayerController.h"
+#include "SniperScopeWidget.h"
+
 void ASniper::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,7 +31,11 @@ void ASniper::StopWeaponAbility()
 	if (bIsAimingDownSight)
 	{
 		SetCameraFOV(OriginalPLayerFOV);
-		// Deactivate UI here
+		
+		if (AShooterPlayerController* Controller = Cast<AShooterPlayerController>(GetOwnerController()))
+		{
+			Controller->RemoveSniperScope();
+		}
 	}
 	else
 	{
@@ -42,7 +49,10 @@ void ASniper::ZoomIn()
 	SetCameraFOV(ZoomInFOV);
 	bIsAimingDownSight = true;
 
-	// Activate UI here
+	if (AShooterPlayerController* Controller = Cast<AShooterPlayerController>(GetOwnerController()))
+	{
+		Controller->AddSniperScope();
+	}
 }
 
 void ASniper::SetCameraFOV(float amount)
@@ -88,6 +98,3 @@ bool ASniper::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLeng
 	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
 	return bHit;
 }
-
-
-
