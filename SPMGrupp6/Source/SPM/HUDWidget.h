@@ -7,6 +7,7 @@
 #include "Components/TimelineComponent.h"
 #include "HUDWidget.generated.h"
 
+enum class EWeaponType : uint8;
 /**
  * 
  */
@@ -63,9 +64,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
+	UFUNCTION()
+	void UpdateEquippedWeapon(EWeaponType Weapon);
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
+	virtual void NativeConstruct() override;
+	
 	UPROPERTY()
 	FTimeline Timeline;
 
@@ -82,4 +88,6 @@ private:
 	float TotalCooldownTime;
 
 	bool bHasDashCooldown;
+
+	UBorder* EquippedWeaponBorder;
 };

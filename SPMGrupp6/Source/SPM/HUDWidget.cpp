@@ -4,6 +4,8 @@
 #include "HUDWidget.h"
 
 #include "ShooterCharacter.h"
+#include "WeaponUnlocking.h"
+#include "Components/Border.h"
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
@@ -58,6 +60,29 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 	HealthBar->SetPercent(Player->GetHealthPercent());
 }
 
+void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
+{
+	UBorder* NextWeaponBorder;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		NextWeaponBorder = AutoPistolBorder;
+		break;
+	case EWeaponType::Shotgun:
+		NextWeaponBorder = ShotgunBorder;
+		break;
+	case EWeaponType::SniperRifle:
+		NextWeaponBorder = SniperRifleBorder;
+		break;
+	default:
+		NextWeaponBorder = AssaultRifleBorder;
+		break;
+	}
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(0.062745f, 0.062745f, 0.062745f));
+	EquippedWeaponBorder = NextWeaponBorder;
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(0.557292f, 0.557292f, 0.557292f));
+}
+
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
@@ -66,4 +91,12 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		UpdateDashCooldownTimer(InDeltaTime);
 	}
+}
+
+void UHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	// First weapon equipped on start is the auto pistol.
+	EquippedWeaponBorder = AutoPistolBorder;
 }

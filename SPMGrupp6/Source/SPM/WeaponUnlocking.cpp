@@ -39,6 +39,8 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 		{
 			CurrentGun->UpdateAmmoText();
 		}
+
+		
 	}
 }
 
