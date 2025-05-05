@@ -40,7 +40,11 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 			CurrentGun->UpdateAmmoText();
 		}
 
-		
+		// Update the currently equipped weapon in this player's HUD.
+		if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(CharacterOwner->GetController()))
+		{
+			PlayerController->HUDWidget->UpdateEquippedWeapon(WeaponType);
+		}
 	}
 }
 
