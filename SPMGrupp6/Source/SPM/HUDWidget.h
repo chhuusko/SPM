@@ -22,6 +22,30 @@ public:
 	class UTextBlock* AmmoText;
 
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AutoPistolKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* ShotgunKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AssaultRifleKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SniperRifleKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* AutoPistolBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* ShotgunBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* AssaultRifleBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* SniperRifleBorder;
+
+	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* DashCooldown;
 	
 	UPROPERTY(meta = (BindWidget))
