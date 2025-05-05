@@ -89,13 +89,13 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	}
 
 	// Change color of currently equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(0.f, 0.f, 0.f));
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(.025f, .025f, .025f));
 	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(1.f, 1.f, 1.f));
 	
 	EquippedWeaponBorder = NextWeaponBorder;
 
 	// Change color of newly equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(1.f, 1.f, 1.f));
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(.6875f, .6875f, .6875f));
 	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f));
 }
 
