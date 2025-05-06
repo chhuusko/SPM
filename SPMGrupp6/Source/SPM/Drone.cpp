@@ -6,6 +6,7 @@
 #include "HealthPickUp.h"
 #include "DroneBullet.h"
 #include "DroneSpawn.h"
+#include "SceneRenderTargetParameters.h"
 
 
 // Sets default values
@@ -108,13 +109,33 @@ void ADrone::LootDrop()
 	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 }
 
+void ADrone::StartAggroTimeHandler()
+{
+	if (!GetWorldTimerManager().IsTimerActive(AggroTimerHandle))
+	{
+		GetWorldTimerManager().SetTimer(AggroTimerHandle, this, &ADrone::LostPlayer, 3.f, false);
+	}
+}
+
+void ADrone::CancellAggroTimeHandler()
+{
+	if (AggroTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(AggroTimerHandle);
+	}
+}
+void ADrone::LostPlayer()
+{
+	ChangeState(new FDroneStateReturn(this, Spawner));
+}
+
 bool ADrone::SeeTarget()
 {
 	if (Player)
 	{
 		FHitResult HitResult;
         FVector Start = GetActorLocation();
-        FVector End = Start + Player->GetActorLocation();
+        FVector End = Player->GetActorLocation();
         FCollisionQueryParams Params;
         Params.AddIgnoredActor(this);
     
@@ -122,12 +143,17 @@ bool ADrone::SeeTarget()
         	HitResult,
         	Start,
         	End,
-        	ECC_Visibility,
+        	ECC_GameTraceChannel1,
         	Params
         );
-    
+		
         if (bHit) {
-        	//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitResult.Actor->GetName());
+        	if (HitResult.GetActor()->GetActorLocation() == Player->GetActorLocation())
+        	{
+        		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.1f);
+        		return true;
+        	}
+        	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 0.1f);
         }
 	}
 	return false;
