@@ -34,5 +34,4 @@ private:
 	
 	void ZoomIn();
 	void SetCameraFOV(float amount);
-
 };

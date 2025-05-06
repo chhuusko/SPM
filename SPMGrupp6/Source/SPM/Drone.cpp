@@ -26,6 +26,7 @@ void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
+	TestRays();
 }
 // Called every frame
 void ADrone::Tick(float DeltaTime)
@@ -61,8 +62,7 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 		{
 			Spawner->DroneDestroyed();
 		}
-		GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
-		GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+		LootDrop();
 		Destroy();
 	}
 	ChangeState(new FDroneStateAttack(this, Spawner, DamageCauser));
@@ -78,6 +78,60 @@ void ADrone::SetSpawner(ADroneSpawn* Spawn)
 void ADrone::ChangeState(FDroneState* newState)
 {
 	State = newState;
+}
+
+void ADrone::TestRays()
+{
+	int numDir = 10;
+	FVector* directions = new FVector[numDir];
+
+	float goldenRatio = (1 + FMath::Sqrt(5.0f)) / 2;
+	float angleIncrement = PI * 2 * goldenRatio;
+
+	for (int i = 0; i < numDir; i++) {
+		float t = (float) i / numDir;
+		float inclination = FMath::Acos (1 - 2 * t);
+		float azimuth = angleIncrement * i;
+
+		float x = FMath::Sin (inclination) * FMath::Cos (azimuth);
+		float y = FMath::Sin (inclination) * FMath::Sin (azimuth);
+		float z = FMath::Cos (inclination);
+		directions[i] = FVector(x, y, z)*200;
+		//DrawDebugSphere(GetWorld(), directions[i]+ this->GetActorLocation(), 4.f, 12, FColor::Red, false, 10.0f);
+		
+	}
+}
+
+void ADrone::LootDrop()
+{
+	GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+}
+
+bool ADrone::SeeTarget()
+{
+	if (Player)
+	{
+		FHitResult HitResult;
+        FVector Start = GetActorLocation();
+        FVector End = Start + Player->GetActorLocation();
+        FCollisionQueryParams Params;
+        Params.AddIgnoredActor(this);
+    
+        bool bHit = GetWorld()->LineTraceSingleByChannel(
+        	HitResult,
+        	Start,
+        	End,
+        	ECC_Visibility,
+        	Params
+        );
+    
+        if (bHit) {
+        	//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), *HitResult.Actor->GetName());
+        }
+	}
+	return false;
+	
 }
 
 

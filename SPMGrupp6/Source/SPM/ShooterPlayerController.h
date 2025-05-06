@@ -22,6 +22,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	void AddSniperScope();
+	void RemoveSniperScope();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,9 +36,48 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> GameOverScreenClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class USniperScopeWidget> ScopeWidgetClass;
+	
+	UPROPERTY()
+	USniperScopeWidget* ScopeWidget;
 	
 	UPROPERTY(EditAnywhere)
 	float RestartDelay = 5;
 
 	FTimerHandle RestartTimer;
+
+	UPROPERTY(EditAnywhere)
+	float AssistSphereRadius = 500;
+
+	UPROPERTY(EditAnywhere)
+	float AssistStrength = 1;
+
+	UPROPERTY(VisibleAnywhere)
+	float DotProduct = 0;
+
+	UPROPERTY(EditAnywhere)
+	float DotThresholdMin = 0.2;
+
+	UPROPERTY(EditAnywhere)
+	float DotProductMultiplier = 1;
+
+	UPROPERTY(EditAnywhere)
+	float SlowAmount = 0.4;
+
+	UPROPERTY(EditAnywhere)
+	float MaxAssistRange = 100000;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnableAimAssist = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bDebugAimAssist = false;
+
+	void UpdateAimAssist(float DeltaTime);
+	AActor* FindAimAssistTarget();
+	float CalculateAssistWeight(AActor* Target);
+	void ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime);
+
 };

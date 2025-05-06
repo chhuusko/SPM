@@ -15,7 +15,6 @@ FDroneState::~FDroneState(){}
 void FDroneStateIdle::Move()
 {
 	if (Spawner == nullptr) return;
-	FVector NewLocation;
 	if (IsIdleGoingUp)
 	{
 		NewLocation = FMath::VInterpTo(Drone->GetActorLocation(), Spawner->GetActorLocation()+IdleHoverDist, UGameplayStatics::GetWorldDeltaSeconds(Drone), 0.5f);
@@ -31,11 +30,14 @@ void FDroneStateIdle::Move()
 
 void FDroneStateAttack::Move()
 {
-	FVector NewLocation = FMath::VInterpTo(Drone->GetActorLocation(), Target->GetActorLocation() + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 0.5f);
-	Drone->SetActorLocation(NewLocation, true);
+	
+    
+	NewLocation = Target->GetActorLocation();
+	Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+	
 	if (Spawner && FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) > MaxSpawnDistance)
 	{
-		Drone->ChangeState(new FDroneStateReturn(Drone, Spawner));
+		Drone->ChangeState(new FDroneStateReturn(Drone, Spawner, PreviousPositions));
 	} 
 }
 
@@ -62,7 +64,18 @@ void FDroneStateAttack::Shoot()
 
 void FDroneStateReturn::Move ()
 {
-	FVector NewLocation = FMath::VInterpTo(Drone->GetActorLocation(), Spawner->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(Drone), 0.5f);
-	Drone->SetActorLocation(NewLocation, true);
+	if (FVector::Dist(Drone->GetActorLocation(), NewLocation) <= 100.f || NewLocation == FVector::ZeroVector)
+ 	{
+		if (PreviousPositions.size() > 0)
+		{
+			NewLocation = PreviousPositions.back();
+			PreviousPositions.pop_back();
+		} else
+		{
+			NewLocation = Spawner->GetActorLocation();
+		}
+ 	}
+	
+	Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
 }
 
