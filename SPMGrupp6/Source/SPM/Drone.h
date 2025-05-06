@@ -40,12 +40,13 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void SetSpawner(ADroneSpawn* Spawn);
 	void ChangeState(FDroneState* newState);
-	
+	void TestRays();
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 private:
 	virtual void LootDrop();
+	bool SeeTarget();
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
