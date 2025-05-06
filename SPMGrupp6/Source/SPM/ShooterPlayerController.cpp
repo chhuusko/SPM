@@ -28,7 +28,7 @@ void AShooterPlayerController::BeginPlay()
 void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
+	UpdateAimAssist(DeltaSeconds);
 }
 
 // Adds sniper scope to screen.
@@ -83,5 +83,107 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
 	UE_LOG(LogTemp, Warning, TEXT("Game Ended!"));
 }
+
+void AShooterPlayerController::UpdateAimAssist(float DeltaTime)
+{
+    // Look for opponent player.
+    // Calculate how much aimassist to be applied.
+    // Apply the aim assist to the player camera.
+
+    AActor* TargetActor = FindAimAssistTarget();
+
+    if (TargetActor)
+    {
+       float AssistWeight = CalculateAssistWeight(TargetActor);
+       ApplyAimAssist(AssistWeight, TargetActor, DeltaTime);
+    }
+}
+
+AActor* AShooterPlayerController::FindAimAssistTarget()
+{
+    // Get Camera Location
+    FVector CameraLocation;
+    FRotator CameraRotation;
+    FVector Direction = CameraRotation.Vector();
+    GetPlayerViewPoint(CameraLocation, CameraRotation);
+    FVector End = CameraLocation + Direction * MaxAssistRange;
+
+    // Ignore yourself
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetPawn());
+
+    // Only search for this type of object
+    FCollisionObjectQueryParams ObjectQueryParams;
+    ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+
+    //Create Sphere
+    FCollisionShape Sphere = FCollisionShape::MakeSphere(AssistSphereRadius);
+    
+    FHitResult Hit;
+    bool bHit = GetWorld()->SweepSingleByObjectType(
+       Hit,
+       CameraLocation,
+       End,
+       FQuat::Identity,
+       ObjectQueryParams,
+       Sphere,
+       CollisionParams
+    );
+
+    if (bHit)
+    {
+       APawn* OpponentPawn = Cast<APawn>(Hit.GetActor());
+       if (OpponentPawn && OpponentPawn != GetPawn())
+       {
+          AController* OpponentController = OpponentPawn->GetController();
+          if (OpponentController && OpponentController->IsPlayerController())
+          {
+             return OpponentPawn;
+          }
+       }
+    }
+    return nullptr;
+}
+
+float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
+{
+    FVector CameraLocation;
+    FRotator CameraRotation;
+    GetPlayerViewPoint(CameraLocation, CameraRotation);
+    FVector Direction = CameraRotation.Vector();
+    
+    FVector TargetLocation = Target->GetActorLocation();
+    FVector DirectionToTarget = (TargetLocation - CameraLocation).GetSafeNormal();
+    DotProduct = FVector::DotProduct(DirectionToTarget, Direction);
+
+    float FinalWeight = 0;
+    if (DotProduct > DotThresholdMin)
+    {
+       FinalWeight = DotProduct * DotProductMultiplier;
+    }
+    
+    return FinalWeight;
+}
+
+void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime)
+{
+    if (!Target || !IsValid(Target))
+    {
+       return;
+    }
+    
+    FRotator CurrentRotation = GetControlRotation();
+    FVector TargetVector = (Target->GetActorLocation() - PlayerCameraManager->GetCameraLocation()).GetSafeNormal();
+    FRotator TargetRotation = TargetVector.Rotation();
+
+    float InterpSpeed = FMath::Lerp(0, AssistStrength, AssistWeight);
+    FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, InterpSpeed);
+    SetControlRotation(NewRotation);
+
+    if (bDebugAimAssist)
+    DrawDebugLine(GetWorld(), PlayerCameraManager->GetCameraLocation(), 
+    PlayerCameraManager->GetCameraLocation() + TargetVector * 300.f, FColor::Green, false, 0.1f, 0, 1.5f);
+}
+
 
 
