@@ -97,7 +97,7 @@ void ADrone::TestRays()
 		float y = FMath::Sin (inclination) * FMath::Sin (azimuth);
 		float z = FMath::Cos (inclination);
 		directions[i] = FVector(x, y, z)*200;
-		DrawDebugSphere(GetWorld(), directions[i]+ this->GetActorLocation(), 4.f, 12, FColor::Red, false, 10.0f);
+		//DrawDebugSphere(GetWorld(), directions[i]+ this->GetActorLocation(), 4.f, 12, FColor::Red, false, 10.0f);
 		
 	}
 }
