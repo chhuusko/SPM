@@ -4,6 +4,8 @@
 #include "HUDWidget.h"
 
 #include "ShooterCharacter.h"
+#include "WeaponUnlocking.h"
+#include "Components/Border.h"
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
@@ -11,6 +13,14 @@
 #include "Math/UnitConversion.h"
 
 const float UHUDWidget::DELTATIME = 0.1f;
+
+void UHUDWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	// First weapon equipped on start is the auto pistol.
+	EquippedWeaponBorder = AutoPistolBorder;
+}
 
 // Updates the ammo text in the HUD.
 void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
@@ -56,6 +66,37 @@ void UHUDWidget::DashCooldownFinished()
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 {
 	HealthBar->SetPercent(Player->GetHealthPercent());
+}
+
+// Updates information of currently equipped weapon in HUD.
+void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
+{
+	UBorder* NextWeaponBorder;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		NextWeaponBorder = AutoPistolBorder;
+		break;
+	case EWeaponType::Shotgun:
+		NextWeaponBorder = ShotgunBorder;
+		break;
+	case EWeaponType::SniperRifle:
+		NextWeaponBorder = SniperRifleBorder;
+		break;
+	default:
+		NextWeaponBorder = AssaultRifleBorder;
+		break;
+	}
+
+	// Change color of currently equipped weapon and it's border.
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(.025f, .025f, .025f));
+	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(1.f, 1.f, 1.f));
+	
+	EquippedWeaponBorder = NextWeaponBorder;
+
+	// Change color of newly equipped weapon and it's border.
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(.6875f, .6875f, .6875f));
+	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f));
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

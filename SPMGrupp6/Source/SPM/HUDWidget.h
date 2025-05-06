@@ -7,6 +7,7 @@
 #include "Components/TimelineComponent.h"
 #include "HUDWidget.generated.h"
 
+enum class EWeaponType : uint8;
 /**
  * 
  */
@@ -20,6 +21,30 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AmmoText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AutoPistolKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* ShotgunKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AssaultRifleKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SniperRifleKeybind;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* AutoPistolBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* ShotgunBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* AssaultRifleBorder;
+
+	UPROPERTY(meta = (BindWidget))
+	class UBorder* SniperRifleBorder;
 
 	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* DashCooldown;
@@ -39,9 +64,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
+	UFUNCTION()
+	void UpdateEquippedWeapon(EWeaponType Weapon);
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
+	virtual void NativeConstruct() override;
+	
 	UPROPERTY()
 	FTimeline Timeline;
 
@@ -58,4 +88,6 @@ private:
 	float TotalCooldownTime;
 
 	bool bHasDashCooldown;
+
+	UBorder* EquippedWeaponBorder;
 };
