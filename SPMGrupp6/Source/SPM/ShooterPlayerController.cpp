@@ -6,6 +6,7 @@
 #include "GameOverScreen.h"
 #include "HUDWidget.h"
 #include "KillThemAllGameMode.h"
+#include "ShooterCharacter.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "SniperScopeWidget.h"
@@ -23,6 +24,8 @@ void AShooterPlayerController::BeginPlay()
 	}
 	
 	InitializeHUD();
+
+	OnTakeAnyDamage.AddDynamic(this, &AShooterPlayerController::TakeAnyDamage);
 }
 
 void AShooterPlayerController::Tick(float DeltaSeconds)
@@ -229,6 +232,12 @@ void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target
     if (bDebugAimAssist)
     DrawDebugLine(GetWorld(), PlayerCameraManager->GetCameraLocation(), 
     PlayerCameraManager->GetCameraLocation() + TargetVector * 300.f, FColor::Green, false, 0.1f, 0, 1.5f);
+}
+
+void AShooterPlayerController::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatorController, AActor* DamageCauser)
+{
+	HUDWidget->UpdateHealth(Cast<AShooterCharacter>(GetPawn()));
 }
 
 
