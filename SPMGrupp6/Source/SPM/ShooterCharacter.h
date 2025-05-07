@@ -119,14 +119,14 @@ private:
 	TSubclassOf<AGun> GunClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	float JetpackPower = 500;
+	float JetpackPower = 550;
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackChargeMax = 50;
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackCharge = 50;
 	//Delay from stopping using jetpack to start of recharging
 	UPROPERTY(EditDefaultsOnly)
-	float JetpackDelayUntilRecharge = 1;
+	float JetpackDelayUntilRecharge = 0.85;
 	//Delay between the jetpack recharging 1 charge
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackRechargeRate = 0.1;

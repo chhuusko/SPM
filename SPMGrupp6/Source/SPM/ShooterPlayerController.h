@@ -87,4 +87,6 @@ private:
 	float CalculateAssistWeight(AActor* Target);
 	void ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime);
 
+	UFUNCTION()
+	void TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
 };
