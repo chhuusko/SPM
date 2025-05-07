@@ -28,7 +28,11 @@ void AShooterPlayerController::BeginPlay()
 void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	UpdateAimAssist(DeltaSeconds);
+	
+	if (bAimAssistActivated)
+	{
+		UpdateAimAssist(DeltaSeconds);
+	}
 }
 
 // Adds sniper scope to screen.
@@ -104,8 +108,8 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
     // Get Camera Location
     FVector CameraLocation;
     FRotator CameraRotation;
-    FVector Direction = CameraRotation.Vector();
     GetPlayerViewPoint(CameraLocation, CameraRotation);
+    FVector Direction = CameraRotation.Vector();
     FVector End = CameraLocation + Direction * MaxAssistRange;
 
     // Ignore yourself
@@ -130,6 +134,35 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
        CollisionParams
     );
 
+	
+	if (bDebugAimAssist)
+	{
+		FVector SweepCenter = (CameraLocation + End) * 0.5f;
+		FVector SweepAxis = (End - CameraLocation).GetSafeNormal();
+		float SweepHalfHeight = (End - CameraLocation).Size() * 0.5f;
+
+		// Skapa rotation för kapseln i svepriktningen
+		FQuat CapsuleRot = FRotationMatrix::MakeFromZ(SweepAxis).ToQuat();
+
+		DrawDebugCapsule(
+			GetWorld(),
+			SweepCenter,
+			SweepHalfHeight,
+			AssistSphereRadius,
+			CapsuleRot,
+			FColor::Purple,
+			false,
+			1.0f
+		);
+		DrawDebugLine(GetWorld(), CameraLocation, End, FColor::Green, false, 1.0f);
+
+		// Visa träffen om det finns en
+		if (bHit)
+		{
+			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 20.f, 12, FColor::Red, false, 1.0f);
+		}
+	}
+	
     if (bHit)
     {
        APawn* OpponentPawn = Cast<APawn>(Hit.GetActor());
@@ -147,22 +180,30 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
 
 float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
 {
+	// Declare position
     FVector CameraLocation;
     FRotator CameraRotation;
     GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+	// Get vectors
     FVector Direction = CameraRotation.Vector();
-    
     FVector TargetLocation = Target->GetActorLocation();
     FVector DirectionToTarget = (TargetLocation - CameraLocation).GetSafeNormal();
+
+	// Calculate dotProduct
     DotProduct = FVector::DotProduct(DirectionToTarget, Direction);
 
-    float FinalWeight = 0;
+	// Calculate distance
+	float Distance = FVector::Dist(CameraLocation, TargetLocation);
+	float DistanceFactor = 1.0f - FMath::Clamp(Distance / MaxAssistRange, 0.0f, 1.0f);
+
+	// Calculate assist amount based on dotProduct and distance
+    float AssistAmount = 0;
     if (DotProduct > DotThresholdMin)
     {
-       FinalWeight = DotProduct * DotProductMultiplier;
+       AssistAmount = (DotProduct * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
     }
-    
-    return FinalWeight;
+    return FMath::Clamp(AssistAmount, 0.0f, 1.0f);
 }
 
 void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime)
