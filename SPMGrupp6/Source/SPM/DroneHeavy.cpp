@@ -2,7 +2,22 @@
 
 
 #include "DroneHeavy.h"
+#include "DroneState.h"
+#include "DroneHeavyState.h"
+#include "DroneSpawn.h"
+class FDroneState;
+class FDroneHeavyStateIdle;
 
+ADroneHeavy::ADroneHeavy()
+{
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Players);
+}
+
+void ADroneHeavy::SetSpawner(ADroneSpawn* Spawn)
+{
+	Spawner = Spawn;
+	State = new FDroneHeavyStateIdle(this, Spawn);
+}
 void ADroneHeavy::LootDrop()
 {
 	//Will fix later
