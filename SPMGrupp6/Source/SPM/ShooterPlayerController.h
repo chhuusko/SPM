@@ -49,7 +49,7 @@ private:
 	FTimerHandle RestartTimer;
 
 	UPROPERTY(EditAnywhere)
-	float AssistSphereRadius = 500;
+	float AssistSphereRadius = 400;
 
 	UPROPERTY(EditAnywhere)
 	float AssistStrength = 1;
@@ -64,13 +64,13 @@ private:
 	float DotProductMultiplier = 1;
 
 	UPROPERTY(EditAnywhere)
+	float DistanceMultiplier = 1;
+
+	UPROPERTY(EditAnywhere)
 	float SlowAmount = 0.4;
 
 	UPROPERTY(EditAnywhere)
-	float MaxAssistRange = 100000;
-
-	UPROPERTY(EditAnywhere)
-	bool bEnableAimAssist = false;
+	float MaxAssistRange = 1000;
 
 	UPROPERTY(EditAnywhere)
 	bool bDebugAimAssist = false;
