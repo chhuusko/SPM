@@ -27,6 +27,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
     void Shoot();
+	virtual void LostPlayer();
 	
 	FDroneState* State;
 	ADroneSpawn* Spawner;
@@ -44,8 +45,8 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void SetSpawner(ADroneSpawn* Spawn);
 	void ChangeState(FDroneState* newState);
-	bool SeeTarget();
-	void TestRays();
+	virtual bool SeeTarget();
+	virtual void TestRays();
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
 	void SetTarget(AActor* Target);
@@ -56,8 +57,7 @@ public:
 	TArray<AActor*> Players;
 private:
 	virtual void LootDrop();
-	void LostPlayer();
-	
+
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Wings;
 	UPROPERTY(EditAnywhere)
