@@ -28,7 +28,11 @@ void AShooterPlayerController::BeginPlay()
 void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	UpdateAimAssist(DeltaSeconds);
+	
+	if (bAimAssistActivated)
+	{
+		UpdateAimAssist(DeltaSeconds);
+	}
 }
 
 // Adds sniper scope to screen.

@@ -75,6 +75,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool bDebugAimAssist = false;
 
+	UPROPERTY(EditAnywhere)
+	bool bAimAssistActivated = false;
+
 	void UpdateAimAssist(float DeltaTime);
 	AActor* FindAimAssistTarget();
 	float CalculateAssistWeight(AActor* Target);
