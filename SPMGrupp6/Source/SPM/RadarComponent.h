@@ -76,6 +76,9 @@ protected:
 private:
 	
 	UPROPERTY(EditAnywhere)
+	bool Enabled = false;
+
+	UPROPERTY(EditAnywhere)
 	float MiniMapSize = 2048.f;
 	
 	UPROPERTY(EditAnywhere)
