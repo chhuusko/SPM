@@ -27,6 +27,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
     void Shoot();
+	
+	FDroneState* State;
+	ADroneSpawn* Spawner;
+	
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AHealthPickUp> HealthPickUpClass;
     UPROPERTY(EditDefaultsOnly, Category="PickUp")
@@ -38,7 +42,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-	void SetSpawner(ADroneSpawn* Spawn);
+	virtual void SetSpawner(ADroneSpawn* Spawn);
 	void ChangeState(FDroneState* newState);
 	bool SeeTarget();
 	void TestRays();
@@ -63,9 +67,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneMissile> MissileClass;
 	
-
-	FDroneState* State;
-	ADroneSpawn* Spawner;
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
 	

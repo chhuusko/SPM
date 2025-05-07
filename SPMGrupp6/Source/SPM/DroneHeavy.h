@@ -13,7 +13,9 @@ UCLASS()
 class SPM_API ADroneHeavy : public ADrone
 {
 	GENERATED_BODY()
-
+protected:
+	ADroneHeavy();
+	virtual void SetSpawner(ADroneSpawn* Spawn) override; 
 private:
 	virtual void LootDrop() override;
 };

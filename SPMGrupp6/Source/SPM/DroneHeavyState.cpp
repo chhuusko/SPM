@@ -4,7 +4,10 @@
 #include "DroneHeavyState.h"
 
 
-void FDroneHeavyState::CheckForPlayer(){}
+void FDroneHeavyState::CheckForPlayer()
+{
+	
+}
 
 void FDroneHeavyStateIdle::CheckForPlayer()
 {
