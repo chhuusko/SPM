@@ -29,7 +29,7 @@ void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	if (bAimAssistActivated)
+	if (bAimAssistActivated && bIsUsingGamepad)
 	{
 		UpdateAimAssist(DeltaSeconds);
 	}
@@ -105,77 +105,79 @@ void AShooterPlayerController::UpdateAimAssist(float DeltaTime)
 
 AActor* AShooterPlayerController::FindAimAssistTarget()
 {
-    // Get Camera Location
-    FVector CameraLocation;
-    FRotator CameraRotation;
-    GetPlayerViewPoint(CameraLocation, CameraRotation);
-    FVector Direction = CameraRotation.Vector();
-    FVector End = CameraLocation + Direction * MaxAssistRange;
+	// Get Camera Location
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetPlayerViewPoint(CameraLocation, CameraRotation);
+	FVector Direction = CameraRotation.Vector();
+	FVector End = CameraLocation + Direction * MaxAssistRange;
 
-    // Ignore yourself
-    FCollisionQueryParams CollisionParams;
-    CollisionParams.AddIgnoredActor(GetPawn());
+	// Ignore yourself
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(GetPawn());
 
-    // Only search for this type of object
-    FCollisionObjectQueryParams ObjectQueryParams;
-    ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
+	// Only search for this type of object
+	FCollisionObjectQueryParams ObjectQueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
-    //Create Sphere
-    FCollisionShape Sphere = FCollisionShape::MakeSphere(AssistSphereRadius);
+	//Create Sphere
+	FCollisionShape Sphere = FCollisionShape::MakeSphere(AssistSphereRadius);
     
-    FHitResult Hit;
-    bool bHit = GetWorld()->SweepSingleByObjectType(
-       Hit,
-       CameraLocation,
-       End,
-       FQuat::Identity,
-       ObjectQueryParams,
-       Sphere,
-       CollisionParams
-    );
-
-	
-	if (bDebugAimAssist)
-	{
-		FVector SweepCenter = (CameraLocation + End) * 0.5f;
-		FVector SweepAxis = (End - CameraLocation).GetSafeNormal();
-		float SweepHalfHeight = (End - CameraLocation).Size() * 0.5f;
-
-		// Skapa rotation för kapseln i svepriktningen
-		FQuat CapsuleRot = FRotationMatrix::MakeFromZ(SweepAxis).ToQuat();
-
-		DrawDebugCapsule(
-			GetWorld(),
-			SweepCenter,
-			SweepHalfHeight,
-			AssistSphereRadius,
-			CapsuleRot,
-			FColor::Purple,
-			false,
-			1.0f
-		);
-		DrawDebugLine(GetWorld(), CameraLocation, End, FColor::Green, false, 1.0f);
-
-		// Visa träffen om det finns en
-		if (bHit)
+	TArray<FHitResult> Hits;
+	bool bHit = GetWorld()->SweepMultiByObjectType(
+		Hits,
+		CameraLocation,
+		End,
+		FQuat::Identity,
+		ObjectQueryParams,
+		Sphere,
+		CollisionParams
+	);
+		if (bDebugAimAssist)
 		{
-			DrawDebugSphere(GetWorld(), Hit.ImpactPoint, 20.f, 12, FColor::Red, false, 1.0f);
+			FVector SweepCenter = (CameraLocation + End) * 0.5f;
+			FVector SweepAxis = (End - CameraLocation).GetSafeNormal();
+			float SweepHalfHeight = (End - CameraLocation).Size() * 0.5f;
+
+			FQuat CapsuleRot = FRotationMatrix::MakeFromZ(SweepAxis).ToQuat();
+
+			// Rita hela sweep-volymen som en kapsel
+			DrawDebugCapsule(
+				GetWorld(),
+				SweepCenter,
+				SweepHalfHeight,
+				AssistSphereRadius,
+				CapsuleRot,
+				FColor::Purple,
+				false,
+				1.0f
+			);
+		}
+
+		AActor* BestTarget = nullptr;
+	if (bHit)
+	{
+		float BestDot = -1.0f;
+
+		for (const FHitResult& Hit : Hits)
+		{
+			APawn* EnemyPawn = Cast<APawn>(Hit.GetActor());
+			if (!EnemyPawn || EnemyPawn == GetPawn()) continue;
+
+			AController* Controller = EnemyPawn->GetController();
+			if (!Controller || !Controller->IsPlayerController()) continue;
+
+			FVector ToTarget = (EnemyPawn->GetActorLocation() - CameraLocation).GetSafeNormal();
+			float Dot = FVector::DotProduct(CameraRotation.Vector(), ToTarget);
+
+			if (Dot > BestDot)
+			{
+				BestDot = Dot;
+				BestTarget = EnemyPawn;
+			}
 		}
 	}
-	
-    if (bHit)
-    {
-       APawn* OpponentPawn = Cast<APawn>(Hit.GetActor());
-       if (OpponentPawn && OpponentPawn != GetPawn())
-       {
-          AController* OpponentController = OpponentPawn->GetController();
-          if (OpponentController && OpponentController->IsPlayerController())
-          {
-             return OpponentPawn;
-          }
-       }
-    }
-    return nullptr;
+		return BestTarget;
 }
 
 float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
@@ -196,30 +198,33 @@ float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
 	// Calculate distance
 	float Distance = FVector::Dist(CameraLocation, TargetLocation);
 	float DistanceFactor = 1.0f - FMath::Clamp(Distance / MaxAssistRange, 0.0f, 1.0f);
+	
+	float MinDot = FMath::Cos(FMath::DegreesToRadians(MaxAssistAngle));
+	float AimAlignment = FMath::Clamp((DotProduct - MinDot) / (1.0f - MinDot), 0.0f, 1.0f);
 
+	
 	// Calculate assist amount based on dotProduct and distance
-    float AssistAmount = 0;
-    if (DotProduct > DotThresholdMin)
-    {
-       AssistAmount = (DotProduct * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
-    }
-    return FMath::Clamp(AssistAmount, 0.0f, 1.0f);
+	return (AimAlignment * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
+    
 }
 
 void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime)
 {
-    if (!Target || !IsValid(Target))
+    if (!Target || !IsValid(Target) || AssistWeight<= 0.0f)
     {
        return;
     }
     
     FRotator CurrentRotation = GetControlRotation();
-    FVector TargetVector = (Target->GetActorLocation() - PlayerCameraManager->GetCameraLocation()).GetSafeNormal();
-    FRotator TargetRotation = TargetVector.Rotation();
+	FVector AdjustedTargetLocation = Target->GetActorLocation() + FVector(0, 0, AimAssistVerticalOffset);
 
+    FVector TargetVector = (AdjustedTargetLocation - PlayerCameraManager->GetCameraLocation()).GetSafeNormal();
+    FRotator TargetRotation = TargetVector.Rotation();
+	
     float InterpSpeed = FMath::Lerp(0, AssistStrength, AssistWeight);
     FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, InterpSpeed);
-    SetControlRotation(NewRotation);
+	SetControlRotation(NewRotation);
+
 
     if (bDebugAimAssist)
     DrawDebugLine(GetWorld(), PlayerCameraManager->GetCameraLocation(), 
