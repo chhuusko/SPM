@@ -45,7 +45,16 @@ void URadarComponent::UpdateMinimapIconPosition(UWidget* IconWidget, const FVect
 void URadarComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!Enabled) return;
+	if (!SceneMapCapture)
+	{
+		SceneMapCapture = GetOwner()->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+	}
+	if (!Enabled)
+	{
+		if (SceneMapCapture) SceneMapCapture->Deactivate();
+		return;
+	}
+	if (SceneMapCapture) SceneMapCapture->Activate();
 	
 	CreateMiniMap();
 	SetMiniMapTexture();
@@ -86,8 +95,18 @@ FVector2D URadarComponent::GetMinimapPosition(FVector PlayerLocation, FVector Ta
 void URadarComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (!Enabled) return;
+	if (!Owner) Owner = GetOwner();
+	if (!Owner) return;
+	if (!SceneMapCapture)
+	{
+		SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+	}
+	if (!Enabled)
+	{
+		if (SceneMapCapture) SceneMapCapture->Deactivate();
+		return;
+	}
+	if (SceneMapCapture) SceneMapCapture->Activate();
 	
 	if (++MapFrameCounter % MapCaptureFrequency == 0)
 	{

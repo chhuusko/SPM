@@ -11,6 +11,16 @@ ADroneSpawn::ADroneSpawn()
 
 }
 
+bool ADroneSpawn::IsDroneRespawnTimerActive() const
+{
+    return GetWorldTimerManager().IsTimerActive(DroneSpawnTimerHandle);
+}
+
+float ADroneSpawn::GetDroneRespawnTimeRemaining() const
+{
+    return GetWorldTimerManager().GetTimerRemaining(DroneSpawnTimerHandle);
+}
+
 // Called when the game starts or when spawned
 void ADroneSpawn::BeginPlay()
 {
