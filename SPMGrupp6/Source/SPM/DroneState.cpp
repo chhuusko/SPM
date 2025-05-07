@@ -11,6 +11,7 @@ void FDroneState::Rotate(){}
 void FDroneState::Move(){}
 void FDroneState::Shoot(){}
 void FDroneState::Exit(){}
+void FDroneState::CheckForPlayer(){}
 
 FDroneState::~FDroneState(){}
 

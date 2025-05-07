@@ -48,9 +48,12 @@ public:
 	void TestRays();
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
+	void SetTarget(AActor* Target);
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
+	float GetAggroDistance() const {return AggroDistance;}
+	TArray<AActor*> Players;
 private:
 	virtual void LootDrop();
 	void LostPlayer();
@@ -73,7 +76,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float FireRate;
-	AShooterCharacter* Player;
+	UPROPERTY(EditAnywhere)
+	float AggroDistance;
+	AActor* Player;
 	
 	UPROPERTY(EditAnywhere)
 	int32 Health;

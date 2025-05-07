@@ -37,6 +37,8 @@ void ADrone::Tick(float DeltaTime)
 	{
 		State->Move();
 		State->Rotate();
+		State->CheckForPlayer();
+		State->Exit();
 	}
 }
 // Called to bind functionality to input
@@ -124,6 +126,12 @@ void ADrone::CancellAggroTimeHandler()
 		GetWorldTimerManager().ClearTimer(AggroTimerHandle);
 	}
 }
+
+void ADrone::SetTarget(AActor* Target)
+{
+	this->Player = Target;
+}
+
 void ADrone::LostPlayer()
 {
 	ChangeState(new FDroneStateReturn(this, Spawner));
@@ -159,5 +167,6 @@ bool ADrone::SeeTarget()
 	return false;
 	
 }
+
 
 

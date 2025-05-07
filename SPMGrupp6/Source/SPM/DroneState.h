@@ -18,6 +18,7 @@ public:
     virtual void Rotate();
     virtual void Shoot();
 	virtual void Exit();
+	virtual void CheckForPlayer();
 	
 	virtual ~FDroneState();
 protected:

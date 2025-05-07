@@ -12,17 +12,20 @@ class SPM_API FDroneHeavyState : public FDroneState
 {
 public:
 	FDroneHeavyState(ADrone* Drone, AActor* Spawner) : FDroneState(Drone, Spawner) {};
-	virtual void CheckForPlayer();
+	
 };
 class SPM_API FDroneHeavyStateIdle : public FDroneHeavyState
 {
 public:
 	FDroneHeavyStateIdle(ADrone* Drone, AActor* Spawner) : FDroneHeavyState(Drone, Spawner) {};
 	virtual void CheckForPlayer() override;
+
 };
 class SPM_API FDroneHeavyStateAttack : public FDroneHeavyState
 {
 public:
-	FDroneHeavyStateAttack(ADrone* Drone, AActor* Spawner) : FDroneHeavyState(Drone, Spawner) {};
+	FDroneHeavyStateAttack(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneHeavyState(Drone, Spawner) {this->Target = Target;};
+private:
+	AActor* Target;
 };
 

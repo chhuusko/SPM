@@ -10,7 +10,7 @@ class FDroneHeavyStateIdle;
 
 ADroneHeavy::ADroneHeavy()
 {
-	
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Players);
 }
 
 void ADroneHeavy::SetSpawner(ADroneSpawn* Spawn)
