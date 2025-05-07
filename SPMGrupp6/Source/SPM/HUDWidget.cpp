@@ -72,7 +72,7 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 
 	// Get the new color to set, as a clamped value between the start color and completely red.
 	FLinearColor EndColor = FLinearColor::Red;
-	FLinearColor Color = FLinearColor::LerpUsingHSV(HealthBarStartColor, EndColor, FMath::Clamp(1.f - HealthPercent, 0.f, 1.f));
+	FLinearColor Color = FLinearColor::LerpUsingHSV(HealthBarStartColor, EndColor, FMath::Clamp(1.1f - HealthPercent, 0.f, 1.f));
 	HealthBar->WidgetStyle.FillImage.TintColor = FSlateColor(Color);
 	
 	// Set background color with transparency. 
