@@ -14,10 +14,10 @@ ADrone::ADrone()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	Wings = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
-	RootComponent = Wings;
+	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
+	RootComponent = BodyMesh;
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	TurretMesh->SetupAttachment(Wings);
+	TurretMesh->SetupAttachment(BodyMesh);
 	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawn->SetupAttachment(TurretMesh);
 }

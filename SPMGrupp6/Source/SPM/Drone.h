@@ -50,16 +50,18 @@ public:
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
 	void SetTarget(AActor* Target);
+	UStaticMeshComponent* GetBody() {return BodyMesh;}
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 	float GetAggroDistance() const {return AggroDistance;}
+	
 	TArray<AActor*> Players;
 private:
 	virtual void LootDrop();
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* Wings;
+	UStaticMeshComponent* BodyMesh;
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
