@@ -134,7 +134,7 @@ private:
 	float JetpackCharge = 50;
 	//Delay from stopping using jetpack to start of recharging
 	UPROPERTY(EditDefaultsOnly)
-	float JetpackDelayUntilRecharge = 0.85;
+	float JetpackDelayUntilRecharge = 0.75;
 	//Delay between the jetpack recharging 1 charge
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackRechargeRate = 0.1;
