@@ -68,6 +68,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopSprint();
 
+	UFUNCTION(BlueprintCallable)
+	void SetRotationSensitivity(float NewSensitivity);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetRotationSensitivity();
+
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;
 
@@ -97,8 +103,10 @@ public:
 	
 private:
 	void UpdatePlayerHealth();
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	float RotationRate = 10;
+	UPROPERTY(EditAnywhere)
+	float DefaultRotationRate = 10;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 

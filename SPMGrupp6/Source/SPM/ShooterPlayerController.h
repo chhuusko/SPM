@@ -31,7 +31,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class UHUDWidget> HUDWidgetClass;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsUsingGamepad = false;
 	
 private:
@@ -70,10 +70,10 @@ private:
 	float MaxAssistRange = 6000;
 
 	UPROPERTY(EditAnywhere)
-	float MaxAssistAngle = 12.f;
+	float MaxAssistAngle = 13.f;
 
 	UPROPERTY(EditAnywhere)
-	float AimAssistVerticalOffset = 45;
+	float AimAssistVerticalOffset = 50;
 
 	UPROPERTY(EditAnywhere)
 	bool bDebugAimAssist = false;
@@ -89,4 +89,6 @@ private:
 
 	UFUNCTION()
 	void TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
+
+	
 };
