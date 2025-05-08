@@ -158,10 +158,10 @@ bool ADrone::SeeTarget()
         if (bHit) {
         	if (HitResult.GetActor()->GetActorLocation() == Player->GetActorLocation())
         	{
-        		DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.1f);
+        		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.1f);
         		return true;
         	}
-        	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 0.1f);
+        	//DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 0.1f);
         }
 	}
 	return false;
