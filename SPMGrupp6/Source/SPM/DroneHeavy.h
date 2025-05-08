@@ -13,8 +13,9 @@ UCLASS()
 class SPM_API ADroneHeavy : public ADrone
 {
 	GENERATED_BODY()
-protected:
+public:
 	ADroneHeavy();
+protected:
 	virtual void SetSpawner(ADroneSpawn* Spawn) override;
 	virtual void LostPlayer() override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;

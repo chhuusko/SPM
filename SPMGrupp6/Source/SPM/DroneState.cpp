@@ -76,6 +76,8 @@ void FDroneStateAttack::Exit()
 
 void FDroneStateReturn::Move ()
 {
+	if (!Drone || !Spawner) return;
+	
 	Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), Spawner->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
 }
 
