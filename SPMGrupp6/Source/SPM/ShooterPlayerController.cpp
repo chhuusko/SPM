@@ -31,6 +31,14 @@ void AShooterPlayerController::BeginPlay()
 void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	const float GamepadX = GetInputAnalogKeyState(EKeys::Gamepad_LeftX);
+	const float GamepadY = GetInputAnalogKeyState(EKeys::Gamepad_LeftY);
+
+	if (FMath::Abs(GamepadX) > 0.1f || FMath::Abs(GamepadY) > 0.1f)
+	{
+		bIsUsingGamepad = true;
+	}
 	
 	if (bAimAssistActivated && bIsUsingGamepad)
 	{
