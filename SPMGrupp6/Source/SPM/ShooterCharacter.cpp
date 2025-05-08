@@ -26,7 +26,7 @@ void AShooterCharacter::BeginPlay()
 	MovementComponent = GetCharacterMovement();
 	
 	Health = MaxHealth;
-	RotationRate = DefaultRotationRate;
+
 	SetCrouch((false));
 }
 
@@ -307,16 +307,4 @@ void AShooterCharacter::UpdatePlayerHealth()
 		}
 	}
 }
-
-void AShooterCharacter::SetRotationSensitivity(float NewSensitivity)
-{
-	RotationRate = NewSensitivity;
-}
-
-void AShooterCharacter::ResetRotationSensitivity()
-{
-	RotationRate = DefaultRotationRate;
-}
-
-
 
