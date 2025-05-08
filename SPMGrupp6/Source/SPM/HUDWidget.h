@@ -87,6 +87,9 @@ private:
 	UPROPERTY()
 	float TotalCooldownTime;
 
+	UPROPERTY()
+	FLinearColor HealthBarStartColor;
+
 	bool bHasDashCooldown;
 
 	UBorder* EquippedWeaponBorder;

@@ -31,6 +31,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<class UHUDWidget> HUDWidgetClass;
 	
+	UPROPERTY(VisibleAnywhere)
+	bool bIsUsingGamepad = false;
+	
 private:
 	void InitializeHUD();
 
@@ -49,16 +52,13 @@ private:
 	FTimerHandle RestartTimer;
 
 	UPROPERTY(EditAnywhere)
-	float AssistSphereRadius = 400;
+	float AssistSphereRadius = 500;
 
 	UPROPERTY(EditAnywhere)
-	float AssistStrength = 1;
+	float AssistStrength = 6;
 
 	UPROPERTY(VisibleAnywhere)
 	float DotProduct = 0;
-
-	UPROPERTY(EditAnywhere)
-	float DotThresholdMin = 0.2;
 
 	UPROPERTY(EditAnywhere)
 	float DotProductMultiplier = 1;
@@ -67,20 +67,26 @@ private:
 	float DistanceMultiplier = 1;
 
 	UPROPERTY(EditAnywhere)
-	float SlowAmount = 0.4;
+	float MaxAssistRange = 6000;
 
 	UPROPERTY(EditAnywhere)
-	float MaxAssistRange = 1000;
+	float MaxAssistAngle = 12.f;
+
+	UPROPERTY(EditAnywhere)
+	float AimAssistVerticalOffset = 45;
 
 	UPROPERTY(EditAnywhere)
 	bool bDebugAimAssist = false;
 
 	UPROPERTY(EditAnywhere)
-	bool bAimAssistActivated = false;
+	bool bAimAssistActivated = true;
+
 
 	void UpdateAimAssist(float DeltaTime);
 	AActor* FindAimAssistTarget();
 	float CalculateAssistWeight(AActor* Target);
 	void ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime);
 
+	UFUNCTION()
+	void TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
 };

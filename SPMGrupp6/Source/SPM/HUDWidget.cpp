@@ -20,6 +20,9 @@ void UHUDWidget::NativeConstruct()
 
 	// First weapon equipped on start is the auto pistol.
 	EquippedWeaponBorder = AutoPistolBorder;
+
+	// Set the start color from the assigned value in the widget blueprint.
+	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
 }
 
 // Updates the ammo text in the HUD.
@@ -65,7 +68,20 @@ void UHUDWidget::DashCooldownFinished()
 // Update health bar value.
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 {
-	HealthBar->SetPercent(Player->GetHealthPercent());
+	float HealthPercent = Player->GetHealthPercent();
+
+	// Get the new color to set, as a clamped value between the start color and completely red.
+	FLinearColor EndColor = FLinearColor::Red;
+	FLinearColor Color = FLinearColor::LerpUsingHSV(HealthBarStartColor, EndColor, FMath::Clamp(1.1f - HealthPercent, 0.f, 1.f));
+	HealthBar->WidgetStyle.FillImage.TintColor = FSlateColor(Color);
+	
+	// Set background color with transparency. 
+	Color.A = .6f;
+	FSlateColor TintColor(Color);
+	HealthBar->WidgetStyle.BackgroundImage.TintColor = TintColor;
+
+	// Set how filled the health bar is.
+	HealthBar->SetPercent(HealthPercent);
 }
 
 // Updates information of currently equipped weapon in HUD.
@@ -89,14 +105,14 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	}
 
 	// Change color of currently equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(.025f, .025f, .025f));
-	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(1.f, 1.f, 1.f));
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(.025f, .025f, .025f, .6f));
+	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, .6f));
 	
 	EquippedWeaponBorder = NextWeaponBorder;
 
 	// Change color of newly equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(.6875f, .6875f, .6875f));
-	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f));
+	EquippedWeaponBorder->SetBrushColor(FLinearColor(.75f, .75f, .75f, 1.f));
+	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
