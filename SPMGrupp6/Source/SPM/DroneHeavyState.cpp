@@ -6,10 +6,11 @@ void FDroneHeavyStateIdle::Exit()
 {
 	for (AActor* Player : Drone->Players)
 	{
-		if (FVector::Dist(Drone->GetActorLocation(), Player->GetActorLocation()) < Drone->GetAggroDistance())
+		Drone->SetTarget(Player);
+		if (FVector::Dist(Drone->GetActorLocation(), Player->GetActorLocation()) < Drone->GetAggroDistance() && Drone->SeeTarget())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Player Movement Detected"));
-			Drone->SetTarget(Player);
+			
 			Drone->ChangeState(new FDroneHeavyStateAttack(Drone, Spawner, Player));
 		}
 	}
