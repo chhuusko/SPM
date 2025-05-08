@@ -26,7 +26,8 @@ void AShooterCharacter::BeginPlay()
 	MovementComponent = GetCharacterMovement();
 	
 	Health = MaxHealth;
-
+	GamepadRotationRate = GamepadDefaultRotationRate;
+	MouseRotationRate = MouseDefaultRotationRate;
 	SetCrouch((false));
 }
 
@@ -252,12 +253,12 @@ void AShooterCharacter::MoveRight(float AxisValue)
 
 void AShooterCharacter::LookUpRate(float AxisValue)
 {
-	AddControllerPitchInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(AxisValue * GamepadRotationRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterCharacter::LookRightRate(float AxisValue)
 {
-	AddControllerYawInput(AxisValue * RotationRate * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(AxisValue * GamepadRotationRate * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterCharacter::Shoot()
@@ -308,4 +309,26 @@ void AShooterCharacter::UpdatePlayerHealth()
 		}
 	}
 }
+
+void AShooterCharacter::SetGamepadRotationSensitivity(float NewSensitivity)
+{
+	GamepadRotationRate = NewSensitivity;
+}
+
+void AShooterCharacter::ResetGamepadRotationSensitivity()
+{
+	GamepadRotationRate = GamepadDefaultRotationRate;
+}
+
+void AShooterCharacter::SetMouseRotationSensitivity(float NewSensitivity)
+{
+	MouseRotationRate = NewSensitivity;
+}
+
+void AShooterCharacter::ResetMouseRotationSensitivity()
+{
+	MouseRotationRate = MouseDefaultRotationRate;
+}
+
+
 

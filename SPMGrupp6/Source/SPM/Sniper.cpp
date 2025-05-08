@@ -2,6 +2,7 @@
 
 #include "Sniper.h"
 
+#include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
 #include "SniperScopeWidget.h"
 
@@ -31,7 +32,7 @@ void ASniper::StopWeaponAbility()
 	if (bIsAimingDownSight)
 	{
 		SetCameraFOV(OriginalPLayerFOV);
-		
+		DisableZoomInSensitivity();
 		if (AShooterPlayerController* Controller = Cast<AShooterPlayerController>(GetOwnerController()))
 		{
 			Controller->RemoveSniperScope();
@@ -47,6 +48,7 @@ void ASniper::StopWeaponAbility()
 void ASniper::ZoomIn()
 {
 	SetCameraFOV(ZoomInFOV);
+	ApplyZoomInSensitivity();
 	bIsAimingDownSight = true;
 
 	if (AShooterPlayerController* Controller = Cast<AShooterPlayerController>(GetOwnerController()))
@@ -97,4 +99,22 @@ bool ASniper::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLeng
 	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
 	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
 	return bHit;
+}
+
+void ASniper::ApplyZoomInSensitivity(){
+	AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner());
+	if (Character)
+	{
+		Character->SetGamepadRotationSensitivity(GamepadScopeInSensitivity);
+		Character->SetMouseRotationSensitivity(MouseScopeInSensitivity);
+	}
+}
+void ASniper::DisableZoomInSensitivity()
+{
+	AShooterCharacter* Character = Cast<AShooterCharacter>(GetOwner());
+	if (Character)
+	{
+		Character->ResetGamepadRotationSensitivity();
+		Character->ResetMouseRotationSensitivity();
+	}
 }
