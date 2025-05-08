@@ -18,7 +18,8 @@ bool ADroneSpawn::IsDroneRespawnTimerActive() const
 
 float ADroneSpawn::GetDroneRespawnTimeRemaining() const
 {
-    return GetWorldTimerManager().GetTimerRemaining(DroneSpawnTimerHandle);
+	if (IsDroneRespawnTimerActive()) return GetWorldTimerManager().GetTimerRemaining(DroneSpawnTimerHandle);
+	else return 0;
 }
 
 // Called when the game starts or when spawned

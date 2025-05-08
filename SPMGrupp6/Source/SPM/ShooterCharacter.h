@@ -8,11 +8,16 @@
 
 class AGun;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
+
 UCLASS()
 class SPM_API AShooterCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintAssignable, Category = "Gun")
+	FOnSetGun OnSetGun;
+	
 public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
@@ -23,8 +28,9 @@ protected:
 
 	UPROPERTY()
 	AGun* Gun;
-
+	
 public:
+	UFUNCTION(BlueprintCallable, Category = "Gun")
 	AGun* GetGun() const;
 	void SetGun(AGun* Gun);
 	

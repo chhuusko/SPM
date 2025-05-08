@@ -48,6 +48,7 @@ AGun* AShooterCharacter::GetGun() const
 void AShooterCharacter::SetGun(AGun* NewGun)
 {
 	this->Gun = NewGun;
+	OnSetGun.Broadcast();
 }
 
 // Called every frame
