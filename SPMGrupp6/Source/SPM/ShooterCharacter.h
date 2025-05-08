@@ -8,11 +8,16 @@
 
 class AGun;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
+
 UCLASS()
 class SPM_API AShooterCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(BlueprintAssignable, Category = "Gun")
+	FOnSetGun OnSetGun;
+	
 public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
@@ -23,8 +28,9 @@ protected:
 
 	UPROPERTY()
 	AGun* Gun;
-
+	
 public:
+	UFUNCTION(BlueprintCallable, Category = "Gun")
 	AGun* GetGun() const;
 	void SetGun(AGun* Gun);
 	
@@ -68,6 +74,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopSprint();
 
+	UFUNCTION(BlueprintCallable)
+	void SetGamepadRotationSensitivity(float NewSensitivity);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetGamepadRotationSensitivity();
+
+	UFUNCTION(BlueprintCallable)
+	void SetMouseRotationSensitivity(float NewSensitivity);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetMouseRotationSensitivity();
+
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;
 
@@ -76,6 +94,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float MouseRotationRate = 1;
 
 	UFUNCTION(BlueprintCallable)
 	void SetCrouch(bool value);
@@ -97,8 +118,12 @@ public:
 	
 private:
 	void UpdatePlayerHealth();
+	UPROPERTY(VisibleAnywhere)
+	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)
-	float RotationRate = 10;
+	float GamepadDefaultRotationRate = 70;
+	UPROPERTY(EditAnywhere)
+	float MouseDefaultRotationRate = 1;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
@@ -119,14 +144,14 @@ private:
 	TSubclassOf<AGun> GunClass;
 
 	UPROPERTY(EditDefaultsOnly)
-	float JetpackPower = 500;
+	float JetpackPower = 550;
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackChargeMax = 50;
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackCharge = 50;
 	//Delay from stopping using jetpack to start of recharging
 	UPROPERTY(EditDefaultsOnly)
-	float JetpackDelayUntilRecharge = 1;
+	float JetpackDelayUntilRecharge = 0.75;
 	//Delay between the jetpack recharging 1 charge
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackRechargeRate = 0.1;

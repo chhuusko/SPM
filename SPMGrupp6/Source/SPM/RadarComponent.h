@@ -12,6 +12,7 @@ class AShooterPlayerController;
 class USceneCaptureComponent2D;
 class UTextureRenderTarget2D;
 class UUserWidget;
+class UWidget;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPM_API URadarComponent : public UActorComponent
@@ -75,6 +76,9 @@ protected:
 	
 private:
 	
+	UPROPERTY(EditAnywhere)
+	bool Enabled = false;
+
 	UPROPERTY(EditAnywhere)
 	float MiniMapSize = 2048.f;
 	

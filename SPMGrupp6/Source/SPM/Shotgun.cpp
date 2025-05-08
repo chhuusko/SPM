@@ -78,6 +78,8 @@ void AShotgun::Fire()
 	}
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+	
+	OnFired.Broadcast();
 }
 
 bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength)

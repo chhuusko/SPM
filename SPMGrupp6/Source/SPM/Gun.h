@@ -9,6 +9,8 @@
 
 class AShooterPlayerController;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
+
 UCLASS()
 class SPM_API AGun : public AActor
 {
@@ -20,6 +22,9 @@ public:
 
 	int GetMagazineSize() const;
 
+	UPROPERTY(BlueprintAssignable, Category = "Fire")
+	FOnFired OnFired;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

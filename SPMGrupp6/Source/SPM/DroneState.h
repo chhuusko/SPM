@@ -17,6 +17,8 @@ public:
 	virtual void Move();
     virtual void Rotate();
     virtual void Shoot();
+	virtual void Exit();
+	virtual void CheckForPlayer();
 	
 	virtual ~FDroneState();
 protected:
@@ -31,7 +33,6 @@ class SPM_API FDroneStateIdle : public FDroneState
 public:
 	FDroneStateIdle(ADrone* Drone, AActor* Spawner) : FDroneState(Drone, Spawner) {};
 	virtual void Move() override;
-	
 private:
 	FVector IdleHoverDist = FVector(0, 0, 50);
 	bool IsIdleGoingUp = false;
@@ -44,6 +45,7 @@ public:
 	virtual void Move() override;
 	virtual void Rotate() override;
 	virtual void Shoot() override;
+	virtual void Exit() override;
 private:
 	float MaxSpawnDistance = 2000;
 	FVector DesiredElevation = FVector(0,0,250);
@@ -56,5 +58,6 @@ public:
 	FDroneStateReturn(ADrone* Drone, AActor* Spawner) : FDroneState(Drone, Spawner) {};
 	FDroneStateReturn(ADrone* Drone, AActor* Spawner, std::vector<FVector> PositionList) : FDroneState(Drone, Spawner){ PreviousPositions = PositionList; }
 	virtual void Move() override;
+	virtual void Exit() override;
 	
 };

@@ -27,6 +27,7 @@ URadarComponent::URadarComponent()
 void URadarComponent::UpdateMinimapIconPosition(UWidget* IconWidget, const FVector& ActorLocation,
 	const FVector& MapCenterLocation, float MapWorldSize, const FVector2D MinimapSize)
 {
+	if (!Enabled) return;
 	if (!IconWidget) return;
 
 	FVector2D MinimapPos = GetMinimapPosition(MapCenterLocation, ActorLocation, MapWorldSize, MinimapSize);
@@ -44,6 +45,17 @@ void URadarComponent::UpdateMinimapIconPosition(UWidget* IconWidget, const FVect
 void URadarComponent::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!SceneMapCapture)
+	{
+		SceneMapCapture = GetOwner()->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+	}
+	if (!Enabled)
+	{
+		if (SceneMapCapture) SceneMapCapture->Deactivate();
+		return;
+	}
+	if (SceneMapCapture) SceneMapCapture->Activate();
+	
 	CreateMiniMap();
 	SetMiniMapTexture();
 
@@ -74,7 +86,8 @@ FVector2D URadarComponent::GetMinimapPosition(FVector PlayerLocation, FVector Ta
 	// 4. Convert to 0-1 UV range and then to UI pixel coordinates
 	FVector2D UV = (Normalized + FVector2D(1.0f, 1.0f)) * 0.5f;
 	FVector2D UIPosition = UV * ActualSize;
-
+	UIPosition.X = 0;
+	UIPosition.Y = 0;
 	return UIPosition;
 }
 
@@ -82,7 +95,19 @@ FVector2D URadarComponent::GetMinimapPosition(FVector PlayerLocation, FVector Ta
 void URadarComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	if (!Owner) Owner = GetOwner();
+	if (!Owner) return;
+	if (!SceneMapCapture)
+	{
+		SceneMapCapture = Owner->FindComponentByTag<USceneCaptureComponent2D>(TEXT("SceneMapCapture"));
+	}
+	if (!Enabled)
+	{
+		if (SceneMapCapture) SceneMapCapture->Deactivate();
+		return;
+	}
+	if (SceneMapCapture) SceneMapCapture->Activate();
+	
 	if (++MapFrameCounter % MapCaptureFrequency == 0)
 	{
 		if(SceneMapCapture) SceneMapCapture->CaptureScene();
@@ -126,6 +151,7 @@ void URadarComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 
 void URadarComponent::CreateMiniMap()
 {
+	if (!Enabled) return;
 	if (Created) return;
 
 	Owner = GetOwner();
@@ -155,6 +181,7 @@ void URadarComponent::CreateMiniMap()
 
 void URadarComponent::UpdateMap()
 {
+	if (!Enabled) return;
     if (!Created)
     {
     	CreateMiniMap();
@@ -187,6 +214,7 @@ void URadarComponent::UpdateMap()
 
 void URadarComponent::Pulse()
 {
+	if (!Enabled) return;
 	if (!Owner)
 	{
 		Owner = GetOwner();
@@ -197,7 +225,12 @@ void URadarComponent::Pulse()
 
 	TArray<AActor*> Enemies;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Enemies);
-
+    if (Enemies.IsEmpty())
+    {
+    	if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Found no enemy characters"), *GetOwner()->GetName());
+	    return;
+    }
+    	
 	for (AActor* Enemy : Enemies)
 	{
 		if (Enemy == Owner) continue;
@@ -206,11 +239,15 @@ void URadarComponent::Pulse()
 		{
 			CreateRedDotOnTarget(Enemy);
 		}
+		else if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Enemy %s is too far away"),
+														*GetOwner()->GetName(),
+														*Enemy->GetName());
 	}
 }
 
 void URadarComponent::ShowIconOnRadar(AActor* Target)
 {
+	if (!Enabled) return;
 	if (!Owner)
 	{
 		Owner = GetOwner();
@@ -237,6 +274,7 @@ void URadarComponent::ShowIconOnRadar(AActor* Target)
 
 void URadarComponent::RevealPosition()
 {
+	if (!Enabled) return;
 	if (!Owner)
 	{
 		Owner = GetOwner();
@@ -265,13 +303,42 @@ void URadarComponent::RevealPosition()
 
 UUserWidget* URadarComponent::CreateRedDotOnTarget(AActor* Target)
 {
-	if (!Target || !CreatedWidget || TrackedIcons.Contains(Target)) return nullptr;
-	if (!EnemyIconClass) return nullptr;
-	if (!PC) PC = GetPlayerController();
-	if (!PC) return nullptr;
-
+	if (!Enabled) nullptr;
+	if (!Target)
+	{
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Target is not set!"), *GetOwner()->GetName());
+		return nullptr;
+	}
+	if (!CreatedWidget)
+	{
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: CreatedWidget is not set!"), *GetOwner()->GetName());
+		return nullptr;
+	}
+	if (TrackedIcons.Contains(Target))
+	{
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: TrackedIcons does not include Target"), *GetOwner()->GetName());
+		return nullptr;
+	}
+	if (!EnemyIconClass)
+	{
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: EnemyIconClass is not set!"), *GetOwner()->GetName());
+		return nullptr;
+	}
+	if (!PC)
+	{
+		PC = GetPlayerController();
+	}
+	if (!PC)
+	{
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: PC is not set!"), *GetOwner()->GetName());
+		return nullptr;
+	}
 	URadarEnemyIcon* IconWidget = CreateWidget<URadarEnemyIcon>(PC, EnemyIconClass);
-	if (!IconWidget) return nullptr;
+	if (!IconWidget)
+	{
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: IconWidget could not be created!"), *GetOwner()->GetName());
+		return nullptr;
+	}
 	IconWidget->InitializeIcon(this, Target);
 	
 	if (UCanvasPanel* Canvas = Cast<UCanvasPanel>(CreatedWidget->GetWidgetFromName(TEXT("MinimapCanvas"))))
@@ -282,22 +349,20 @@ UUserWidget* URadarComponent::CreateRedDotOnTarget(AActor* Target)
 		{
 			Slot->SetAutoSize(true);
 			Slot->SetAlignment(FVector2D(0.5f, 0.5f));
-		}
+		} else if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Canvas Panel Slot could not be found on IconWidget!"), *GetOwner()->GetName());
 		
 		TrackedIcons.Add(Target, IconWidget);
 
-		if (PrintDebug)
-		{
-			UE_LOG(LogTemp, Log, TEXT("Radar %s: Created UMG Icon for %s"), *GetOwner()->GetName(), *Target->GetName());
-		}
+		if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Created UMG Icon for %s"), *GetOwner()->GetName(), *Target->GetName());
 		return IconWidget;
-	}
+	} else if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: MinimapCanvas could not be found!"), *GetOwner()->GetName());
 
 	return nullptr;
 }
 
 AShooterPlayerController* URadarComponent::GetPlayerController() const
 {
+	if (!Enabled) return nullptr;
 	if (const AShooterCharacter* OwnerPawn = Cast<AShooterCharacter>(GetOwner()))
 	{
 		if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(OwnerPawn->GetLocalViewingPlayerController()))
@@ -311,10 +376,12 @@ AShooterPlayerController* URadarComponent::GetPlayerController() const
 
 void URadarComponent::ResetCooldown()
 {
+	if (!Enabled) return;
     CooldownProgress = 0.0f;
 }
 void URadarComponent::SetMiniMapTexture()
 {
+	if (!Enabled) return;
 	Owner = GetOwner();
 	if (!Owner) return;
 	PC = GetPlayerController();

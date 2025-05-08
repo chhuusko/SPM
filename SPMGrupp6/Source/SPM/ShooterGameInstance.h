@@ -14,13 +14,27 @@ class SPM_API UShooterGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 public:
+	virtual void Init() override;
+	
 	int32 GetIncrementedRound();
 	void IncrementBlueScore();
 	void IncrementRedScore();
 	int32 GetBlueScore() const;
 	int32 GetRedScore() const;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> GlobalMinimapWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	bool CombinedRadarEnabled = false;
+	
 private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
 	int32 RedScore = 0;
+	
+	UPROPERTY()
+	TObjectPtr<class UUserWidget> GlobalMinimapWidget;
+
+	void OnPostLoadMap();
 };

@@ -133,6 +133,8 @@ void AGun::Fire()
 	// Stops possibility to fire between shots.
 	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+	
+	OnFired.Broadcast();
 }
 
 void AGun::ResetCanFire()
@@ -143,7 +145,6 @@ void AGun::ResetCanFire()
 void AGun::PullTrigger()
 {
 	if (!bCanFire) return;
-
 	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{

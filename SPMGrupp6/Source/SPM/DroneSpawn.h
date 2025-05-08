@@ -16,6 +16,13 @@ public:
 	// Sets default values for this actor's properties
 	ADroneSpawn();
 
+	UFUNCTION(BlueprintCallable, Category = "Drone")
+	bool IsDroneRespawnTimerActive() const;
+	UFUNCTION(BlueprintCallable, Category = "Drone")
+	float GetDroneRespawnTimeRemaining() const;
+	UFUNCTION(BlueprintCallable, Category = "Drone")
+	float GetSpawnTime() const { return SpawnTime; }
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
