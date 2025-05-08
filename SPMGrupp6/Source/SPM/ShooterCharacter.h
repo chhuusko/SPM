@@ -69,10 +69,16 @@ public:
 	void StopSprint();
 
 	UFUNCTION(BlueprintCallable)
-	void SetRotationSensitivity(float NewSensitivity);
+	void SetGamepadRotationSensitivity(float NewSensitivity);
 
 	UFUNCTION(BlueprintCallable)
-	void ResetRotationSensitivity();
+	void ResetGamepadRotationSensitivity();
+
+	UFUNCTION(BlueprintCallable)
+	void SetMouseRotationSensitivity(float NewSensitivity);
+
+	UFUNCTION(BlueprintCallable)
+	void ResetMouseRotationSensitivity();
 
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;
@@ -82,6 +88,9 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float MouseRotationRate = 1;
 
 	UFUNCTION(BlueprintCallable)
 	void SetCrouch(bool value);
@@ -104,9 +113,11 @@ public:
 private:
 	void UpdatePlayerHealth();
 	UPROPERTY(VisibleAnywhere)
-	float RotationRate = 10;
+	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)
-	float DefaultRotationRate = 10;
+	float GamepadDefaultRotationRate = 70;
+	UPROPERTY(EditAnywhere)
+	float MouseDefaultRotationRate = 1;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
