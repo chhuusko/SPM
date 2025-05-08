@@ -49,7 +49,10 @@ public:
 	virtual void TestRays();
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
+	
 	void SetTarget(AActor* Target);
+	
+	//Get
 	UStaticMeshComponent* GetBody() {return BodyMesh;}
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
@@ -59,7 +62,8 @@ public:
 	TArray<AActor*> Players;
 private:
 	virtual void LootDrop();
-
+	
+	//Body
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* BodyMesh;
 	UPROPERTY(EditAnywhere)
@@ -67,6 +71,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
 	
+	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
@@ -74,8 +79,9 @@ private:
 	
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
-	
-	
+
+	UPROPERTY(EditAnywhere)
+	FVector PreferedHeightOverPlayer;
 	UPROPERTY(EditAnywhere)
 	float FireRate;
 	UPROPERTY(EditAnywhere)
