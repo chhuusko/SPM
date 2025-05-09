@@ -94,6 +94,10 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void UseJetpack();
+	UFUNCTION(BlueprintCallable)
+	float GetJetpackCharge();
+	UFUNCTION(BlueprintCallable)
+	float GetJetpackPercentage();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float MouseRotationRate = 1;
