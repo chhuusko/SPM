@@ -49,7 +49,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	void InitializeWeaponUnlockingSystem();
-	void testCTRL(const FInputActionInstance& Instance);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void EquipSlot1(const FInputActionInstance& Instance);
 	void UpgradeSlot1(const FInputActionInstance& Instance);

@@ -188,6 +188,23 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 	}
 	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking started successfully"));
 }
+
+void UWeaponUnlocking::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	for (auto& Elem : WeaponPool)
+	{
+		if (AGun* Gun = Elem.Value)
+		{
+			if (IsValid(Gun))
+			{
+				Gun->Destroy();
+			}
+		}
+	}
+	WeaponPool.Empty();
+}
+
 void UWeaponUnlocking::EquipSlot1(const FInputActionInstance& Instance)
 {
 	EquipWeapon(EWeaponType::Pistol);
