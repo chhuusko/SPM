@@ -53,51 +53,66 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 
 void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 {
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking trying to UnlockOrUpgradeWeapon weapon: %d"), (int32)WeaponType);
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] trying to UnlockOrUpgradeWeapon weapon: %d"), (int32)WeaponType);
 	if (!ResourceComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking does not have a reference to ResourceComponent!"));
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] does not have a reference to ResourceComponent!"));
 		return;
 	}
 	if (!WeaponClasses.Contains(WeaponType))
 	{
-		UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking WeaponClasses does not contain weapon type %d!"), (int32)WeaponType);
+		UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] WeaponClasses does not contain weapon type %d!"), (int32)WeaponType);
 		return;
 	}
 	
 	FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
+	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
+	if (!Gun)
+	{
+		// If gun is not in pool, spawn it temporarily to query cost (optional)
+		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
+	}
 	
-	UE_LOG(LogTemp, Log, TEXT("Weapon: %d | Unlocked: %s | Level: %d"),
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon: %d | Unlocked: %s | Level: %d"),
 		(int32)WeaponType,
 		State.bUnlocked ? TEXT("Yes") : TEXT("No"),
 		State.Level);
 	
 	if (!State.bUnlocked)
 	{
-		int Cost = UnlockCosts.Contains(WeaponType) ? UnlockCosts[WeaponType] : 999;
+        int32 UnlockCost = Gun ? Gun->GetUpgradeCost(1) : INT_MAX;
 
-		if (ResourceComponent->HasEnoughResources(Cost))
+		if (ResourceComponent->HasEnoughResources(UnlockCost))
 		{
-			UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking checked for HasEnoughResources in UnlockWeapon weapon: %d"), (int32)WeaponType);
-			ResourceComponent->SpendResources(Cost);
+			ResourceComponent->SpendResources(UnlockCost);
 			State.bUnlocked = true;
 			State.Level = 1;
-
 			EquipWeapon(WeaponType);
-		}
+			UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
+		} else UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock Weapon %d"),
+									(int32)WeaponType);
 	}
-	else
+	else if (WeaponPool.Contains(WeaponType))
 	{
-		int UpgradeCost = UpgradeCosts.Contains(WeaponType) ? UpgradeCosts[WeaponType] : 999;
-
-		if (ResourceComponent->HasEnoughResources(UpgradeCost))
+		Gun = WeaponPool[WeaponType];
+		if (Gun)
 		{
-			UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking checked for HasEnoughResources in UpgradeWeapon weapon: %d"), (int32)WeaponType);
-			ResourceComponent->SpendResources(UpgradeCost);
-			State.Level += 1;
-			// ToDo: Upgrade weapon
-		}
-	}
+			int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
+			if (ResourceComponent->HasEnoughResources(UpgradeCost))
+			{
+				ResourceComponent->SpendResources(UpgradeCost);
+				State.Level += 1;
+				Gun->ApplyUpgrade(State.Level);
+				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d upgraded!"),
+									(int32)WeaponType);
+			}else UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade Weapon %d from level %d to  %d"),
+									(int32)WeaponType,
+									State.Level,
+									State.Level+1);
+		} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
+									(int32)WeaponType);
+	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d is not in WeaponPool!"),
+									(int32)WeaponType);
 }
 
 bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
