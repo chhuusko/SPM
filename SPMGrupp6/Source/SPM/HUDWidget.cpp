@@ -26,6 +26,22 @@ void UHUDWidget::NativeConstruct()
 	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
 }
 
+void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (bHasDashCooldown)
+	{
+		UpdateDashCooldownTimer(InDeltaTime);
+	}
+
+	// Only update when the fuel is currently being used or is recharging.
+	if (!bJetpackFuelFull)
+	{
+		UpdateJetpackCooldown();
+	}
+}
+
 // Updates the ammo text in the HUD.
 void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 {
@@ -38,18 +54,35 @@ void UHUDWidget::StartDashTimer(float CooldownTime)
 	// Reset dash cooldown element.
 	DashCooldown->SetValue(0.f);
 
-	TotalCooldownTime = CooldownTime;
-	ElapsedTime = 0;
+	TotalDashCooldownTime = CooldownTime;
+	ElapsedDashTime = 0;
 	
 	bHasDashCooldown = true;
 }
 
+void UHUDWidget::StartJetpackUpdate()
+{
+	bJetpackFuelFull = false;
+}
+
+// Set the jetpack fuel bar in HUD.
+void UHUDWidget::UpdateJetpackCooldown()
+{
+	JetpackFuelBar->SetPercent(Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter())->GetJetpackPercentage());
+
+	// The jetpack has full fuel, so there's no need to update the fuel bar.
+	if (JetpackFuelBar->GetPercent() >= 1.f)
+	{
+		bJetpackFuelFull = true;
+	}
+}
+
 void UHUDWidget::UpdateDashCooldownTimer(float DeltaTime)
 {
-	ElapsedTime += DeltaTime;
+	ElapsedDashTime += DeltaTime;
 
 	// Set the value representing the slider's progress.
-	float Progress = ElapsedTime / TotalCooldownTime;
+	float Progress = ElapsedDashTime / TotalDashCooldownTime;
 	DashCooldown->SetValue(Progress);
 
 	// Cooldown is done.
@@ -126,14 +159,4 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	// Change color of newly equipped weapon and it's border.
 	EquippedWeaponBorder->SetBrushColor(FLinearColor(.75f, .75f, .75f, 1.f));
 	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
-}
-
-void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	if (bHasDashCooldown)
-	{
-		UpdateDashCooldownTimer(InDeltaTime);
-	}
 }

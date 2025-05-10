@@ -144,6 +144,15 @@ void AShooterCharacter::UseJetpack()
 			bCanRechargeJetpack = false;
 		}
 		LaunchCharacter(FVector(0, 0, JetpackPower), false, true);
+
+		if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetController()))
+		{
+			if (PlayerController->HUDWidget)
+			{
+				// Jetpack fuel indicator.
+				PlayerController->HUDWidget->StartJetpackUpdate();
+			}
+		}
 	}
 
 	JetpackCharge--;
