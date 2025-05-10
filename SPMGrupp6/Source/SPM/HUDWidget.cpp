@@ -24,6 +24,7 @@ void UHUDWidget::NativeConstruct()
 
 	// Set the start color from the assigned value in the widget blueprint.
 	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
+	JetpackFuelStartColor = JetpackFuelBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -68,7 +69,11 @@ void UHUDWidget::StartJetpackUpdate()
 // Set the jetpack fuel bar in HUD.
 void UHUDWidget::UpdateJetpackCooldown()
 {
-	JetpackFuelBar->SetPercent(Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter())->GetJetpackPercentage());
+	float FuelPercent = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter())->GetJetpackPercentage();
+	
+	JetpackFuelBar->SetPercent(FuelPercent);
+
+	SetBarColor(JetpackFuelBar, FuelPercent, JetpackFuelStartColor);
 
 	// The jetpack has full fuel, so there's no need to update the fuel bar.
 	if (JetpackFuelBar->GetPercent() >= 1.f)
@@ -99,20 +104,27 @@ void UHUDWidget::DashCooldownFinished()
 	bHasDashCooldown = false;
 }
 
+// Set progress bar color.
+void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor)
+{
+	// Get the new color to set, as a clamped value between the start color and completely red.
+	FLinearColor EndColor = FLinearColor::Red;
+	FLinearColor Color = FLinearColor::LerpUsingHSV(StartColor, EndColor, FMath::Clamp(1.1f - Percent, 0.f, 1.f));
+
+	Bar->WidgetStyle.FillImage.TintColor = FSlateColor(Color);
+	
+	// Set background color with transparency. 
+	Color.A = .6f;
+	FSlateColor TintColor(Color);
+	Bar->WidgetStyle.BackgroundImage.TintColor = TintColor;
+}
+
 // Update health bar value.
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 {
 	float HealthPercent = Player->GetHealthPercent();
 
-	// Get the new color to set, as a clamped value between the start color and completely red.
-	FLinearColor EndColor = FLinearColor::Red;
-	FLinearColor Color = FLinearColor::LerpUsingHSV(HealthBarStartColor, EndColor, FMath::Clamp(1.1f - HealthPercent, 0.f, 1.f));
-	HealthBar->WidgetStyle.FillImage.TintColor = FSlateColor(Color);
-	
-	// Set background color with transparency. 
-	Color.A = .6f;
-	FSlateColor TintColor(Color);
-	HealthBar->WidgetStyle.BackgroundImage.TintColor = TintColor;
+	SetBarColor(HealthBar, HealthPercent, HealthBarStartColor);
 
 	// Set how filled the health bar is.
 	HealthBar->SetPercent(HealthPercent);

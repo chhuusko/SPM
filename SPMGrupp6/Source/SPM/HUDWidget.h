@@ -75,6 +75,9 @@ public:
 private:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
+	void SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor);
+
 	UPROPERTY()
 	float ElapsedJetpackTime;
 
@@ -98,6 +101,9 @@ private:
 
 	UPROPERTY()
 	FLinearColor HealthBarStartColor;
+	
+	UPROPERTY()
+	FLinearColor JetpackFuelStartColor;
 
 	bool bHasDashCooldown;
 
