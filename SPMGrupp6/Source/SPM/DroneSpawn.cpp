@@ -43,8 +43,9 @@ void ADroneSpawn::DroneDestroyed()
 
 void ADroneSpawn::Spawn()
 {
-	ADrone* Drone = GetWorld()->SpawnActor<ADrone>(DroneClass, GetActorLocation(), GetActorRotation());
-	Drone->SetSpawner(this);
-	
+	if (ADrone* Drone = GetWorld()->SpawnActor<ADrone>(DroneClass, GetActorLocation(), GetActorRotation()))
+	{
+		Drone->SetSpawner(this);
+	}
 }
 

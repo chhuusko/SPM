@@ -40,6 +40,15 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
 
+	UPROPERTY(meta = (BindWidget))
+	class UImage* ShotgunPadlock;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* AssaultRiflePadlock;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* SniperRiflePadlock;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCurveFloat* DashCooldownCurve;
 

@@ -6,6 +6,7 @@
 #include "ShooterCharacter.h"
 #include "WeaponUnlocking.h"
 #include "Components/Border.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
@@ -95,12 +96,24 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		break;
 	case EWeaponType::Shotgun:
 		NextWeaponBorder = ShotgunBorder;
+		if (ShotgunPadlock->IsVisible())
+		{
+			ShotgunPadlock->SetVisibility(ESlateVisibility::Hidden);
+		}
 		break;
 	case EWeaponType::SniperRifle:
 		NextWeaponBorder = SniperRifleBorder;
+		if (SniperRiflePadlock->IsVisible())
+		{
+			SniperRiflePadlock->SetVisibility(ESlateVisibility::Hidden);
+		}
 		break;
 	default:
 		NextWeaponBorder = AssaultRifleBorder;
+		if (AssaultRiflePadlock->IsVisible())
+		{
+			AssaultRiflePadlock->SetVisibility(ESlateVisibility::Hidden);
+		}
 		break;
 	}
 
