@@ -32,7 +32,7 @@ struct FWeaponState
 	int32 Level = 1;
 };
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPM_API UWeaponUnlocking : public UActorComponent
 {
 	GENERATED_BODY()

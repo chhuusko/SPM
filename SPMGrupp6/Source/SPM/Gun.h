@@ -28,6 +28,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UPROPERTY()
+	AShooterPlayerController* PlayerController;
 	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;
@@ -124,6 +127,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
 
+	UFUNCTION()
+	void GetPlayerController();
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

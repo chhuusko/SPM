@@ -2,6 +2,7 @@
 
 #include "Sniper.h"
 
+#include "HeadMountedDisplayTypes.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
 #include "SniperScopeWidget.h"
@@ -11,7 +12,6 @@ void ASniper::BeginPlay()
 	Super::BeginPlay();
 
 	// Save the DefaultFOV of the camera.
-	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->PlayerCameraManager)
 	{
 		OriginalPLayerFOV = PlayerController->PlayerCameraManager->DefaultFOV;
@@ -33,9 +33,9 @@ void ASniper::StopWeaponAbility()
 	{
 		SetCameraFOV(OriginalPLayerFOV);
 		DisableZoomInSensitivity();
-		if (AShooterPlayerController* Controller = Cast<AShooterPlayerController>(GetOwnerController()))
+		if (PlayerController)
 		{
-			Controller->RemoveSniperScope();
+			PlayerController->RemoveSniperScope();
 		}
 	}
 	else
@@ -51,16 +51,15 @@ void ASniper::ZoomIn()
 	ApplyZoomInSensitivity();
 	bIsAimingDownSight = true;
 
-	if (AShooterPlayerController* Controller = Cast<AShooterPlayerController>(GetOwnerController()))
+	if (PlayerController)
 	{
-		Controller->AddSniperScope();
+		PlayerController->AddSniperScope();
 	}
 }
 
 void ASniper::SetCameraFOV(float amount)
 {
 	// Set new camera FOV.
-	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->PlayerCameraManager)
 	{
 		PlayerController->PlayerCameraManager->SetFOV(amount);

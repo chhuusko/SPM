@@ -39,6 +39,9 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* JetpackFuelBar;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ShotgunPadlock;
@@ -59,6 +62,9 @@ public:
 	void StartDashTimer(float CooldownTime);
 
 	UFUNCTION(BlueprintCallable)
+	void StartJetpackUpdate();
+
+	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
 	UFUNCTION()
@@ -68,9 +74,18 @@ public:
 
 private:
 	virtual void NativeConstruct() override;
-	
+
+	UFUNCTION()
+	void SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor);
+
 	UPROPERTY()
-	FTimeline Timeline;
+	float ElapsedJetpackTime;
+
+	UPROPERTY()
+	float TotalJetpackCooldownTime;
+
+	UFUNCTION()
+	void UpdateJetpackCooldown();
 
 	UFUNCTION()
 	void UpdateDashCooldownTimer(float ElapsedTime);
@@ -79,15 +94,23 @@ private:
 	void DashCooldownFinished();
 
 	UPROPERTY()
-	float ElapsedTime;
+	float ElapsedDashTime;
 	
 	UPROPERTY()
-	float TotalCooldownTime;
+	float TotalDashCooldownTime;
 
 	UPROPERTY()
 	FLinearColor HealthBarStartColor;
+	
+	UPROPERTY()
+	FLinearColor JetpackFuelStartColor;
+
+	UPROPERTY()
+	AShooterCharacter* PlayerCharacter;
 
 	bool bHasDashCooldown;
+
+	bool bJetpackFuelFull = true;
 
 	UBorder* EquippedWeaponBorder;
 };

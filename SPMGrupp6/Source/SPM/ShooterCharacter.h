@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
+class AShooterPlayerController;
 class AGun;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
@@ -159,6 +160,9 @@ private:
 	//Delay between the jetpack recharging 1 charge
 	UPROPERTY(EditDefaultsOnly)
 	float JetpackRechargeRate = 0.1;
+
+	UPROPERTY()
+	AShooterPlayerController* PlayerController;
 	
 	void SetCanRechargeJetpack();
 	bool bCanRechargeJetpack = false;
