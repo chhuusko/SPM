@@ -105,6 +105,9 @@ private:
 	UPROPERTY()
 	FLinearColor JetpackFuelStartColor;
 
+	UPROPERTY()
+	AShooterCharacter* PlayerCharacter;
+
 	bool bHasDashCooldown;
 
 	bool bJetpackFuelFull = true;

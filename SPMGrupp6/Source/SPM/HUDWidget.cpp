@@ -25,6 +25,9 @@ void UHUDWidget::NativeConstruct()
 	// Set the start color from the assigned value in the widget blueprint.
 	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
 	JetpackFuelStartColor = JetpackFuelBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
+
+	// Get the player at start, so we don't need to cast each tick.
+	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -69,7 +72,7 @@ void UHUDWidget::StartJetpackUpdate()
 // Set the jetpack fuel bar in HUD.
 void UHUDWidget::UpdateJetpackCooldown()
 {
-	float FuelPercent = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter())->GetJetpackPercentage();
+	float FuelPercent = PlayerCharacter->GetJetpackPercentage();
 	
 	JetpackFuelBar->SetPercent(FuelPercent);
 

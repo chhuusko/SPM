@@ -24,6 +24,7 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	MovementComponent = GetCharacterMovement();
+	PlayerController = Cast<AShooterPlayerController>(GetController());
 	
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
@@ -145,13 +146,10 @@ void AShooterCharacter::UseJetpack()
 		}
 		LaunchCharacter(FVector(0, 0, JetpackPower), false, true);
 
-		if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetController()))
+		if (PlayerController && PlayerController->HUDWidget)
 		{
-			if (PlayerController->HUDWidget)
-			{
-				// Jetpack fuel indicator.
-				PlayerController->HUDWidget->StartJetpackUpdate();
-			}
+			// Start updating jetpack fuel indicator.
+			PlayerController->HUDWidget->StartJetpackUpdate();
 		}
 	}
 
@@ -318,13 +316,10 @@ void AShooterCharacter::StopWeaponAbility()
 void AShooterCharacter::UpdatePlayerHealth()
 {
 	// The hud exists.
-	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetController()))
+	if (PlayerController && PlayerController->HUDWidget)
 	{
-		if (PlayerController->HUDWidget)
-		{
-			// Update player's health.
-			PlayerController->HUDWidget->UpdateHealth(this);
-		}
+		// Update player's health.
+		PlayerController->HUDWidget->UpdateHealth(this);
 	}
 }
 
