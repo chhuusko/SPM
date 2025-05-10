@@ -115,6 +115,15 @@ protected:
 	void ResetAmmo();
 	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength);
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<int32> UpgradeCostPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> DamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<int32> MagazineSizePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> ReloadTimePerLevel;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -123,10 +132,12 @@ public:
 	virtual void PullTrigger();
 	virtual void WeaponAbility();
 	virtual void StopWeaponAbility();
+	virtual void ApplyUpgrade(int NewLevel);
 	void ResetCanFire();
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
 	void UpdateAmmoText();
 	float CalculateDamageFalloff(float TraceLength);
+    int32 GetUpgradeCost(int Level) const;
 };

@@ -80,11 +80,6 @@ private:
 	
 	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
 	
-	UPROPERTY(EditDefaultsOnly, Category="Costs")
-	TMap<EWeaponType, int32> UnlockCosts;
-	UPROPERTY(EditDefaultsOnly, Category="Costs")
-	TMap<EWeaponType, int32> UpgradeCosts;
-	
 	UPROPERTY()
 	TMap<EWeaponType, FWeaponState> WeaponStates;
 	
