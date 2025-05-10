@@ -256,6 +256,61 @@ void AGun::StopWeaponAbility()
 	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
 }
 
+void AGun::ApplyUpgrade(int NewLevel)
+{
+	const float BaseDamageValue = DamagePerLevel.Num() > 0 ? DamagePerLevel.Last() : Damage;
+	const float BaseReloadTime = ReloadTimePerLevel.Num() > 0 ? ReloadTimePerLevel.Last() : ReloadTime;
+	const int32 BaseMagazineSize = MagazineSizePerLevel.Num() > 0 ? MagazineSizePerLevel.Last() : MagazineSize;
+	int Index;
+	
+	if (DamagePerLevel.Num() > 0)
+	{
+		Index = FMath::Clamp(NewLevel - 1, 0, DamagePerLevel.Num() - 1);
+		Damage = DamagePerLevel.IsValidIndex(Index) ? DamagePerLevel[Index] : BaseDamageValue;
+	}
+	else
+	{
+		Damage = BaseDamageValue;
+	}
+
+	if (ReloadTimePerLevel.Num() > 0)
+	{
+		Index = FMath::Clamp(NewLevel - 1, 0, ReloadTimePerLevel.Num() - 1);
+		ReloadTime = ReloadTimePerLevel.IsValidIndex(Index) ? ReloadTimePerLevel[Index] : BaseReloadTime;
+	}
+	else
+	{
+		ReloadTime = BaseReloadTime;
+	}
+
+	if (MagazineSizePerLevel.Num() > 0)
+	{
+		Index = FMath::Clamp(NewLevel - 1, 0, MagazineSizePerLevel.Num() - 1);
+		MagazineSize = MagazineSizePerLevel.IsValidIndex(Index) ? MagazineSizePerLevel[Index] : BaseMagazineSize;
+	}
+	else
+	{
+		MagazineSize = BaseMagazineSize;
+	}
+    UpdateAmmoText();
+
+    if (const int DefinedLevels = DamagePerLevel.Num() > 0 ? DamagePerLevel.Num() : 1; NewLevel > DefinedLevels)
+	{
+		Damage *= FMath::Pow(1.1f, NewLevel - DefinedLevels);
+	}
+}
+int32 AGun::GetUpgradeCost(int Level) const
+{
+    const int Index = FMath::Clamp(Level - 1, 0, UpgradeCostPerLevel.Num() - 1);
+	int32 BaseCost = UpgradeCostPerLevel.IsValidIndex(Index) ? UpgradeCostPerLevel[Index] : INT_MAX;
+	if (Level > UpgradeCostPerLevel.Num())
+	{
+		BaseCost += 2 * Level - UpgradeCostPerLevel.Num();
+	}
+	
+    return BaseCost;
+}
+
 
 float AGun::CalculateDamageFalloff(float TraceLength)
 {

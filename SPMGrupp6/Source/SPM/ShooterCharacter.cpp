@@ -155,6 +155,15 @@ void AShooterCharacter::UseJetpack()
 	UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 }
 
+float AShooterCharacter::GetJetpackCharge() {
+	return JetpackCharge;
+}
+
+float AShooterCharacter::GetJetpackPercentage() {
+	return JetpackCharge / JetpackChargeMax;
+}
+
+
 void AShooterCharacter::SetCrouch(bool value)
 {
 	if (!MovementComponent->IsMovingOnGround()) return;
