@@ -4,7 +4,7 @@
 #include "GameOverScreen.h"
 
 #include "SceneRenderTargetParameters.h"
-#include "ShooterGameInstance.h"
+#include "SPM/ShooterGameInstance.h"
 #include "Components/TextBlock.h"
 
 // Changes the current round displayed.

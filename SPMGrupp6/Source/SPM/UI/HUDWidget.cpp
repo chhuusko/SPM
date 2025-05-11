@@ -3,16 +3,13 @@
 
 #include "HUDWidget.h"
 
-#include "ShooterCharacter.h"
-#include "WeaponUnlocking.h"
+#include "SPM/ShooterCharacter.h"
+#include "SPM/WeaponUnlocking.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
-#include "Components/TimelineComponent.h"
-#include "EntitySystem/MovieSceneEntitySystemRunner.h"
-#include "Math/UnitConversion.h"
 
 const float UHUDWidget::DELTATIME = 0.1f;
 
@@ -180,7 +177,7 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
 }
 
-// 
+// Display the upgrade icon over the weapon.
 void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
 {
 	// Get the image to change the icon for.
@@ -208,9 +205,9 @@ void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
 		return;
 	}
 
+	// Change image from padlock to upgrade icon if it hasn't already.
 	if (UpgradableImage->GetBrush().GetResourceObject() != UpgradeTexture)
 	{
-		// Change image from padlock to upgrade icon.
 		UpgradableImage->SetBrushFromAtlasInterface(UpgradeTexture);
 	}
 	

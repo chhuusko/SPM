@@ -5,7 +5,6 @@
 #include "HeadMountedDisplayTypes.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
-#include "SniperScopeWidget.h"
 
 void ASniper::BeginPlay()
 {

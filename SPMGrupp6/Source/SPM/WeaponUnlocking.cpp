@@ -8,7 +8,7 @@
 #include "ShooterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "HUDWidget.h"
+#include "UI/HUDWidget.h"
 #include "ShooterPlayerController.h"
 
 // Sets default values for this component's properties
