@@ -17,24 +17,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b441fb19-a1f3-4497-9424-896203807a4e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/projectSettingsUpdater.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_doorway_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_doorway_300x300x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_pillar_330x50x50.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_pillar_330x50x50.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_leftcorner_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_leftcorner_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_rightcorner_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_rightcorner_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_window_300x150x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_window_300x150x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_sideroof_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_sideroof_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_stairs_150x170x100.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_stairs_150x170x100.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_steelbeam_300x30x50.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_steelbeam_300x30x50.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_wall_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_wall_300x300x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_wall_window_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_wall_window_300x300x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Down_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Down_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Left_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Left_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Right_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Right_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Up_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Up_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/padlock.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/padlock.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dash.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dash.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Upgrade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Upgrade.uasset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,21 +41,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C/C++ Project.SPM.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "design__C-H",
-    "ignore.virus.scanning.warn.message": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C/C++ Project.SPM.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;design__C-H&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C/C++ Project.SPM">
     <configuration name="SPM" type="CppProject" factoryName="C++ Project">
       <configuration_1 setup="1">
@@ -202,6 +187,7 @@
       <updated>1744378028363</updated>
       <workItem from="1744378029939" duration="271000" />
       <workItem from="1746878048186" duration="1487000" />
+      <workItem from="1746958309176" duration="1429000" />
     </task>
     <servers />
   </component>
