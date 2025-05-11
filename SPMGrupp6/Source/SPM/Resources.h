@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Resources.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResourceModified);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SPM_API UResources : public UActorComponent
@@ -29,4 +30,6 @@ public:
 	void ModifyResourceAmount(int ResourceAmount);
 	bool HasEnoughResources(int Cost);
 	void SpendResources(int Cost);
+
+	FOnResourceModified ResourceModified;
 };

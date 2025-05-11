@@ -79,6 +79,9 @@ public:
 	UFUNCTION()
 	void ShowWeaponUpgradeUI(EWeaponType Weapon);
 
+	UFUNCTION()
+	void HideWeaponUpgradeUI(EWeaponType Weapon);
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
