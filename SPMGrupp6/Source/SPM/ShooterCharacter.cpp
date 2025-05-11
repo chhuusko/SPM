@@ -4,7 +4,7 @@
 #include "ShooterCharacter.h"
 
 #include "Gun.h"
-#include "HUDWidget.h"
+#include "UI/HUDWidget.h"
 #include "ShooterPlayerController.h"
 #include "SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
@@ -24,6 +24,7 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	MovementComponent = GetCharacterMovement();
+	PlayerController = Cast<AShooterPlayerController>(GetController());
 	
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
@@ -144,6 +145,12 @@ void AShooterCharacter::UseJetpack()
 			bCanRechargeJetpack = false;
 		}
 		LaunchCharacter(FVector(0, 0, JetpackPower), false, true);
+
+		if (PlayerController && PlayerController->HUDWidget)
+		{
+			// Start updating jetpack fuel indicator.
+			PlayerController->HUDWidget->StartJetpackUpdate();
+		}
 	}
 
 	JetpackCharge--;
@@ -309,13 +316,10 @@ void AShooterCharacter::StopWeaponAbility()
 void AShooterCharacter::UpdatePlayerHealth()
 {
 	// The hud exists.
-	if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetController()))
+	if (PlayerController && PlayerController->HUDWidget)
 	{
-		if (PlayerController->HUDWidget)
-		{
-			// Update player's health.
-			PlayerController->HUDWidget->UpdateHealth(this);
-		}
+		// Update player's health.
+		PlayerController->HUDWidget->UpdateHealth(this);
 	}
 }
 
