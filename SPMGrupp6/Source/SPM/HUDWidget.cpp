@@ -11,6 +11,7 @@
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "Components/TimelineComponent.h"
+#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "Math/UnitConversion.h"
 
 const float UHUDWidget::DELTATIME = 0.1f;
@@ -144,6 +145,7 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		break;
 	case EWeaponType::Shotgun:
 		NextWeaponBorder = ShotgunBorder;
+		
 		if (ShotgunPadlock->IsVisible())
 		{
 			ShotgunPadlock->SetVisibility(ESlateVisibility::Hidden);
@@ -151,6 +153,7 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		break;
 	case EWeaponType::SniperRifle:
 		NextWeaponBorder = SniperRifleBorder;
+		
 		if (SniperRiflePadlock->IsVisible())
 		{
 			SniperRiflePadlock->SetVisibility(ESlateVisibility::Hidden);
@@ -158,6 +161,7 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		break;
 	default:
 		NextWeaponBorder = AssaultRifleBorder;
+		
 		if (AssaultRiflePadlock->IsVisible())
 		{
 			AssaultRiflePadlock->SetVisibility(ESlateVisibility::Hidden);
@@ -174,4 +178,41 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	// Change color of newly equipped weapon and it's border.
 	EquippedWeaponBorder->SetBrushColor(FLinearColor(.75f, .75f, .75f, 1.f));
 	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
+}
+
+// 
+void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
+{
+	// Get the image to change the icon for.
+	UImage* UpgradableImage;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		UpgradableImage = AutoPistolPadlock;
+		break;
+	case EWeaponType::Shotgun:
+		UpgradableImage = ShotgunPadlock;
+		break;
+	case EWeaponType::SniperRifle:
+		UpgradableImage = SniperRiflePadlock;
+		break;
+	case EWeaponType::AssaultRifle:
+		UpgradableImage = AssaultRiflePadlock;
+		break;
+	default:
+		return;
+	}
+	
+	if (UpgradableImage->IsVisible())
+	{
+		return;
+	}
+
+	if (UpgradableImage->GetBrush().GetResourceObject() != UpgradeTexture)
+	{
+		// Change image from padlock to upgrade icon.
+		UpgradableImage->SetBrushFromAtlasInterface(UpgradeTexture);
+	}
+	
+	UpgradableImage->SetVisibility(ESlateVisibility::Visible);
 }

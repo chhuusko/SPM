@@ -44,6 +44,9 @@ public:
 	class UProgressBar* JetpackFuelBar;
 
 	UPROPERTY(meta = (BindWidget))
+	class UImage* AutoPistolPadlock;
+
+	UPROPERTY(meta = (BindWidget))
 	class UImage* ShotgunPadlock;
 
 	UPROPERTY(meta = (BindWidget))
@@ -52,8 +55,11 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* SniperRiflePadlock;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCurveFloat* DashCooldownCurve;
+	UPROPERTY(EditDefaultsOnly)
+	UTexture2D* PadlockTexture;
+
+	UPROPERTY(EditDefaultsOnly)
+	UTexture2D* UpgradeTexture;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
@@ -69,6 +75,9 @@ public:
 
 	UFUNCTION()
 	void UpdateEquippedWeapon(EWeaponType Weapon);
+
+	UFUNCTION()
+	void ShowWeaponUpgradeUI(EWeaponType Weapon);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
