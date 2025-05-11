@@ -274,6 +274,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		{
 			WeaponPool.Add(WeaponType, PooledGun);
 			PooledGun->SetOwner(CharacterOwner);
+			PooledGun->SetActorEnableCollision(false);
 		}
 		else
 		{
