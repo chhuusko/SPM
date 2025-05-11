@@ -135,34 +135,24 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
 	UBorder* NextWeaponBorder;
+	UImage* Image;
 	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
 		NextWeaponBorder = AutoPistolBorder;
+		Image = AutoPistolPadlock;
 		break;
 	case EWeaponType::Shotgun:
 		NextWeaponBorder = ShotgunBorder;
-		
-		if (ShotgunPadlock->IsVisible())
-		{
-			ShotgunPadlock->SetVisibility(ESlateVisibility::Hidden);
-		}
+		Image = ShotgunPadlock;
 		break;
 	case EWeaponType::SniperRifle:
 		NextWeaponBorder = SniperRifleBorder;
-		
-		if (SniperRiflePadlock->IsVisible())
-		{
-			SniperRiflePadlock->SetVisibility(ESlateVisibility::Hidden);
-		}
+		Image = SniperRiflePadlock;
 		break;
 	default:
 		NextWeaponBorder = AssaultRifleBorder;
-		
-		if (AssaultRiflePadlock->IsVisible())
-		{
-			AssaultRiflePadlock->SetVisibility(ESlateVisibility::Hidden);
-		}
+		Image = AssaultRiflePadlock;
 		break;
 	}
 
@@ -175,6 +165,12 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	// Change color of newly equipped weapon and it's border.
 	EquippedWeaponBorder->SetBrushColor(FLinearColor(.75f, .75f, .75f, 1.f));
 	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
+
+	// Weapon has been unlocked.
+	if (Image->GetBrush().GetResourceObject() == PadlockTexture && Image->IsVisible())
+	{
+		Image->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 // Display the upgrade icon over the weapon.
@@ -199,11 +195,6 @@ void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
 	default:
 		return;
 	}
-	
-	if (UpgradableImage->IsVisible())
-	{
-		return;
-	}
 
 	// Change image from padlock to upgrade icon if it hasn't already.
 	if (UpgradableImage->GetBrush().GetResourceObject() != UpgradeTexture)
@@ -212,4 +203,35 @@ void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
 	}
 	
 	UpgradableImage->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
+{
+	UImage* Image = nullptr;
+	for (int32 EnumValue = 0; EnumValue <= static_cast<int32>(EWeaponType::SniperRifle); ++EnumValue)
+	{
+		// Hide icons for all other weapons.
+		if (EWeaponType WeaponType = static_cast<EWeaponType>(EnumValue); WeaponType != Weapon)
+		{
+			switch (WeaponType)
+			{
+			case EWeaponType::Pistol:
+				Image = AutoPistolPadlock;
+				break;
+			case EWeaponType::Shotgun:
+				Image = ShotgunPadlock;
+				break;
+			case EWeaponType::AssaultRifle:
+				Image = AssaultRiflePadlock;
+				break;
+			case EWeaponType::SniperRifle:
+				Image = SniperRiflePadlock;
+				break;
+			}
+			if (Image->GetBrush().GetResourceObject() == UpgradeTexture && Image->IsVisible())
+			{
+				Image->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+	}
 }

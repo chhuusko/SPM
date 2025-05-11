@@ -41,12 +41,9 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 		}
 
 		// Update the currently equipped weapon in this player's HUD.
-		if (AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(CharacterOwner->GetController()))
+		if (PlayerController && PlayerController->HUDWidget)
 		{
-			if (PlayerController->HUDWidget)
-			{
-				PlayerController->HUDWidget->UpdateEquippedWeapon(WeaponType);
-			}
+			PlayerController->HUDWidget->UpdateEquippedWeapon(WeaponType);
 		}
 	}
 }
@@ -85,6 +82,10 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 		if (ResourceComponent->HasEnoughResources(UnlockCost))
 		{
 			ResourceComponent->SpendResources(UnlockCost);
+			if (PlayerController && PlayerController->HUDWidget)
+			{
+				PlayerController->HUDWidget->HideWeaponUpgradeUI(WeaponType);
+			}
 			State.bUnlocked = true;
 			State.Level = 1;
 			EquipWeapon(WeaponType);
@@ -103,6 +104,11 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 				ResourceComponent->SpendResources(UpgradeCost);
 				State.Level += 1;
 				Gun->ApplyUpgrade(State.Level);
+
+				if (PlayerController && PlayerController->HUDWidget)
+				{
+					PlayerController->HUDWidget->HideWeaponUpgradeUI(WeaponType);
+				}
 				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d upgraded!"),
 									(int32)WeaponType);
 			}else UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade Weapon %d from level %d to  %d"),
@@ -113,6 +119,33 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 									(int32)WeaponType);
 	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d is not in WeaponPool!"),
 									(int32)WeaponType);
+}
+
+void UWeaponUnlocking::CanAffordUpgrade()
+{
+	AGun* Gun;
+	// Loop through all weapons.
+	for (int32 EnumValue = 0; EnumValue <= static_cast<int32>(EWeaponType::SniperRifle); ++EnumValue)
+	{
+		EWeaponType WeaponType = static_cast<EWeaponType>(EnumValue);
+
+		// This weapon hasn't been unlocked yet.
+		if (!WeaponPool.Contains(WeaponType))
+		{
+			continue;
+		}
+		
+		Gun = WeaponPool[WeaponType];
+		if (Gun)
+		{
+			FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
+			int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
+			if (ResourceComponent->HasEnoughResources(UpgradeCost))
+			{
+				PlayerController->HUDWidget->ShowWeaponUpgradeUI(WeaponType);
+			}
+		}
+	}
 }
 
 bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
@@ -129,6 +162,8 @@ void UWeaponUnlocking::BeginPlay()
 	
 	CharacterOwner = Cast<AShooterCharacter>(GetOwner());
 	if (!CharacterOwner) return;
+
+	PlayerController = CharacterOwner->GetController<AShooterPlayerController>();
 	
 	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking BeginPlay - Owner: %s | Controller: %s | LocalController: %s"),
 										*CharacterOwner->GetName(),
@@ -141,6 +176,9 @@ void UWeaponUnlocking::BeginPlay()
 		return;
 	}
 	InitializeWeaponUnlockingSystem();
+
+	// Add the resource instance to check for changes in.
+	ResourceComponent->ResourceModified.AddDynamic(this, &UWeaponUnlocking::CanAffordUpgrade);
 }
 void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 {
