@@ -39,6 +39,12 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* JetpackFuelBar;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* AutoPistolPadlock;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* ShotgunPadlock;
@@ -49,8 +55,11 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* SniperRiflePadlock;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCurveFloat* DashCooldownCurve;
+	UPROPERTY(EditDefaultsOnly)
+	UTexture2D* PadlockTexture;
+
+	UPROPERTY(EditDefaultsOnly)
+	UTexture2D* UpgradeTexture;
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
@@ -59,18 +68,36 @@ public:
 	void StartDashTimer(float CooldownTime);
 
 	UFUNCTION(BlueprintCallable)
+	void StartJetpackUpdate();
+
+	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
 	UFUNCTION()
 	void UpdateEquippedWeapon(EWeaponType Weapon);
 
+	UFUNCTION()
+	void ShowWeaponUpgradeUI(EWeaponType Weapon);
+
+	UFUNCTION()
+	void HideWeaponUpgradeUI(EWeaponType Weapon);
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	virtual void NativeConstruct() override;
-	
+
+	UFUNCTION()
+	void SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor);
+
 	UPROPERTY()
-	FTimeline Timeline;
+	float ElapsedJetpackTime;
+
+	UPROPERTY()
+	float TotalJetpackCooldownTime;
+
+	UFUNCTION()
+	void UpdateJetpackCooldown();
 
 	UFUNCTION()
 	void UpdateDashCooldownTimer(float ElapsedTime);
@@ -79,15 +106,23 @@ private:
 	void DashCooldownFinished();
 
 	UPROPERTY()
-	float ElapsedTime;
+	float ElapsedDashTime;
 	
 	UPROPERTY()
-	float TotalCooldownTime;
+	float TotalDashCooldownTime;
 
 	UPROPERTY()
 	FLinearColor HealthBarStartColor;
+	
+	UPROPERTY()
+	FLinearColor JetpackFuelStartColor;
+
+	UPROPERTY()
+	AShooterCharacter* PlayerCharacter;
 
 	bool bHasDashCooldown;
+
+	bool bJetpackFuelFull = true;
 
 	UBorder* EquippedWeaponBorder;
 };

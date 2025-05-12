@@ -3,7 +3,7 @@
 
 #include "Gun.h"
 
-#include "HUDWidget.h"
+#include "UI/HUDWidget.h"
 #include "MathUtil.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"
@@ -28,6 +28,13 @@ void AGun::BeginPlay()
 {
 	Super::BeginPlay();
 	BulletsLeft = MagazineSize;
+	
+	PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+
+	if (!PlayerController)
+	{
+		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::GetPlayerController);
+	}
 }
 
 // Called every frame
@@ -54,6 +61,12 @@ void AGun::Tick(float DeltaTime)
 	
 	
 }
+
+void AGun::GetPlayerController()
+{
+	PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+}
+
 
 int AGun::GetMagazineSize() const
 {
@@ -200,8 +213,6 @@ void AGun::AddRecoil()
 {
 	float Recoil = FMath::Min(RecoilPerShot + RecoilMultiplier*TimesFired, MaxRecoil);
 	
-	
-	APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
 	if (PlayerController && RecoilCameraShake)
 	{
 		PlayerController->ClientStartCameraShake(RecoilCameraShake);
@@ -240,7 +251,6 @@ AController* AGun::GetOwnerController() const
 void AGun::UpdateAmmoText()
 {
 	// Update players ammo text.
-	AShooterPlayerController* PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
 	if (PlayerController && PlayerController->HUDWidget)
 	{
 		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
