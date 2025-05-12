@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UpgradedPistol.h"
-#include "RadarComponent.h"
+#include "SPM/Minimap/RadarComponent.h"
 
 
 
