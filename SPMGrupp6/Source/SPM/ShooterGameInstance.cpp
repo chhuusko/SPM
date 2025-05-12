@@ -35,32 +35,31 @@ int32 UShooterGameInstance::GetRedScore() const
 void UShooterGameInstance::Init()
 {
 	Super::Init();
-
-	if (CombinedRadarEnabled)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
 	
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::OnPostLoadMap);
-	
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
-	}
+    FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UShooterGameInstance::OnPostLoadMap);
 }
 
-void UShooterGameInstance::OnPostLoadMap()
+void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
 {
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Starting OnPostLoadMap"));
-	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
+	const FString CurrentMapName = LoadedWorld->GetMapName();
+	if (const FString CleanMapName = FPackageName::GetShortName(CurrentMapName); CombinedRadarEnabled && CleanMapName != TEXT("MainMenuMap"))
 	{
-		GlobalMinimapWidget = CreateWidget<UUserWidget>(this, GlobalMinimapWidgetClass);
-		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
+		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
+		if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 		{
-			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
+			GlobalMinimapWidget = CreateWidget<UUserWidget>(this, GlobalMinimapWidgetClass);
+			if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
 			{
-                TSharedRef<SWidget> SlateWidget = GlobalMinimapWidget->TakeWidget();
-				Viewport->AddViewportWidgetContent(SlateWidget, 1000);
-			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to get GameViewport"));
-		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
-	}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));
+				if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
+				{
+	                TSharedRef<SWidget> SlateWidget = GlobalMinimapWidget->TakeWidget();
+					Viewport->AddViewportWidgetContent(SlateWidget, 1000);
+				}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to get GameViewport"));
+			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
+		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));
+		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
+	}
 }
 void UShooterGameInstance::CheckGameWon()
 {

@@ -36,5 +36,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UUserWidget> GlobalMinimapWidget;
 
-	void OnPostLoadMap();
+	void OnPostLoadMap(UWorld* LoadedWorld);
 };
