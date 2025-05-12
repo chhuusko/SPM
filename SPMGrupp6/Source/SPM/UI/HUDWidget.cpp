@@ -10,8 +10,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
-#include "SPM/Drone/Drone.h"
-#include "SPM/Gun.h"
+#include "SPM/Weapons/Gun.h"
 
 void UHUDWidget::NativeConstruct()
 {
