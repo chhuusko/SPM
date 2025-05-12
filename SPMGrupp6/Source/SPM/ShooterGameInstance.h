@@ -21,7 +21,7 @@ public:
 	void IncrementRedScore();
 	int32 GetBlueScore() const;
 	int32 GetRedScore() const;
-	
+	void CheckGameWon();
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> GlobalMinimapWidgetClass;
 
@@ -32,7 +32,7 @@ private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
 	int32 RedScore = 0;
-	
+	int32 ScoreMax = 5;
 	UPROPERTY()
 	TObjectPtr<class UUserWidget> GlobalMinimapWidget;
 

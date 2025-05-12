@@ -30,6 +30,7 @@ public:
 	void ModifyResourceAmount(int ResourceAmount);
 	bool HasEnoughResources(int Cost);
 	void SpendResources(int Cost);
+	int32 GetResourceAmount();
 
 	FOnResourceModified ResourceModified;
 };

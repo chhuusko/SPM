@@ -122,6 +122,7 @@ public:
 	bool bSliding = false;
 	
 private:
+	void SetPlayerController();
 	void UpdatePlayerHealth();
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;

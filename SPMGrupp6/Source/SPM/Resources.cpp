@@ -49,3 +49,8 @@ void UResources::SpendResources(int Cost)
 	ResourceAmount -= Cost;
 }
 
+int32 UResources::GetResourceAmount()
+{
+	return ResourceAmount;
+}
+

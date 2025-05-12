@@ -72,7 +72,6 @@ public:
 private:
 	UPROPERTY()
 	AShooterCharacter* CharacterOwner;
-
 	UPROPERTY()
 	AShooterPlayerController* PlayerController;
 	
@@ -87,6 +86,8 @@ private:
 
 	UFUNCTION()
 	void CanAffordUpgrade();
+	UFUNCTION()
+	void OnCurrencyPickup();
 	
 	UPROPERTY()
 	TMap<EWeaponType, FWeaponState> WeaponStates;

@@ -51,6 +51,13 @@ void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 	AmmoText->SetText(FText::FromString(AmmoString));
 }
 
+// Updates the UI text element showing current amount of currency.
+void UHUDWidget::UpdateCurrencyText(int32 NewValue)
+{
+	FString CurrencyString = FString::Printf(TEXT("%d"), NewValue);
+	CurrencyText->SetText(FText::FromString(CurrencyString));
+}
+
 void UHUDWidget::StartDashTimer(float CooldownTime)
 {
 	// Reset dash cooldown element.
@@ -205,6 +212,14 @@ void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
 	UpgradableImage->SetVisibility(ESlateVisibility::Visible);
 }
 
+// Calls helper methods to update the UI when an upgrade gets applied.
+void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue)
+{
+	HideWeaponUpgradeUI(Weapon);
+	UpdateCurrencyText(NewCurrencyValue);
+}
+
+// Hides symbols in UI when upgrade is applied.
 void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
 {
 	UImage* Image = nullptr;
