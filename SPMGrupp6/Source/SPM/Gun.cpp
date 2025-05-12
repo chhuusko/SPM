@@ -111,6 +111,8 @@ void AGun::Fire()
 
 		AActor* HitActor = Hit.GetActor();
 		if(HitActor)
+		{
+			OnHit.Broadcast(HitActor);
 			if (HitActor->ActorHasTag("Button"))
 			{
 				// Call the ActivateButton event in the Blueprint
@@ -120,15 +122,16 @@ void AGun::Fire()
 				}
 			}
 			else
-		{
-			float ActualDamage = CalculateDamageFalloff(TraceLength);
-			FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
-			AController* OwnerController = GetOwnerController();
-			HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
-
-			if (bDebugDamageFalloff)
 			{
-				UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
+				float ActualDamage = CalculateDamageFalloff(TraceLength);
+				FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
+				AController* OwnerController = GetOwnerController();
+				HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
+
+				if (bDebugDamageFalloff)
+				{
+					UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
+				}
 			}
 		}
 	}

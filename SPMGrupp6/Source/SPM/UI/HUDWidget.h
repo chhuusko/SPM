@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/TimelineComponent.h"
+#include "SPM/WeaponUnlocking.h"
 #include "HUDWidget.generated.h"
 
 enum class EWeaponType : uint8;
@@ -17,8 +17,6 @@ class SPM_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	static const float DELTATIME;
-	
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AmmoText;
 
@@ -113,6 +111,12 @@ private:
 
 	UFUNCTION()
 	void HideWeaponUpgradeUI(EWeaponType Weapon);
+
+	UFUNCTION()
+	void AddHitmarker(AActor* HitActor);
+
+	UFUNCTION()
+	void GetGun();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -128,6 +132,12 @@ private:
 
 	UPROPERTY()
 	AShooterCharacter* PlayerCharacter;
+
+	UPROPERTY()
+	AGun* Gun;
+
+	UPROPERTY()
+	UWeaponUnlocking* WeaponUnlocking;
 
 	bool bHasDashCooldown;
 
