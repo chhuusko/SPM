@@ -7,7 +7,7 @@
 
 void AUpgradedAssaultRifle::WeaponAbility()
 {
-	//if (!bCanUseAbility || !PulseGrenadeClass) return;
+	if (!bCanUseAbility) return;
 
 	bCanUseAbility = false;
 	GetWorldTimerManager().SetTimer(
@@ -17,16 +17,26 @@ void AUpgradedAssaultRifle::WeaponAbility()
 		AbilityCooldown, 
 		false
 	);
-	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * ProjectileSpawnOffset;
-		 
+
 	AController* OwnerController = GetOwnerController();
 	if (!OwnerController) return;
 
+	FVector SpawnLocation = GetActorLocation() + OwnerController->GetControlRotation().Vector() * ProjectileSpawnOffset;
 	FRotator SpawnRotation = OwnerController->GetControlRotation();
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Instigator = GetInstigator();
 	SpawnParams.Owner = this;
+
+	if (!HomingMissileClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HomingMissileClass is null"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Attempting to spawn projectile at: %s"), *SpawnLocation.ToString());
+
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AExplosiveProjectile>(
 		HomingMissileClass,

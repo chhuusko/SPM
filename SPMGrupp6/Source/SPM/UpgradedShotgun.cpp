@@ -17,11 +17,11 @@ void AUpgradedShotgun::WeaponAbility()
 		AbilityCooldown, 
 		false
 	);
-		FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * ProjectileSpawnOffset;
 		 
 		AController* OwnerController = GetOwnerController();
 		if (!OwnerController) return;
 
+		FVector SpawnLocation = GetActorLocation() + OwnerController->GetControlRotation().Vector() * ProjectileSpawnOffset;
 		FRotator SpawnRotation = OwnerController->GetControlRotation();
 
 		FActorSpawnParameters SpawnParams;
