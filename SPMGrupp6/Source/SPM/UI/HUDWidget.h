@@ -56,6 +56,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* SniperRiflePadlock;
 
+	UPROPERTY(meta = (BindWidget))
+	class UImage* HitMarker;
+
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* PadlockTexture;
 
@@ -114,6 +117,9 @@ private:
 
 	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
+	
+	UFUNCTION()
+	void RemoveHitMarker();
 
 	UFUNCTION()
 	void GetGun();
@@ -138,10 +144,15 @@ private:
 
 	UPROPERTY()
 	UWeaponUnlocking* WeaponUnlocking;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float HitmarkerTime = 1;
 
 	bool bHasDashCooldown;
 
 	bool bJetpackFuelFull = true;
 
 	UBorder* EquippedWeaponBorder;
+
+	FTimerHandle TimerHandle;
 };
