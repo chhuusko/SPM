@@ -130,6 +130,8 @@ void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor Star
 // Update health bar value.
 void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Updating Health"));
+	
 	float HealthPercent = Player->GetHealthPercent();
 
 	SetBarColor(HealthBar, HealthPercent, HealthBarStartColor);
