@@ -11,6 +11,7 @@
 #include "Components/CanvasPanelSlot.h"
 #include "UI/SniperScopeWidget.h"
 
+
 void AShooterPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -31,20 +32,29 @@ void AShooterPlayerController::BeginPlay()
 void AShooterPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	const float GamepadX = GetInputAnalogKeyState(EKeys::Gamepad_LeftX);
-	const float GamepadY = GetInputAnalogKeyState(EKeys::Gamepad_LeftY);
+	const float GamepadRightX = GetInputAnalogKeyState(EKeys::Gamepad_RightX);
+	const float GamepadRightY = GetInputAnalogKeyState(EKeys::Gamepad_RightY);
 
-	if (FMath::Abs(GamepadX) > 0.1f || FMath::Abs(GamepadY) > 0.1f)
+	if (FMath::Abs(GamepadRightX) > 0.02f || FMath::Abs(GamepadRightY) > 0.02f)
 	{
-		bIsUsingGamepad = true;
+		bUsingRightStick = true;
+		GetWorld()->GetTimerManager().ClearTimer(PauseAimAssistTimer);
+	}
+	else if (!GetWorld()->GetTimerManager().IsTimerActive(PauseAimAssistTimer))
+	{
+		GetWorld()->GetTimerManager().SetTimer(PauseAimAssistTimer, this, &AShooterPlayerController::PauseAimAssist, 0.25, false);
 	}
     
-	if (bAimAssistActivated && bIsUsingGamepad)
+	if (bAimAssistActivated && bUsingRightStick)
 	{
 		UpdateAimAssist(DeltaSeconds);
 	}
 }
 
+void AShooterPlayerController::PauseAimAssist()
+{
+	bUsingRightStick = false;
+}
 
 // Adds sniper scope to screen.
 void AShooterPlayerController::AddSniperScope()
@@ -152,7 +162,7 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
 
 			FQuat CapsuleRot = FRotationMatrix::MakeFromZ(SweepAxis).ToQuat();
 
-			// Rita hela sweep-volymen som en kapsel
+			// Draw the whole Sphere as a capsule for debugging
 			DrawDebugCapsule(
 				GetWorld(),
 				SweepCenter,
@@ -175,9 +185,40 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
 			APawn* EnemyPawn = Cast<APawn>(Hit.GetActor());
 			if (!EnemyPawn || EnemyPawn == GetPawn()) continue;
 
-			AController* Controller = EnemyPawn->GetController();
-			if (!Controller || !Controller->IsPlayerController()) continue;
+			// Raycast to potential target to see if the target is visible to the player
+			FHitResult SightHit;
+			bool bBlocked = GetWorld()->LineTraceSingleByChannel(
+				SightHit,
+				CameraLocation,
+				EnemyPawn->GetActorLocation(),
+				ECC_Visibility,
+				CollisionParams
+			);
 
+			if (bDebugAimAssist)
+			{
+				DrawDebugLine(
+					GetWorld(),
+					CameraLocation,
+					EnemyPawn->GetActorLocation(),
+					bBlocked ? FColor::Red : FColor::Blue,
+					false,
+					1.0f,
+					0,
+					1.0f
+				);
+			}
+			
+			// Skip Target if sight is blocked
+			if (bBlocked && SightHit.GetActor() != EnemyPawn) continue;
+
+			// Return target if it's a player and not a NPC
+			if (EnemyPawn->IsA(AShooterCharacter::StaticClass()))
+			{
+				return EnemyPawn;
+			}
+
+			// Calculate dot product to find best target
 			FVector ToTarget = (EnemyPawn->GetActorLocation() - CameraLocation).GetSafeNormal();
 			float Dot = FVector::DotProduct(CameraRotation.Vector(), ToTarget);
 
@@ -215,8 +256,11 @@ float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
 
 	
 	// Calculate assist amount based on dotProduct and distance
-	return (AimAlignment * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
-    
+	if (Target->IsA(AShooterCharacter::StaticClass()))
+	{
+		return (AimAlignment * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
+	}
+	return (AimAlignment * DotProductMultiplier) * (DistanceFactor * NPCDistanceMultiplier);
 }
 
 void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime)
@@ -227,7 +271,13 @@ void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target
     }
     
     FRotator CurrentRotation = GetControlRotation();
-	FVector AdjustedTargetLocation = Target->GetActorLocation() + FVector(0, 0, AimAssistVerticalOffset);
+	FVector AdjustedTargetLocation = Target->GetActorLocation();
+
+	// If Target is a shooter Character, add offset to match character length.
+	if (Target->IsA(AShooterCharacter::StaticClass()))
+	{
+		AdjustedTargetLocation += FVector(0,0,AimAssistVerticalOffset);
+	}
 
     FVector TargetVector = (AdjustedTargetLocation - PlayerCameraManager->GetCameraLocation()).GetSafeNormal();
     FRotator TargetRotation = TargetVector.Rotation();

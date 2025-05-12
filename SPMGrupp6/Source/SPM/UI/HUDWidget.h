@@ -76,7 +76,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartJetpackUpdate();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
 	UFUNCTION()

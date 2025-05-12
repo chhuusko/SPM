@@ -25,11 +25,22 @@ void AShooterCharacter::BeginPlay()
 
 	MovementComponent = GetCharacterMovement();
 	PlayerController = Cast<AShooterPlayerController>(GetController());
+
+	// The PlayerController hasn't been created yet, check next tick.
+	if (!PlayerController)
+	{
+		GetWorldTimerManager().SetTimerForNextTick(this, &AShooterCharacter::SetPlayerController);
+	}
 	
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
 	MouseRotationRate = MouseDefaultRotationRate;
 	SetCrouch((false));
+}
+
+void AShooterCharacter::SetPlayerController()
+{
+	PlayerController = Cast<AShooterPlayerController>(GetController());
 }
 
 bool AShooterCharacter::IsDead() const
@@ -313,6 +324,7 @@ void AShooterCharacter::StopWeaponAbility()
 	if (!Gun) return;
 	Gun->StopWeaponAbility();
 }
+
 void AShooterCharacter::UpdatePlayerHealth()
 {
 	// The hud exists.
