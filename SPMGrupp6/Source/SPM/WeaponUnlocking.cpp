@@ -84,7 +84,7 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 			ResourceComponent->SpendResources(UnlockCost);
 			if (PlayerController && PlayerController->HUDWidget)
 			{
-				PlayerController->HUDWidget->HideWeaponUpgradeUI(WeaponType);
+				PlayerController->HUDWidget->UpgradeApplied(WeaponType, ResourceComponent->GetResourceAmount());
 			}
 			State.bUnlocked = true;
 			State.Level = 1;
@@ -107,7 +107,7 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 
 				if (PlayerController && PlayerController->HUDWidget)
 				{
-					PlayerController->HUDWidget->HideWeaponUpgradeUI(WeaponType);
+					PlayerController->HUDWidget->UpgradeApplied(WeaponType, ResourceComponent->GetResourceAmount());
 				}
 				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d upgraded!"),
 									(int32)WeaponType);
@@ -148,6 +148,15 @@ void UWeaponUnlocking::CanAffordUpgrade()
 	}
 }
 
+void UWeaponUnlocking::OnCurrencyPickup()
+{
+	if (PlayerController && PlayerController->HUDWidget)
+	{
+		PlayerController->HUDWidget->UpdateCurrencyText(ResourceComponent->GetResourceAmount());
+	}
+	CanAffordUpgrade();
+}
+
 bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
 {
 	const FWeaponState* State = WeaponStates.Find(WeaponType);
@@ -178,7 +187,7 @@ void UWeaponUnlocking::BeginPlay()
 	InitializeWeaponUnlockingSystem();
 
 	// Add the resource instance to check for changes in.
-	ResourceComponent->ResourceModified.AddDynamic(this, &UWeaponUnlocking::CanAffordUpgrade);
+	ResourceComponent->ResourceModified.AddDynamic(this, &UWeaponUnlocking::OnCurrencyPickup);
 }
 void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 {

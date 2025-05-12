@@ -23,6 +23,9 @@ public:
 	class UTextBlock* AmmoText;
 
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* CurrencyText;
+
+	UPROPERTY(meta = (BindWidget))
 	class UBorder* AutoPistolBorder;
 
 	UPROPERTY(meta = (BindWidget))
@@ -61,8 +64,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* UpgradeTexture;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
+
+	UFUNCTION()
+	void UpdateCurrencyText(int32 NewValue);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartDashTimer(float CooldownTime);
@@ -70,7 +76,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartJetpackUpdate();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	void UpdateHealth(AShooterCharacter* Player);
 
 	UFUNCTION()
@@ -80,7 +86,7 @@ public:
 	void ShowWeaponUpgradeUI(EWeaponType Weapon);
 
 	UFUNCTION()
-	void HideWeaponUpgradeUI(EWeaponType Weapon);
+	void UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -105,6 +111,9 @@ private:
 	UFUNCTION()
 	void DashCooldownFinished();
 
+	UFUNCTION()
+	void HideWeaponUpgradeUI(EWeaponType Weapon);
+	
 	UPROPERTY()
 	float ElapsedDashTime;
 	
