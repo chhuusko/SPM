@@ -4,9 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "ExplosiveProjectile.h"
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "PulseGrenade.generated.h"
 
+class UProjectileMovementComponent;
 
 /**
  * 

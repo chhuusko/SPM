@@ -83,9 +83,3 @@ void APistol::Fire()
 		OnFired.Broadcast();
 	}
 
-
-void APistol::PullTrigger()
-{
-	Super::PullTrigger();
-}
-

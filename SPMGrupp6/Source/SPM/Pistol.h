@@ -15,7 +15,6 @@ class SPM_API APistol : public AGun
 	GENERATED_BODY()
 
 public:
-	virtual void PullTrigger() override;
 	virtual void Fire() override;
 private:
 	UPROPERTY(EditAnywhere)
