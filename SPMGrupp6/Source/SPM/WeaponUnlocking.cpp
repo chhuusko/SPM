@@ -232,8 +232,8 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 		Input->BindAction(IA_UpgradeSlot4, ETriggerEvent::Triggered, this, &UWeaponUnlocking::UpgradeSlot4);
 		
 		Input->BindAction(IA_HotSwap, ETriggerEvent::Triggered, this, &UWeaponUnlocking::HotSwap);
-		Input->BindAction(IA_SwapForward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapForward);
-		Input->BindAction(IA_SwapBackward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapBackward);
+		Input->BindAction(IA_SwapForward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapBackward);
+		Input->BindAction(IA_SwapBackward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapForward);
 	}
 	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking started successfully"));
 }

@@ -35,20 +35,31 @@ int32 UShooterGameInstance::GetRedScore() const
 void UShooterGameInstance::Init()
 {
 	Super::Init();
-
-	if (CombinedRadarEnabled)
+	
+	// Bind for future map loads
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UShooterGameInstance::OnPostLoadMap);
+	
+	// Handle the initial map load manually
+	if (UWorld* CurrentWorld = GetWorld())
 	{
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
-	
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::OnPostLoadMap);
-	
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
+		OnPostLoadMap(CurrentWorld);
 	}
 }
 
-void UShooterGameInstance::OnPostLoadMap()
+void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
 {
-	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Starting OnPostLoadMap"));
+	FString CleanMapName = UGameplayStatics::GetCurrentLevelName(this, true);
+	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance] Starting OnPostLoadMap on [%s]"),
+										*CleanMapName);
+	if (CombinedRadarEnabled && CleanMapName != TEXT("MainMenuMap"))
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::LoadCombinedMinimap);
+	}
+}
+
+void UShooterGameInstance::LoadCombinedMinimap()
+{
+	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
 		GlobalMinimapWidget = CreateWidget<UUserWidget>(this, GlobalMinimapWidgetClass);
@@ -56,17 +67,20 @@ void UShooterGameInstance::OnPostLoadMap()
 		{
 			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
 			{
-                TSharedRef<SWidget> SlateWidget = GlobalMinimapWidget->TakeWidget();
+				TSharedRef<SWidget> SlateWidget = GlobalMinimapWidget->TakeWidget();
 				Viewport->AddViewportWidgetContent(SlateWidget, 1000);
 			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to get GameViewport"));
 		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
 	}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));
+	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
 }
+
 void UShooterGameInstance::CheckGameWon()
 {
 	if (RedScore > ScoreMax && BlueScore > ScoreMax)
 	{
-		///TODO ta en till start meny
+		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+		
 		///TODO ta Bort alla värden
 		Round = 0;
 		BlueScore = 0;
