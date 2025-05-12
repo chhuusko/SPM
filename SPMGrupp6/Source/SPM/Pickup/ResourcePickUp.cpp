@@ -31,7 +31,7 @@ void AResourcePickUp::BeginPlay()
 void AResourcePickUp::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), TargetActor->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(this), 3.f);
+	FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), TargetActor->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(this), 2.5f);
 	SetActorLocation(NewLocation, false);
 }
 
