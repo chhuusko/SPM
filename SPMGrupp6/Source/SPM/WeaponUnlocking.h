@@ -65,6 +65,10 @@ protected:
 	void EquipSlot4(const FInputActionInstance& Instance);
 	void UpgradeSlot4(const FInputActionInstance& Instance);
 
+	void SwapForward(const FInputActionInstance& Instance);
+	void SwapBackward(const FInputActionInstance& Instance);
+	void HotSwap(const FInputActionInstance& Instance);
+	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -120,4 +124,14 @@ private:
 	UInputAction* IA_EquipSlot4;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* IA_UpgradeSlot4;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* IA_HotSwap;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* IA_SwapForward;
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputAction* IA_SwapBackward;
+	
+	EWeaponType CurrentWeapon = EWeaponType::Pistol;
+	EWeaponType LastWeapon = EWeaponType::Pistol;
 };
