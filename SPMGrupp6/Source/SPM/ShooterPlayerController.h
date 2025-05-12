@@ -32,7 +32,7 @@ protected:
 	TSubclassOf<class UHUDWidget> HUDWidgetClass;
 	
 	UPROPERTY(VisibleAnywhere)
-	bool bIsUsingGamepad = false;
+	bool bUsingRightStick = false;
 	
 private:
 	void InitializeHUD();
@@ -81,6 +81,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool bAimAssistActivated = true;
 
+	void PauseAimAssist();
+	FTimerHandle PauseAimAssistTimer;
 
 	void UpdateAimAssist(float DeltaTime);
 	AActor* FindAimAssistTarget();
