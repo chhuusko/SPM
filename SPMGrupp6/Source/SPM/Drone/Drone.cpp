@@ -3,7 +3,7 @@
 
 #include "Drone.h"
 #include "DroneState.h"
-#include "HealthPickUp.h"
+#include "SPM/Pickup/HealthPickUp.h"
 #include "DroneBullet.h"
 #include "DroneSpawn.h"
 #include "SceneRenderTargetParameters.h"

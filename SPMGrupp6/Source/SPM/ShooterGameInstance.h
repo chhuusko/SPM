@@ -32,7 +32,7 @@ private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
 	int32 RedScore = 0;
-	int32 ScoreMax = 5;
+	int32 ScoreMax = 3;
 	UPROPERTY()
 	TObjectPtr<class UUserWidget> GlobalMinimapWidget;
 

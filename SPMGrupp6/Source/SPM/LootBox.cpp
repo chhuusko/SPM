@@ -2,7 +2,7 @@
 
 
 #include "LootBox.h"
-#include "ResourcePickUp.h"
+#include "SPM/Pickup/ResourcePickUp.h"
 #include "Components/BoxComponent.h"
 
 // Sets default values
