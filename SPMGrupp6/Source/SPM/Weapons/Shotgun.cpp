@@ -4,7 +4,6 @@
 #include "Shotgun.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
-#include "ShooterPlayerController.h"
 
 
 

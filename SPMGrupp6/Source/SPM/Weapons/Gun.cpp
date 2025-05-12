@@ -3,10 +3,10 @@
 
 #include "Gun.h"
 
-#include "UI/HUDWidget.h"
+#include "SPM/UI/HUDWidget.h"
 #include "MathUtil.h"
-#include "ShooterCharacter.h"
-#include "ShooterPlayerController.h"
+#include "SPM/ShooterCharacter.h"
+#include "SPM/ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 

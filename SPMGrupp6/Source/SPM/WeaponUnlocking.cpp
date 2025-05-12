@@ -2,8 +2,7 @@
 
 
 #include "WeaponUnlocking.h"
-
-#include "Gun.h"
+#include "Weapons/Gun.h"
 #include "Resources.h"
 #include "ShooterCharacter.h"
 #include "EnhancedInputComponent.h"
