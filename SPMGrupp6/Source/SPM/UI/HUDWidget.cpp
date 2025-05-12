@@ -10,8 +10,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
-
-const float UHUDWidget::DELTATIME = 0.1f;
+#include "SPM/Gun.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -26,6 +25,24 @@ void UHUDWidget::NativeConstruct()
 
 	// Get the player at start, so we don't need to cast each tick.
 	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
+
+	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
+
+	if (!WeaponUnlocking)
+		UE_LOG(LogTemp, Warning, TEXT("No WeaponUnlocking!"));
+
+	WeaponUnlocking->OnWeaponSwap.AddDynamic(this, &UHUDWidget::UpdateEquippedWeapon);
+
+	Gun = PlayerCharacter->GetGun();
+
+	if (Gun)
+	{
+		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
+	}
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -42,6 +59,16 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		UpdateJetpackCooldown();
 	}
+}
+
+void UHUDWidget::GetGun()
+{
+	if (Gun)
+	{
+		Gun->OnHit.Clear();
+	}
+	Gun = PlayerCharacter->GetGun();
+	Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 }
 
 // Updates the ammo text in the HUD.
@@ -141,6 +168,7 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 // Updates information of currently equipped weapon in HUD.
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
+	GetGun();
 	UBorder* NextWeaponBorder;
 	UImage* Image;
 	switch (Weapon)
@@ -250,3 +278,10 @@ void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
 		}
 	}
 }
+
+void UHUDWidget::AddHitmarker(AActor* HitActor)
+{
+	
+}
+
+

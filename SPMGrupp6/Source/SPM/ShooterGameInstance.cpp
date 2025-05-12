@@ -66,6 +66,11 @@ void UShooterGameInstance::CheckGameWon()
 {
 	if (RedScore > ScoreMax && BlueScore > ScoreMax)
 	{
+		///TODO ta en till start meny
+		///TODO ta Bort alla värden
+		Round = 0;
+		BlueScore = 0;
+		RedScore = 0;
 		
 	}
 }

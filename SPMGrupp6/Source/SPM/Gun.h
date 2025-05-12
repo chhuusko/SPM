@@ -10,6 +10,7 @@
 class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, AActor*, HitActor);
 
 UCLASS()
 class SPM_API AGun : public AActor
@@ -24,6 +25,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Fire")
 	FOnFired OnFired;
+
+	FOnHit OnHit;
 	
 protected:
 	// Called when the game starts or when spawned
