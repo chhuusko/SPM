@@ -10,6 +10,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
+#include "SPM/Drone.h"
 #include "SPM/Gun.h"
 
 void UHUDWidget::NativeConstruct()
@@ -284,8 +285,11 @@ void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
 // Show the hit marker for a limited time.
 void UHUDWidget::AddHitmarker(AActor* HitActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AddHitmarker"));
-	
+	// Hitting the environment shouldn't display the hit marker.
+	if (!Cast<APawn>(HitActor))
+	{
+		return;
+	}
 	HitMarker->SetVisibility(ESlateVisibility::Visible);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
 }
