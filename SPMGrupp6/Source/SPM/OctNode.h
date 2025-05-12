@@ -9,10 +9,18 @@
  */
 class SPM_API FOctNode
 {
+	
 public:
-	float HalfSize;
+	FOctNode(FVector Position, FVector Size) : Position(Position), Size(Size), Parent(nullptr) {
+        for (int i = 0; i < 8; ++i) {
+            Children[i] = nullptr;
+        }
+    }
 	FVector Position;
+	FVector Size;
 	FOctNode* Parent;
 	FOctNode* Children[8];
 	bool isLeaf = false;
+	void AddChildren();
 };
+

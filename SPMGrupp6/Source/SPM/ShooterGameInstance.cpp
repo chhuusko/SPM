@@ -8,6 +8,7 @@
 
 int32 UShooterGameInstance::GetIncrementedRound()
 {
+	CheckGameWon();
 	return ++Round;
 }
 
@@ -60,4 +61,11 @@ void UShooterGameInstance::OnPostLoadMap()
 			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to get GameViewport"));
 		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
 	}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));
+}
+void UShooterGameInstance::CheckGameWon()
+{
+	if (RedScore > ScoreMax && BlueScore > ScoreMax)
+	{
+		
+	}
 }
