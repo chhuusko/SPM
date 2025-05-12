@@ -44,8 +44,6 @@ void APistol::Fire()
 
 			AActor* HitActor = Hit.GetActor();
 			if(HitActor)
-			{
-				OnHit.Broadcast(HitActor);
 				if (HitActor->ActorHasTag("Button"))
 				{
 					// Call the ActivateButton event in the Blueprint
@@ -67,7 +65,6 @@ void APistol::Fire()
 						UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
 					}
 				}
-			}
 		}
 		AddRecoil();
 		BulletsLeft--;

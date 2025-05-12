@@ -28,9 +28,13 @@ void UHUDWidget::NativeConstruct()
 
 	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
 
+	if (!WeaponUnlocking)
+		UE_LOG(LogTemp, Warning, TEXT("No WeaponUnlocking!"));
+
 	WeaponUnlocking->OnWeaponSwap.AddDynamic(this, &UHUDWidget::UpdateEquippedWeapon);
 
 	Gun = PlayerCharacter->GetGun();
+
 	if (Gun)
 	{
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
@@ -59,18 +63,12 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UHUDWidget::GetGun()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Getgun"));
-	
-	Gun = PlayerCharacter->GetGun();
 	if (Gun)
 	{
 		Gun->OnHit.Clear();
-		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 	}
-	else
-	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
-	}
+	Gun = PlayerCharacter->GetGun();
+	Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 }
 
 // Updates the ammo text in the HUD.
@@ -281,17 +279,9 @@ void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
 	}
 }
 
-// Show the hit marker for a limited time.
 void UHUDWidget::AddHitmarker(AActor* HitActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AddHitmarker"));
 	
-	HitMarker->SetVisibility(ESlateVisibility::Visible);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
 }
 
-// Remove hit marker.
-void UHUDWidget::RemoveHitMarker()
-{
-	HitMarker->SetVisibility(ESlateVisibility::Hidden);
-}
+
