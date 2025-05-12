@@ -10,6 +10,7 @@ class AShooterPlayerController;
 class AGun;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTakeDamage);
 
 UCLASS()
 class SPM_API AShooterCharacter : public ACharacter
@@ -40,6 +41,8 @@ public:
 	
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
+
+	FOnTakeDamage OnTakeDamage;
 	
 	void Heal(int HealAmount);
 	// Called every frame

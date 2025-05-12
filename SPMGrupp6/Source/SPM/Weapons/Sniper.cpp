@@ -1,10 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Sniper.h"
-
-#include "HeadMountedDisplayTypes.h"
-#include "ShooterCharacter.h"
-#include "ShooterPlayerController.h"
+#include "SPM/ShooterCharacter.h"
+#include "SPM/ShooterPlayerController.h"
 
 void ASniper::BeginPlay()
 {

@@ -3,7 +3,7 @@
 
 #include "DroneBullet.h"
 
-#include "ShooterCharacter.h"
+#include "SPM/ShooterCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 

@@ -77,14 +77,16 @@ void UShooterGameInstance::LoadCombinedMinimap()
 
 void UShooterGameInstance::CheckGameWon()
 {
-	if (RedScore > ScoreMax && BlueScore > ScoreMax)
+	UE_LOG(LogTemp, Warning, TEXT("RedScore %d : BlueScore %d"), RedScore, BlueScore);
+	if (1+RedScore >= ScoreMax || 1+BlueScore >= ScoreMax)
 	{
+		Round = 0;
+     	BlueScore = 0;
+     	RedScore = 0;
 		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
 		
 		///TODO ta Bort alla värden
-		Round = 0;
-		BlueScore = 0;
-		RedScore = 0;
+		///TODO Skapar ERROR
 		
 	}
 }

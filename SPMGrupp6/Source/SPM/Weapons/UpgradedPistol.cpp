@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UpgradedPistol.h"
-#include "RadarComponent.h"
+#include "SPM/RadarComponent.h"
 
 
 
@@ -26,6 +26,7 @@ void AUpgradedPistol::WeaponAbility()
 		if (Radar)
 		{
 			Radar->Pulse();
+			UE_LOG(LogTemp, Display, TEXT("Pulse metod körs"));
 		}
 	}
 }
