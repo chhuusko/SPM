@@ -32,7 +32,7 @@ protected:
 	TSubclassOf<class UHUDWidget> HUDWidgetClass;
 	
 	UPROPERTY(VisibleAnywhere)
-	bool bIsUsingGamepad = false;
+	bool bUsingRightStick = false;
 	
 private:
 	void InitializeHUD();
@@ -65,6 +65,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float DistanceMultiplier = 1;
+	
+	UPROPERTY(EditAnywhere)
+	float NPCDistanceMultiplier = 0.5;
 
 	UPROPERTY(EditAnywhere)
 	float MaxAssistRange = 6000;
@@ -81,6 +84,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool bAimAssistActivated = true;
 
+	void PauseAimAssist();
+	FTimerHandle PauseAimAssistTimer;
 
 	void UpdateAimAssist(float DeltaTime);
 	AActor* FindAimAssistTarget();
