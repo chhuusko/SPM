@@ -26,6 +26,7 @@ void AUpgradedPistol::WeaponAbility()
 		if (Radar)
 		{
 			Radar->Pulse();
+			UE_LOG(LogTemp, Display, TEXT("Pulse metod körs"));
 		}
 	}
 }
