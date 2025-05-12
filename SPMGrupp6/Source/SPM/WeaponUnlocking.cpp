@@ -30,6 +30,9 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 		AGun* CurrentGun = CharacterOwner->GetGun();
 		if (CurrentGun && CurrentGun->GetClass() == WeaponClasses[WeaponType]) return; // Hoppa över, samma vapen redan utrustat
 		
+		LastWeapon = CurrentWeapon;
+		CurrentWeapon = WeaponType;
+		
 		TSubclassOf<AGun> WeaponClass = WeaponClasses[WeaponType];
 		SpawnAndAttachWeapon(WeaponClass);
 
@@ -232,6 +235,10 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 		Input->BindAction(IA_UpgradeSlot2, ETriggerEvent::Triggered, this, &UWeaponUnlocking::UpgradeSlot2);
 		Input->BindAction(IA_UpgradeSlot3, ETriggerEvent::Triggered, this, &UWeaponUnlocking::UpgradeSlot3);
 		Input->BindAction(IA_UpgradeSlot4, ETriggerEvent::Triggered, this, &UWeaponUnlocking::UpgradeSlot4);
+		
+		Input->BindAction(IA_HotSwap, ETriggerEvent::Triggered, this, &UWeaponUnlocking::HotSwap);
+		Input->BindAction(IA_SwapForward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapForward);
+		Input->BindAction(IA_SwapBackward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapBackward);
 	}
 	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking started successfully"));
 }
@@ -285,6 +292,46 @@ void UWeaponUnlocking::UpgradeSlot4(const FInputActionInstance& Instance)
 	TryUnlockOrUpgradeWeapon(EWeaponType::SniperRifle);
 }
 
+void UWeaponUnlocking::SwapForward(const FInputActionInstance& Instance)
+{
+	constexpr int32 NumTypes = static_cast<int32>(EWeaponType::SniperRifle) + 1;
+	const int32 StartIndex = static_cast<int32>(CurrentWeapon);
+	
+	for (int32 Offset = 1; Offset < NumTypes; Offset++)
+	{
+		int32 NextIndex = (StartIndex + Offset) % NumTypes;
+		if (const EWeaponType NextType = static_cast<EWeaponType>(NextIndex); IsWeaponUnlocked(NextType))
+		{
+			EquipWeapon(NextType);
+			break;
+		}
+	}
+}
+
+void UWeaponUnlocking::SwapBackward(const FInputActionInstance& Instance)
+{
+	constexpr int32 NumTypes = static_cast<int32>(EWeaponType::SniperRifle) + 1;
+	const int32 StartIndex = static_cast<int32>(CurrentWeapon);
+
+	for (int32 Offset = 1; Offset < NumTypes; ++Offset)
+	{
+		int32 PrevIndex = (StartIndex - Offset + NumTypes) % NumTypes;
+		if (const EWeaponType PrevType = static_cast<EWeaponType>(PrevIndex); IsWeaponUnlocked(PrevType))
+		{
+			EquipWeapon(PrevType);
+			break;
+		}
+	}
+}
+
+void UWeaponUnlocking::HotSwap(const FInputActionInstance& Instance)
+{
+	if (CurrentWeapon != LastWeapon && IsWeaponUnlocked(LastWeapon))
+	{
+		EquipWeapon(LastWeapon);
+	}
+}
+
 
 // Called every frame
 void UWeaponUnlocking::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -321,6 +368,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		{
 			WeaponPool.Add(WeaponType, PooledGun);
 			PooledGun->SetOwner(CharacterOwner);
+			PooledGun->SetActorEnableCollision(false);
 		}
 		else
 		{
