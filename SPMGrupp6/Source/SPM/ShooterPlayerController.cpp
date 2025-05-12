@@ -256,8 +256,11 @@ float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
 
 	
 	// Calculate assist amount based on dotProduct and distance
-	return (AimAlignment * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
-    
+	if (Target->IsA(AShooterCharacter::StaticClass()))
+	{
+		return (AimAlignment * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);
+	}
+	return (AimAlignment * DotProductMultiplier) * (DistanceFactor * NPCDistanceMultiplier);
 }
 
 void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target, float DeltaTime)

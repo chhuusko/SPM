@@ -65,6 +65,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float DistanceMultiplier = 1;
+	
+	UPROPERTY(EditAnywhere)
+	float NPCDistanceMultiplier = 0.5;
 
 	UPROPERTY(EditAnywhere)
 	float MaxAssistRange = 6000;
