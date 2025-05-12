@@ -146,7 +146,7 @@ private:
 	UWeaponUnlocking* WeaponUnlocking;
 	
 	UPROPERTY(EditDefaultsOnly)
-	float HitmarkerTime = 1;
+	float HitmarkerTime = 0.5f;
 
 	bool bHasDashCooldown;
 
