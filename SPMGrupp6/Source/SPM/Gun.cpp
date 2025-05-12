@@ -3,7 +3,7 @@
 
 #include "Gun.h"
 
-#include "HUDWidget.h"
+#include "UI/HUDWidget.h"
 #include "MathUtil.h"
 #include "ShooterCharacter.h"
 #include "ShooterPlayerController.h"

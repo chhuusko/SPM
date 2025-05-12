@@ -36,6 +36,7 @@ void UResources::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompo
 void UResources::ModifyResourceAmount(int ResourceModification)
 {
 	this->ResourceAmount += ResourceModification;
+	ResourceModified.Broadcast();
 }
 
 bool UResources::HasEnoughResources(int Cost)
@@ -46,5 +47,10 @@ bool UResources::HasEnoughResources(int Cost)
 void UResources::SpendResources(int Cost)
 {
 	ResourceAmount -= Cost;
+}
+
+int32 UResources::GetResourceAmount()
+{
+	return ResourceAmount;
 }
 

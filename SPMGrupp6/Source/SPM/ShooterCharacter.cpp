@@ -4,7 +4,7 @@
 #include "ShooterCharacter.h"
 
 #include "Gun.h"
-#include "HUDWidget.h"
+#include "UI/HUDWidget.h"
 #include "ShooterPlayerController.h"
 #include "SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"

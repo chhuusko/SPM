@@ -7,6 +7,8 @@
 #include "Components/ActorComponent.h"
 #include "WeaponUnlocking.generated.h"
 
+class AShooterPlayerController;
+class UResources;
 class AGun;
 class AShooterCharacter;
 class UInputMappingContext;
@@ -70,6 +72,8 @@ public:
 private:
 	UPROPERTY()
 	AShooterCharacter* CharacterOwner;
+	UPROPERTY()
+	AShooterPlayerController* PlayerController;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 	TMap<EWeaponType, TSubclassOf<AGun>> WeaponClasses;
@@ -79,6 +83,11 @@ private:
 	FName WeaponSocketName = TEXT("WeaponSocket");
 	
 	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
+
+	UFUNCTION()
+	void CanAffordUpgrade();
+	UFUNCTION()
+	void OnCurrencyPickup();
 	
 	UPROPERTY()
 	TMap<EWeaponType, FWeaponState> WeaponStates;

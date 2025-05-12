@@ -17,23 +17,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b441fb19-a1f3-4497-9424-896203807a4e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/projectSettingsUpdater.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/projectSettingsUpdater.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_CraneMiddle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_CraneMiddle.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_CraneTopFront_NotClean.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_CraneTopFront_NotClean.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_TrafficCone_low.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_TrafficCone_low.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_doorway_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_doorway_300x300x20.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_floor_100x100x30.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_floor_100x100x30.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_floor_300x300x40.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_floor_300x300x40.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_pillar_330x50x50.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_pillar_330x50x50.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_300x300x300.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_leftcorner_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_leftcorner_300x300x300.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_rightcorner_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_rightcorner_300x300x300.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_300x150x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_300x150x20.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_window_300x150x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_window_300x150x20.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_sideroof_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_sideroof_300x300x300.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_stairs_150x170x100.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_stairs_150x170x100.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_steelbeam_300x30x50.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_steelbeam_300x30x50.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_wall_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_wall_300x300x20.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_wall_window_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_wall_window_300x300x20.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__ambientocclusion.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__ambientocclusion.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__basecolor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__basecolor.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__height.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__height.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__normal.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__normal.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__roughness.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__roughness.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_BaseColor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_BaseColor.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_Normal.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_Normal.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_OcclusionRoughnessMetallic.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_OcclusionRoughnessMetallic.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dash.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dash.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Down_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Down_scaled.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Left_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Left_scaled.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Right_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Right_scaled.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Up_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Up_scaled.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Upgrade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Upgrade.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/UI/Icons/padlock.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/padlock.uasset" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -61,7 +76,7 @@
     "C/C++ Project.SPM.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "design__C-H",
+    "git-widget-placeholder": "prog__Malte2",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -118,13 +133,8 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
-      <option name="AUTO_ATTACH_CHILDREN" value="0" />
-      <option name="MIXED_MODE_DEBUG" value="0" />
       <option name="PROJECT_PATH" value="E:/Unreal/UE_5.5/Engine/Source/Programs/AutomationTool/AutomationTool.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
@@ -141,13 +151,8 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      <option name="ENV_FILE_PATHS" value="" />
-      <option name="REDIRECT_INPUT_PATH" value="" />
-      <option name="PTY_MODE" value="Auto" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
-      <option name="AUTO_ATTACH_CHILDREN" value="0" />
-      <option name="MIXED_MODE_DEBUG" value="0" />
       <option name="PROJECT_PATH" value="E:/Unreal/UE_5.5/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
@@ -202,6 +207,8 @@
       <updated>1744378028363</updated>
       <workItem from="1744378029939" duration="271000" />
       <workItem from="1746878048186" duration="1487000" />
+      <workItem from="1746958309176" duration="1429000" />
+      <workItem from="1747031286881" duration="736000" />
     </task>
     <servers />
   </component>
@@ -211,23 +218,5 @@
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
-          <option name="timeStamp" value="2" />
-        </breakpoint>
-        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
-          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
-          <option name="timeStamp" value="3" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
