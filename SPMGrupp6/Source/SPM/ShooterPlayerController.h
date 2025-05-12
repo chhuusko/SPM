@@ -9,6 +9,7 @@
 /**
  * 
  */
+
 UCLASS()
 class SPM_API AShooterPlayerController : public APlayerController
 {
@@ -35,13 +36,19 @@ protected:
 	bool bUsingRightStick = false;
 	
 private:
-	void InitializeHUD();
+	void InitializeUI();
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> GameOverScreenClass;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class USniperScopeWidget> ScopeWidgetClass;
+	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UHitIndicatorWidget> HitIndicatorWidgetClass;
+
+	UPROPERTY()
+	UHitIndicatorWidget* HitIndicatorWidget;
 	
 	UPROPERTY()
 	USniperScopeWidget* ScopeWidget;

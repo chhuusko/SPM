@@ -4,7 +4,7 @@
 #include "ResourcePickUp.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "Resources.h"
+#include "SPM/Resources.h"
 
 void AResourcePickUp::BeginPlay()
 {

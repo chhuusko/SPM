@@ -9,6 +9,7 @@
 #include "ShooterCharacter.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
+#include "UI/HitIndicatorWidget.h"
 #include "UI/SniperScopeWidget.h"
 
 
@@ -20,11 +21,11 @@ void AShooterPlayerController::BeginPlay()
 	{
 		// Only add the HUD if the player pawn is attached to the controller, otherwise wait.
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController does not have a LocalPlayer yet. Delaying HUD creation."));
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AShooterPlayerController::InitializeHUD);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AShooterPlayerController::InitializeUI);
 		return;
 	}
 	
-	InitializeHUD();
+	InitializeUI();
 
 	OnTakeAnyDamage.AddDynamic(this, &AShooterPlayerController::TakeAnyDamage);
 }
@@ -76,12 +77,18 @@ void AShooterPlayerController::RemoveSniperScope()
 }
 
 // Spawn player HUD.
-void AShooterPlayerController::InitializeHUD()
+void AShooterPlayerController::InitializeUI()
 {
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
-	if (HUDWidgetClass)
+	if (HUDWidget)
 	{
 		HUDWidget->AddToPlayerScreen();
+	}
+
+	HitIndicatorWidget = CreateWidget<UHitIndicatorWidget>(this, HitIndicatorWidgetClass);
+	if (HitIndicatorWidget)
+	{
+		HitIndicatorWidget->AddToPlayerScreen();
 	}
 }
 

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
-#include "ShooterCharacter.h"
+#include "SPM/ShooterCharacter.h"
 #include "BasePickUp.generated.h"
 
 UCLASS()
