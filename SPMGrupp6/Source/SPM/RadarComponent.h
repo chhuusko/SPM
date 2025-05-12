@@ -43,6 +43,9 @@ public:
 	UPROPERTY()
 	TMap<AActor*, URadarEnemyIcon*> TrackedIcons;
 	
+	UFUNCTION(BlueprintCallable, Category="Radar")
+	void Pulse();
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -50,8 +53,6 @@ protected:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
-	UFUNCTION(BlueprintCallable, Category="Radar")
-	void Pulse();
 	UFUNCTION(BlueprintCallable, Category="Radar")
 	void RevealPosition();
 	UFUNCTION(BlueprintCallable, Category="Radar")

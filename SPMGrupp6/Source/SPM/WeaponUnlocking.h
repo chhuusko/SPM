@@ -22,6 +22,9 @@ enum class EWeaponType : uint8
 	AssaultRifle UMETA(DisplayName = "Assault Rifle"),
 	SniperRifle UMETA(DisplayName = "Sniper Rifle")
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponSwap, EWeaponType, WeaponType);
+
 USTRUCT(BlueprintType)
 struct FWeaponState
 {
@@ -46,6 +49,7 @@ public:
 	void EquipWeapon(EWeaponType WeaponType);
 	void TryUnlockOrUpgradeWeapon(EWeaponType WeaponType);
 	bool IsWeaponUnlocked(EWeaponType WeaponType) const;
+	FOnWeaponSwap OnWeaponSwap;
 
 protected:
 	// Called when the game starts

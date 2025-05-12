@@ -3,30 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Shotgun.h"
-#include "PulseGrenade.h"
-#include "UpgradedShotgun.generated.h"
+#include "Pistol.h"
+#include "UpgradedPistol.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SPM_API AUpgradedShotgun : public AShotgun
+class SPM_API AUpgradedPistol : public APistol
 {
 	GENERATED_BODY()
 
-	protected:
+protected:
+	
 	virtual void WeaponAbility() override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<APulseGrenade> PulseGrenadeClass;
-
-	UPROPERTY(EditAnywhere)
-	float ProjectileSpawnOffset = 100.f;
-
-	UPROPERTY(EditAnywhere)
-	USoundBase* LaunchGrenadeSound;
 
 	UPROPERTY(EditAnywhere)
 	float AbilityCooldown = 5.0f;

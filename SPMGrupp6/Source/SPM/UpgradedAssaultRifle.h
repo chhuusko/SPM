@@ -3,24 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Shotgun.h"
-#include "PulseGrenade.h"
-#include "UpgradedShotgun.generated.h"
+#include "AssaultRifle.h"
+#include "HomingMissile.h"
+#include "UpgradedAssaultRifle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class SPM_API AUpgradedShotgun : public AShotgun
+class SPM_API AUpgradedAssaultRifle : public AAssaultRifle
 {
 	GENERATED_BODY()
-
-	protected:
+protected:
+	
 	virtual void WeaponAbility() override;
 
 private:
+	
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<APulseGrenade> PulseGrenadeClass;
+	TSubclassOf<AHomingMissile> HomingMissileClass;
 
 	UPROPERTY(EditAnywhere)
 	float ProjectileSpawnOffset = 100.f;
@@ -32,6 +33,7 @@ private:
 	float AbilityCooldown = 5.0f;
 
 	void ResetAbilityCooldown();
+	
 	bool bCanUseAbility = true;
 
 	FTimerHandle AbilityCooldownTimerHandle;

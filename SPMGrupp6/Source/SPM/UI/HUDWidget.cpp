@@ -10,8 +10,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
-
-const float UHUDWidget::DELTATIME = 0.1f;
+#include "SPM/Gun.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -26,6 +25,20 @@ void UHUDWidget::NativeConstruct()
 
 	// Get the player at start, so we don't need to cast each tick.
 	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
+
+	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
+
+	WeaponUnlocking->OnWeaponSwap.AddDynamic(this, &UHUDWidget::UpdateEquippedWeapon);
+
+	Gun = PlayerCharacter->GetGun();
+	if (Gun)
+	{
+		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
+	}
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -41,6 +54,22 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (!bJetpackFuelFull)
 	{
 		UpdateJetpackCooldown();
+	}
+}
+
+void UHUDWidget::GetGun()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Getgun"));
+	
+	Gun = PlayerCharacter->GetGun();
+	if (Gun)
+	{
+		Gun->OnHit.Clear();
+		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
 	}
 }
 
@@ -141,6 +170,7 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 // Updates information of currently equipped weapon in HUD.
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
+	GetGun();
 	UBorder* NextWeaponBorder;
 	UImage* Image;
 	switch (Weapon)
@@ -249,4 +279,19 @@ void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
 			}
 		}
 	}
+}
+
+// Show the hit marker for a limited time.
+void UHUDWidget::AddHitmarker(AActor* HitActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("AddHitmarker"));
+	
+	HitMarker->SetVisibility(ESlateVisibility::Visible);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
+}
+
+// Remove hit marker.
+void UHUDWidget::RemoveHitMarker()
+{
+	HitMarker->SetVisibility(ESlateVisibility::Hidden);
 }

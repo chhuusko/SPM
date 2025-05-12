@@ -25,6 +25,7 @@ void AShotgun::Fire()
 	FVector ShotDirection;
 	float TraceLength;
 	bool bShouldPlayEffects = false;
+	AActor* LastHitActor = nullptr;
 
 	//Skjuter flera raycasts
 	for (int i = 0; i < numberOfPellets; i++)
@@ -41,6 +42,7 @@ void AShotgun::Fire()
 			AActor* HitActor = Hit.GetActor();
 			if(HitActor)
 			{
+				LastHitActor = HitActor;
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
 
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
@@ -65,7 +67,12 @@ void AShotgun::Fire()
 	//If any of the shots hits, play effects.
 	if (bShouldPlayEffects)
 	{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
+
+		if (LastHitActor)
+		{
+			OnHit.Broadcast(LastHitActor);
+		}
 	}
 	
 	AddRecoil();
