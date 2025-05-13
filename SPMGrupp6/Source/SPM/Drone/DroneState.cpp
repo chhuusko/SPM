@@ -38,10 +38,10 @@ void FDroneStateAttack::Move()
 		Drone->StartAggroTimeHandler();
 	} else
 	{
+		LastPosition = Target->GetActorLocation();
 		Drone->CancellAggroTimeHandler();
-		NewLocation = Target->GetActorLocation();
-		Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
 	}
+	Drone->MoveTo(LastPosition+DesiredElevation);
 }
 
 void FDroneStateAttack::Rotate()

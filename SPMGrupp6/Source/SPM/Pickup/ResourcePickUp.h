@@ -17,13 +17,6 @@ class SPM_API AResourcePickUp : public ABasePickUp
 protected:
 	UPROPERTY(EditAnywhere)
 	int ResourceAmount;
-	UPROPERTY(EditAnywhere)
-    float VacuumDistance;
-	virtual void BeginPlay() override;
 	virtual void PlayerInteraction(AShooterCharacter* player) override;
 	
-private:
-	TArray<AActor*> FoundActors;
-	AActor* TargetActor;
-	virtual void Tick(float DeltaSeconds) override;
 };
