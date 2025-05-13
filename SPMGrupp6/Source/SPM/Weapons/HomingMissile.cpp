@@ -12,7 +12,7 @@ AHomingMissile::AHomingMissile()
 	ProjectileMovement->bRotationFollowsVelocity = false;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0;
-	Collision->SetCollisionProfileName(TEXT("BlockAll"));
+	Collision->SetCollisionProfileName(TEXT("Projectile"));
 }
 
 void AHomingMissile::BeginPlay()

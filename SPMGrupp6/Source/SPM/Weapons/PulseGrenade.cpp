@@ -19,7 +19,7 @@ APulseGrenade::APulseGrenade()
 	ProjectileMovement->bRotationFollowsVelocity = true;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 1.0f;
-	Collision->SetCollisionProfileName(TEXT("BlockAll"));
+	Collision->SetCollisionProfileName(TEXT("Projectile"));
 
 }
 void APulseGrenade::BeginPlay()
