@@ -32,14 +32,18 @@ void ASVOGrid::CreateGrid()
 	{
 		DrawDebugBox(GetWorld(), AreaLocation, AreaSize, FColor::Red, true, 5.f, 0, 10);
 	}
-	RootNode->AddChildren();
-	for (FOctNode* Node : RootNode->Children)
+	for(int i = 0; i <= MaxDepth; i++)
 	{
-		if (Node != nullptr)
-		{
-			DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
-		}
-	}
+		RootNode->AddChildren();
+		
+	} 
+	for (FOctNode* Node : RootNode->Children[0]->Children)
+    {
+    	if (Node != nullptr)
+    	{
+    		DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
+    	}
+    }
 }
 
 
