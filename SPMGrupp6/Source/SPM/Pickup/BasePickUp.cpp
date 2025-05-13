@@ -4,6 +4,7 @@
 #include "BasePickUp.h"
 
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 class AShooterCharacter;
 // Sets default values
@@ -25,7 +26,8 @@ ABasePickUp::ABasePickUp()
 	Collision->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap); // Overlap with pawns
 	
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABasePickUp::OverlapInteract);
-
+	
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), FoundActors);
 }
 
 // Called when the game starts or when spawned
@@ -45,7 +47,29 @@ void ABasePickUp::PlayerInteraction(AShooterCharacter* player)
 // Called every frame
 void ABasePickUp::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
+
+	if (FoundActors.Num() > 0)
+	{
+		for (AActor* Actor : FoundActors)
+		{
+			if (FVector::Dist(Actor->GetActorLocation(), RootComponent->GetComponentLocation()) < VacuumDistance)
+			{
+				TargetActor = Actor;
+				//SetSimulatePhysics(false);
+				Collision->SetSimulatePhysics(false);
+					
+			}
+		}
+	}
+	if (TargetActor != nullptr)
+	{
+		float Distance = FVector::Dist(TargetActor->GetActorLocation(), RootComponent->GetComponentLocation());
+		FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), TargetActor->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(this), 2.5f);
+		SetActorLocation(NewLocation, false);
+	}
+	
 
 }
 //Handles collision. Yes it does need all of these parameters, because of OnComponentBeginOverlap
