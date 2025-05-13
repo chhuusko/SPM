@@ -25,7 +25,11 @@ AExplosiveProjectile::AExplosiveProjectile()
 void AExplosiveProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (GetInstigator())
+	{
+		Collision->IgnoreActorWhenMoving(GetInstigator(), true);
+	}
 }
 
 // Called every frame

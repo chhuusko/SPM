@@ -79,10 +79,7 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 		if (ResourceComponent->HasEnoughResources(UnlockCost))
 		{
 			ResourceComponent->SpendResources(UnlockCost);
-			if (PlayerController && PlayerController->HUDWidget)
-			{
-				PlayerController->HUDWidget->UpgradeApplied(WeaponType, ResourceComponent->GetResourceAmount());
-			}
+			OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 			State.bUnlocked = true;
 			State.Level = 1;
 			EquipWeapon(WeaponType);
@@ -101,11 +98,7 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 				ResourceComponent->SpendResources(UpgradeCost);
 				State.Level += 1;
 				Gun->ApplyUpgrade(State.Level);
-
-				if (PlayerController && PlayerController->HUDWidget)
-				{
-					PlayerController->HUDWidget->UpgradeApplied(WeaponType, ResourceComponent->GetResourceAmount());
-				}
+				OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d upgraded!"),
 									(int32)WeaponType);
 			}else UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade Weapon %d from level %d to  %d"),
