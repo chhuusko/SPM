@@ -25,8 +25,8 @@ void AUpgradedShotgun::WeaponAbility()
 		FRotator SpawnRotation = OwnerController->GetControlRotation();
 
 		FActorSpawnParameters SpawnParams;
-		SpawnParams.Instigator = GetInstigator();
-		SpawnParams.Owner = this;
+		SpawnParams.Instigator = Cast<APawn>(GetOwner()); // Ignore player
+		SpawnParams.Owner = this; // Ignore gun
 
 		GetWorld()->SpawnActor<AExplosiveProjectile>(
 			PulseGrenadeClass,
