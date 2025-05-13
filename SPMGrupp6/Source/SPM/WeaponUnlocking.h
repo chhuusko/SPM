@@ -24,6 +24,7 @@ enum class EWeaponType : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponSwap, EWeaponType, WeaponType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpgrade, int32, NewCurrencyValue);
 
 USTRUCT(BlueprintType)
 struct FWeaponState
@@ -50,6 +51,7 @@ public:
 	void TryUnlockOrUpgradeWeapon(EWeaponType WeaponType);
 	bool IsWeaponUnlocked(EWeaponType WeaponType) const;
 	FOnWeaponSwap OnWeaponSwap;
+	FOnUpgrade OnUpgrade;
 
 protected:
 	// Called when the game starts
