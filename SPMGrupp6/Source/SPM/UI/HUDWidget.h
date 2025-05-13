@@ -123,6 +123,12 @@ private:
 
 	UFUNCTION()
 	void GetGun();
+
+	UFUNCTION()
+	void GetWeaponUnlocking();
+
+	UFUNCTION()
+	void GetPlayerCharacter();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
