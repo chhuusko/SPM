@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Minimap/CombinedMinimap.h"
 
 int32 UShooterGameInstance::GetIncrementedRound()
 {
@@ -62,13 +63,14 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
-		GlobalMinimapWidget = CreateWidget<UUserWidget>(this, GlobalMinimapWidgetClass);
+		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
 		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
 		{
 			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
 			{
 				TSharedRef<SWidget> SlateWidget = GlobalMinimapWidget->TakeWidget();
 				Viewport->AddViewportWidgetContent(SlateWidget, 1000);
+				UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Map added to viewport"));
 			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to get GameViewport"));
 		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
 	}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));

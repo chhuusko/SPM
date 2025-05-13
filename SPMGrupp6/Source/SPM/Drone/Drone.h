@@ -49,8 +49,8 @@ public:
 	virtual void TestRays();
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
-	
 	void SetTarget(AActor* Target);
+	void MoveTo(FVector TargetLocation);
 	
 	//Get
 	UStaticMeshComponent* GetBody() {return BodyMesh;}
@@ -70,6 +70,8 @@ private:
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
+
+	//
 	
 	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")

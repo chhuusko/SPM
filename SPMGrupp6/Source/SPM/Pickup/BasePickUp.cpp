@@ -3,27 +3,31 @@
 
 #include "BasePickUp.h"
 
+#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
+
 class AShooterCharacter;
 // Sets default values
 ABasePickUp::ABasePickUp()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("collisionArea"));
-	RootComponent = CollisionSphere;
-	CollisionSphere->SetCollisionProfileName(TEXT("Trigger"));
+	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("collisionArea"));
+	RootComponent = Collision;
+	Collision->SetCollisionProfileName(TEXT("Trigger"));
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(CollisionSphere);
+	MeshComp->SetupAttachment(Collision);
 
-	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // Enables overlap and hit detection
-	CollisionSphere->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	Collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics); // Enables overlap and hit detection
+	Collision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
 	
-	CollisionSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block); // Block everything
+	Collision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block); // Block everything
 	
-	CollisionSphere->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap); // Overlap with pawns
+	Collision->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap); // Overlap with pawns
 	
-	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABasePickUp::OverlapInteract);
-
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABasePickUp::OverlapInteract);
+	
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), FoundActors);
 }
 
 // Called when the game starts or when spawned
@@ -43,7 +47,29 @@ void ABasePickUp::PlayerInteraction(AShooterCharacter* player)
 // Called every frame
 void ABasePickUp::Tick(float DeltaTime)
 {
+	
 	Super::Tick(DeltaTime);
+
+	if (FoundActors.Num() > 0)
+	{
+		for (AActor* Actor : FoundActors)
+		{
+			if (FVector::Dist(Actor->GetActorLocation(), RootComponent->GetComponentLocation()) < VacuumDistance)
+			{
+				TargetActor = Actor;
+				//SetSimulatePhysics(false);
+				Collision->SetSimulatePhysics(false);
+					
+			}
+		}
+	}
+	if (TargetActor != nullptr)
+	{
+		float Distance = FVector::Dist(TargetActor->GetActorLocation(), RootComponent->GetComponentLocation());
+		FVector NewLocation = FMath::VInterpTo(RootComponent->GetComponentLocation(), TargetActor->GetActorLocation(), UGameplayStatics::GetWorldDeltaSeconds(this), 2.5f);
+		SetActorLocation(NewLocation, false);
+	}
+	
 
 }
 //Handles collision. Yes it does need all of these parameters, because of OnComponentBeginOverlap

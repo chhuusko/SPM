@@ -29,12 +29,8 @@ void AGun::BeginPlay()
 	Super::BeginPlay();
 	BulletsLeft = MagazineSize;
 	
-	PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
-
-	if (!PlayerController)
-	{
-		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::GetPlayerController);
-	}
+	GetPlayerController();
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
 }
 
 // Called every frame
@@ -58,13 +54,15 @@ void AGun::Tick(float DeltaTime)
 			}
 		}
 	}*/
-	
-	
 }
 
 void AGun::GetPlayerController()
 {
 	PlayerController = Cast<AShooterPlayerController>(GetOwnerController());
+	if (!PlayerController)
+	{
+		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::GetPlayerController);
+	}
 }
 
 
@@ -258,6 +256,10 @@ void AGun::UpdateAmmoText()
 	{
 		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
 	}
+	else
+	{
+		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
+	}
 }
 
 void AGun::WeaponAbility()
@@ -315,10 +317,10 @@ void AGun::ApplyUpgrade(int NewLevel)
 int32 AGun::GetUpgradeCost(int Level) const
 {
     const int Index = FMath::Clamp(Level - 1, 0, UpgradeCostPerLevel.Num() - 1);
-	int32 BaseCost = UpgradeCostPerLevel.IsValidIndex(Index) ? UpgradeCostPerLevel[Index] : INT_MAX;
+	int32 BaseCost = UpgradeCostPerLevel.IsValidIndex(Index) ? UpgradeCostPerLevel[Index] : 0;
 	if (Level > UpgradeCostPerLevel.Num())
 	{
-		BaseCost += 2 * Level - UpgradeCostPerLevel.Num();
+		BaseCost += 2 * (Level - UpgradeCostPerLevel.Num());
 	}
 	
     return BaseCost;

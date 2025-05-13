@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "SPM/ShooterCharacter.h"
 #include "BasePickUp.generated.h"
+
+class UBoxComponent;
 
 UCLASS()
 class SPM_API ABasePickUp : public AActor
@@ -24,13 +25,19 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* MeshComp;
 	UPROPERTY(VisibleAnywhere)
-	USphereComponent* CollisionSphere;
+	UBoxComponent* Collision;
 	UPROPERTY(EditAnywhere)
 	float RemoveTime = 20.0f;
 	FTimerHandle RemoveTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+    float VacuumDistance;
+	TArray<AActor*> FoundActors;
+	AActor* TargetActor;
 	
 public:	
 	// Called every frame
+	
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION()
 	void OverlapInteract(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

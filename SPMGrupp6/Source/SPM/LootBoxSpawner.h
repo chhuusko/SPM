@@ -16,6 +16,12 @@ class SPM_API ALootBoxSpawner : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ALootBoxSpawner();
+	UFUNCTION(BlueprintCallable, Category = "LootBox")
+	bool IsLootBoxSpawnTimerActive() const;
+	UFUNCTION(BlueprintCallable, Category = "LootBox")
+	float GetLootBoxSpawnTimeRemaining() const;
+	UFUNCTION(BlueprintCallable, Category = "LootBox")
+	float GetSpawnTime() const { return SpawnDelay; }
 
 protected:
 	// Called when the game starts or when spawned
