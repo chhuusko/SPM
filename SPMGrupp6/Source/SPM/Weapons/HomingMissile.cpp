@@ -3,6 +3,7 @@
 
 #include "HomingMissile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Engine/DamageEvents.h"
@@ -17,20 +18,46 @@ AHomingMissile::AHomingMissile()
 	ProjectileMovement->bRotationFollowsVelocity = false;
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0;
-	Collision->SetCollisionProfileName(TEXT("Projectile"));
+
+	SmokeTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SmokeTrail"));
+	SmokeTrail->SetupAttachment(RootComponent);
+	SmokeTrail->bAutoActivate = true;
+
+	GlowingParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("GlowingParticle"));
+	GlowingParticle->SetupAttachment(RootComponent);
+	GlowingParticle->bAutoActivate = true;
 }
 
 void AHomingMissile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Collision->OnComponentHit.AddDynamic(this, &AHomingMissile::OnHit);
 	GetWorldTimerManager().SetTimer(ExplosionTimer, this, &AHomingMissile::Explode, SecondsUntilExplosion, false);
+
+	if (SmokeParticles)
+	{
+		SmokeTrail->SetTemplate(SmokeParticles);
+	}
+	if (GlowingParticle)
+	{
+		GlowingParticle->SetTemplate(GlowingParticles);
+	}
+	Controller = Cast<APlayerController>(GetInstigatorController());
+}
+
+void AHomingMissile::Tick(float DeltaTime)
+{
+	SteerMissile(DeltaTime);
 }
 
 void AHomingMissile::Explode()
 {
-	TArray<FHitResult> HitActors;
+	// Return if explosion already occured.
+	if (bHasExploded)
+		return;
+	bHasExploded = true;
 	
+	TArray<FHitResult> HitActors;
 	FVector StartTrace = GetActorLocation();
 	FVector EndTrace = StartTrace;
 	EndTrace.Z += 1;
@@ -153,4 +180,34 @@ float AHomingMissile::CalculateDamage(float DistanceToTarget, APawn* HitPawn)
 	
 	// Extra check to make sure damage is between set values.
 	return FMath::RoundToInt(FMath::Clamp(CalculatedDamage, MinDamage, MaxDamage));
+}
+
+void AHomingMissile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor && OtherActor != this && OtherActor != GetInstigator())
+	{
+		Explode();
+		GetWorld()->GetTimerManager().ClearTimer(ExplosionTimer);
+	}
+}
+
+void AHomingMissile::SteerMissile(float DeltaTime)
+{
+	if (!Controller) return;
+
+	// Get player Rotation
+	FVector ViewLocation;
+	FRotator PlayerViewRotation;
+	Controller->GetPlayerViewPoint(ViewLocation, PlayerViewRotation);
+
+	// Get current missile rotation.
+	FRotator CurrentRotation = GetActorRotation();
+
+	// Interpolate towards the players rotation
+	FRotator TargetRotation = PlayerViewRotation;
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationInterpSpeed);
+
+	// Set new rotation and update velocity
+	SetActorRotation(NewRotation);
+	ProjectileMovement->Velocity = GetActorForwardVector() * ProjectileMovement->InitialSpeed;
 }
