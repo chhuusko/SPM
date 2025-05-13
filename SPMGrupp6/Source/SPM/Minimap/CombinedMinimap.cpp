@@ -8,6 +8,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/SceneCapture2D.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/LootBoxSpawner.h"
 #include "SPM/ShooterCharacter.h"
 #include "SPM/Drone/DroneSpawn.h"
 #include "SPM/Weapons/Gun.h"
@@ -33,11 +34,17 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	{
 		FrameCounter = 0;
 		SceneCaptureRef->CaptureScene();
+		if (AlwaysShowPlayers)
+		{
+			OnRedPlayerFire();
+			OnBluePlayerFire();
+		}
 	}
 }
 
 void UCombinedMinimap::InitializeMap()
 {
+	SetAlwaysShowPlayers(false);
 	FlipMapDependingOnPlayerSpawn();
 	SetSceneCapture();
 	
@@ -47,6 +54,8 @@ void UCombinedMinimap::InitializeMap()
 	BindOnBluePlayerFire();
 	
 	HidePlayersFromSceneCapture();
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombinedMinimap::SpawnDroneIcons);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombinedMinimap::SpawnLootBoxIcon);
 }
 
 void UCombinedMinimap::FlipMapDependingOnPlayerSpawn()
@@ -266,8 +275,6 @@ void UCombinedMinimap::HidePlayersFromSceneCapture()
 	{
 		SceneCaptureRef->HideActorComponents(BluePlayer);
 	}
-	
-    GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombinedMinimap::SpawnDroneIcons);
 }
 
 void UCombinedMinimap::SpawnDroneIcons()
@@ -292,6 +299,33 @@ void UCombinedMinimap::SpawnDroneIcons()
 			if (FObjectProperty* ObjProp = CastField<FObjectProperty>(Property))
 			{
 				ObjProp->SetObjectPropertyValue(PropertyAddress, DroneRef);
+			}
+		}
+	}
+}
+
+void UCombinedMinimap::SpawnLootBoxIcon()
+{
+	TArray<AActor*> FoundLootBoxSpawners;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALootBoxSpawner::StaticClass(), FoundLootBoxSpawners);
+
+	for (AActor* Actor : FoundLootBoxSpawners)
+	{
+		if (!Actor) continue;
+
+		FVector WorldLocation = Actor->GetActorLocation();
+		FVector2D MinimapPos = GetMinimapPosition(WorldLocation);
+
+		UUserWidget* IconWidget = SpawnIconOn(MinimapPos, LootBoxIconClass);
+		if (!IconWidget) continue;
+
+		if (FProperty* Property = IconWidget->GetClass()->FindPropertyByName("LootBoxSpawner"))
+		{
+			void* PropertyAddress = Property->ContainerPtrToValuePtr<void>(IconWidget);
+			AActor* LootBoxRef = Cast<AActor>(Actor);
+			if (FObjectProperty* ObjProp = CastField<FObjectProperty>(Property))
+			{
+				ObjProp->SetObjectPropertyValue(PropertyAddress, LootBoxRef);
 			}
 		}
 	}

@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "Minimap/CombinedMinimap.h"
 
 int32 UShooterGameInstance::GetIncrementedRound()
 {
@@ -62,7 +63,7 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
-		GlobalMinimapWidget = CreateWidget<UUserWidget>(this, GlobalMinimapWidgetClass);
+		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
 		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
 		{
 			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())

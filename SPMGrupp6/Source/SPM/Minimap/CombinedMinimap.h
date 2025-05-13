@@ -14,8 +14,18 @@ UCLASS()
 class SPM_API UCombinedMinimap : public UUserWidget
 {
 	GENERATED_BODY()
-
 	
+public:
+	AShooterCharacter* GetRedPlayer() { return RedPlayer; }
+	AShooterCharacter* GetBluePlayer() { return BluePlayer; }
+	
+	UFUNCTION(BlueprintCallable, Category = "Minimap")
+	void OnRedPlayerFire();
+	UFUNCTION(BlueprintCallable, Category = "Minimap")
+	void OnBluePlayerFire();
+	UFUNCTION()
+	void SetAlwaysShowPlayers(bool bAlwaysShowPlayers) { AlwaysShowPlayers = bAlwaysShowPlayers; }
+
 protected:
     virtual void NativeConstruct() override;
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
@@ -34,8 +44,6 @@ protected:
 	void BindOnRedPlayerSetGun();
 	UFUNCTION(BlueprintCallable, Category = "Minimap")
 	void BindOnRedPlayerFire();
-	UFUNCTION(BlueprintCallable, Category = "Minimap")
-	void OnRedPlayerFire();
 	
 	UFUNCTION(BlueprintCallable, Category = "Minimap")
 	void SetBluePlayer(APlayerController* Controller);
@@ -43,13 +51,13 @@ protected:
 	void BindOnBluePlayerSetGun();
 	UFUNCTION(BlueprintCallable, Category = "Minimap")
 	void BindOnBluePlayerFire();
-	UFUNCTION(BlueprintCallable, Category = "Minimap")
-	void OnBluePlayerFire();
 
 	UFUNCTION(BlueprintCallable)
 	void HidePlayersFromSceneCapture();
 	UFUNCTION()
 	void SpawnDroneIcons();
+	UFUNCTION()
+	void SpawnLootBoxIcon();
 	
 	void SetRenderTransformAngle(UCanvasPanel* Canvas, float Angle);
 	FVector2D GetMinimapPosition(const FVector& WorldLocation) const;
@@ -62,18 +70,26 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	UTextureRenderTarget2D* RenderTarget;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	TSubclassOf<UUserWidget> DroneIconClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
+	TSubclassOf<UUserWidget> LootBoxIconClass;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	TSubclassOf<UUserWidget> RedPlayerRadarIconClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	TSubclassOf<UUserWidget> BluePlayerRadarIconClass;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
 	FVector2D RedPlayerSpawnPoint = FVector2D(4600, -4600);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
 	int32 UpdateEveryNFrame = 5;
     int32 FrameCounter = 0;
+    bool AlwaysShowPlayers = false;
 
+protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Minimap")
 	AShooterCharacter* RedPlayer;
 	UPROPERTY(BlueprintReadOnly, Category = "Minimap")

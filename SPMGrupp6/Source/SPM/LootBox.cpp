@@ -2,8 +2,12 @@
 
 
 #include "LootBox.h"
+
+#include "ShooterGameInstance.h"
 #include "SPM/Pickup/ResourcePickUp.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Minimap/CombinedMinimap.h"
 
 // Sets default values
 ALootBox::ALootBox()
@@ -35,6 +39,13 @@ void ALootBox::DropLoot()
 		GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 	}
 	
+	if (UShooterGameInstance* GI = Cast<UShooterGameInstance>(UGameplayStatics::GetGameInstance(this)))
+	{
+		if(UCombinedMinimap* Minimap = GI->GetGlobalMinimapWidget())
+		{
+			Minimap->SetAlwaysShowPlayers(true);
+		}
+	}
 }
 
 // Called every frame

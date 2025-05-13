@@ -6,9 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "ShooterGameInstance.generated.h"
 
-/**
- * 
- */
+class UCombinedMinimap;
+
 UCLASS()
 class SPM_API UShooterGameInstance : public UGameInstance
 {
@@ -27,15 +26,19 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	bool CombinedRadarEnabled = false;
-	
+
+    UFUNCTION(BlueprintGetter)
+	UCombinedMinimap* GetGlobalMinimapWidget() const { return GlobalMinimapWidget; }
+
 private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
 	int32 RedScore = 0;
 	int32 ScoreMax = 3;
-	UPROPERTY()
-	TObjectPtr<class UUserWidget> GlobalMinimapWidget;
 
 	void OnPostLoadMap(UWorld* LoadedWorld);
 	void LoadCombinedMinimap();
+	
+	UPROPERTY(BlueprintGetter = GetGlobalMinimapWidget)
+	TObjectPtr<class UCombinedMinimap> GlobalMinimapWidget;
 };
