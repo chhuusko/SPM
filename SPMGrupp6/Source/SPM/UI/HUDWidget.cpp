@@ -24,7 +24,7 @@ void UHUDWidget::NativeConstruct()
 	JetpackFuelStartColor = JetpackFuelBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
 
 	// Get the player at start, so we don't need to cast each tick.
-	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
+	GetPlayerCharacter();
 
 	// Get the components and bind to their delegates.
 	GetWeaponUnlocking();
@@ -72,6 +72,21 @@ void UHUDWidget::GetWeaponUnlocking()
 	else
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetWeaponUnlocking);
+	}
+}
+
+void UHUDWidget::GetPlayerCharacter()
+{
+	APlayerController* PC = GetOwningPlayer();
+	if (!PC)
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
+	}
+	
+	PlayerCharacter = Cast<AShooterCharacter>(PC->GetCharacter());
+	if (!PlayerCharacter)
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
 	}
 }
 
