@@ -26,20 +26,9 @@ void UHUDWidget::NativeConstruct()
 	// Get the player at start, so we don't need to cast each tick.
 	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
 
-	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
-
-	WeaponUnlocking->OnWeaponSwap.AddDynamic(this, &UHUDWidget::UpdateEquippedWeapon);
-	WeaponUnlocking->OnUpgrade.AddDynamic(this, &UHUDWidget::UpdateCurrencyText);
-
-	Gun = PlayerCharacter->GetGun();
-	if (Gun)
-	{
-		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
-	}
-	else
-	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
-	}
+	// Get the components and bind to their delegates.
+	GetWeaponUnlocking();
+	GetGun();
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -60,8 +49,6 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 void UHUDWidget::GetGun()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Getgun"));
-	
 	Gun = PlayerCharacter->GetGun();
 	if (Gun)
 	{
@@ -71,6 +58,20 @@ void UHUDWidget::GetGun()
 	else
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
+	}
+}
+
+void UHUDWidget::GetWeaponUnlocking()
+{
+	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
+	if (WeaponUnlocking)
+	{
+		WeaponUnlocking->OnWeaponSwap.AddDynamic(this, &UHUDWidget::UpdateEquippedWeapon);
+		WeaponUnlocking->OnUpgrade.AddDynamic(this, &UHUDWidget::UpdateCurrencyText);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetWeaponUnlocking);
 	}
 }
 
