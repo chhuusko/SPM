@@ -24,7 +24,7 @@ private:
 	TSubclassOf<AHomingMissile> HomingMissileClass;
 
 	UPROPERTY(EditAnywhere)
-	float ProjectileSpawnOffset = 100.f;
+	float ProjectileSpawnOffset = 40.f;
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;

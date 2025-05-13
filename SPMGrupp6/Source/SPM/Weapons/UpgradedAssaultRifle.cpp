@@ -25,18 +25,14 @@ void AUpgradedAssaultRifle::WeaponAbility()
 	FRotator SpawnRotation = OwnerController->GetControlRotation();
 
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.Instigator = GetInstigator();
-	SpawnParams.Owner = this;
+	SpawnParams.Instigator = Cast<APawn>(GetOwner()); // Ignore player character
+	SpawnParams.Owner = this; // Ignore gun
 
 	if (!HomingMissileClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("HomingMissileClass is null"));
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Attempting to spawn projectile at: %s"), *SpawnLocation.ToString());
-
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	GetWorld()->SpawnActor<AExplosiveProjectile>(
 		HomingMissileClass,
