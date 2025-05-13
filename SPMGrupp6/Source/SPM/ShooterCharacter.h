@@ -17,13 +17,14 @@ class SPM_API AShooterCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintAssignable, Category = "Gun")
-	FOnSetGun OnSetGun;
 	
 public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
 
+	UPROPERTY(BlueprintAssignable, Category = "Gun")
+	FOnSetGun OnSetGun;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

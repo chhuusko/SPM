@@ -4,8 +4,6 @@
 #include "RadarComponent.h"
 
 #include "RadarEnemyIcon.h"
-#include "ShooterCharacter.h"
-#include "ShooterPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/Actor.h"
@@ -15,6 +13,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "SPM/ShooterCharacter.h"
+#include "SPM/ShooterPlayerController.h"
 
 // Sets default values for this component's properties
 URadarComponent::URadarComponent()

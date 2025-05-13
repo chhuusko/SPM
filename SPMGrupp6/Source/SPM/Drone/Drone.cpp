@@ -132,6 +132,15 @@ void ADrone::SetTarget(AActor* Target)
 	this->Player = Target;
 }
 
+void ADrone::MoveTo(FVector Location)
+{
+	FVector CurrentLocation = GetActorLocation();
+	FVector TargetLocation = FMath::VInterpTo(CurrentLocation, Location, UGameplayStatics::GetWorldDeltaSeconds(this), 1.f);
+	FVector Delta = TargetLocation - CurrentLocation;
+
+	AddActorWorldOffset(Delta, true);
+}
+
 void ADrone::LostPlayer()
 {
 	ChangeState(new FDroneStateReturn(this, Spawner));
@@ -167,6 +176,7 @@ bool ADrone::SeeTarget()
 	return false;
 	
 }
+
 
 
 
