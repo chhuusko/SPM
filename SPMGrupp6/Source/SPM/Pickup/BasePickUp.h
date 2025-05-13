@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "SPM/ShooterCharacter.h"
 #include "BasePickUp.generated.h"
+
+class UBoxComponent;
 
 UCLASS()
 class SPM_API ABasePickUp : public AActor
@@ -24,7 +25,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* MeshComp;
 	UPROPERTY(VisibleAnywhere)
-	USphereComponent* CollisionSphere;
+	UBoxComponent* Collision;
 	UPROPERTY(EditAnywhere)
 	float RemoveTime = 20.0f;
 	FTimerHandle RemoveTimerHandle;
