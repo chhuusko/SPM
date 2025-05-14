@@ -41,6 +41,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* Mesh;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent* MuzzlePosition;
+
+	FVector MuzzleLocation;
+	FRotator MuzzleRotation;
+
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* MuzzleFlash;
 
