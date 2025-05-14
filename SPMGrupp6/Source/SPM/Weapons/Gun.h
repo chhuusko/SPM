@@ -55,6 +55,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Sounds")
 	USoundBase* HitMarkerSound;
+
+	UPROPERTY(EditDefaultsOnly, Category="Sounds")
+	USoundBase* ReloadSound;
+	
+	UPROPERTY(EditDefaultsOnly, Category="Sounds")
+	USoundBase* EmptyMagSound;
 	
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ImpactParticles;

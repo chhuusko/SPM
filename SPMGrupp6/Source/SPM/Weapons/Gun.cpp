@@ -85,10 +85,11 @@ void AGun::Fire()
 	// Reloads automatically if bullets are 0.
 	if (BulletsLeft <= 0)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
+		UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
 		Reload();
 		return;
 	}
-	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
@@ -151,6 +152,8 @@ void AGun::Fire()
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
+		UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
 		Reload();
 	}
 
@@ -196,8 +199,8 @@ void AGun::Reload()
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		// Can not shoot while reloading.
 		bCanFire = false;
-		
-		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false );
+		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
+		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
 	}
 }
 void AGun::ResetAmmo()
