@@ -41,6 +41,7 @@ void ABasePickUp::BeginPlay()
 
 void ABasePickUp::PlayerInteraction(AShooterCharacter* player)
 {
+	UGameplayStatics::PlaySound2D(player, PickupSound);
 	UE_LOG(LogTemp, Warning, TEXT("Player Interaction"));
 }
 
