@@ -97,8 +97,16 @@ private:
 	TSet<EWeaponType> UnlockedWeapons;
 	UPROPERTY(EditDefaultsOnly)
 	FName WeaponSocketName = TEXT("WeaponSocket");
-	
+
+	void UnlockingWeapon(EWeaponType WeaponType, FWeaponState& State);
+	void UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponState& State, int32 UnlockCost);
 	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
+	void UnlockingWeaponFailed(const AGun* Gun) const;
+	
+	void UpgradingWeapon(EWeaponType WeaponType, FWeaponState& State);
+	void UpgradingWeaponSuccess(AGun* Gun, FWeaponState& State, int32 UpgradeCost) const;
+	void UpgradingWeaponFailed(const AGun* Gun, const FWeaponState& State) const;
+	
 	
 	UFUNCTION()
 	void OnCurrencyPickup();
@@ -119,9 +127,15 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundBase* LockedSound;
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* SuccessfulUnlockSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundBase* FailedUnlockSound;
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* SuccessfulUpgradeSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundBase* FailedUpgradeSound;
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	float SoundVolume = 1.f;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* WeaponUpgradeMappingContext;

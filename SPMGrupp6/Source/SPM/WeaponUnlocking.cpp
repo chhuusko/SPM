@@ -7,7 +7,6 @@
 #include "ShooterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "UI/HUDWidget.h"
 #include "ShooterPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -27,7 +26,15 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 
 	if (!IsWeaponUnlocked(WeaponType))
 	{
-		if (LockedSound) UGameplayStatics::PlaySoundAtLocation(this, LockedSound, CharacterOwner->GetActorLocation());
+		if (LockedSound)
+		{
+			float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
+			UGameplayStatics::PlaySoundAtLocation(this,
+				LockedSound,
+				CharacterOwner->GetActorLocation(), 
+				SoundVolume, 
+				RandomPitch);
+		}
 		return;
 	}
 	
@@ -67,12 +74,6 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 	}
 	
 	FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
-	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
-	if (!Gun)
-	{
-		// If gun is not in pool, spawn it temporarily to query cost (optional)
-		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
-	}
 	
 	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon: %d | Unlocked: %s | Level: %d"),
 		(int32)WeaponType,
@@ -81,52 +82,117 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 	
 	if (!State.bUnlocked)
 	{
-        int32 UnlockCost = Gun ? Gun->GetUpgradeCost(1) : INT_MAX;
-
-		if (ResourceComponent->HasEnoughResources(UnlockCost))
-		{
-			ResourceComponent->SpendResources(UnlockCost);
-			OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
-			State.bUnlocked = true;
-			State.Level = 1;
-			EquipWeapon(WeaponType);
-			UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
-		}
-		else
-		{
-			if (FailedUnlockSound) UGameplayStatics::PlaySoundAtLocation(this, FailedUnlockSound, CharacterOwner->GetActorLocation());
-			UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock Weapon %d"),
-									(int32)WeaponType);
-		}
+		UnlockingWeapon(WeaponType, State);
 	}
 	else if (WeaponPool.Contains(WeaponType))
 	{
-		Gun = WeaponPool[WeaponType];
-		if (Gun)
-		{
-			int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
-			if (ResourceComponent->HasEnoughResources(UpgradeCost))
-			{
-				ResourceComponent->SpendResources(UpgradeCost);
-				//CanAffordUpgrade(WeaponType);
-				State.Level += 1;
-				Gun->ApplyUpgrade(State.Level);
-				OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
-				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d upgraded!"),
-									(int32)WeaponType);
-			}
-			else
-			{
-				if (FailedUpgradeSound) UGameplayStatics::PlaySoundAtLocation(this, FailedUpgradeSound, CharacterOwner->GetActorLocation());
-				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade Weapon %d from level %d to  %d"),
-									(int32)WeaponType,
-									State.Level,
-									State.Level+1);
-			}
-		} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
-									(int32)WeaponType);
+		UpgradingWeapon(WeaponType, State);
 	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d is not in WeaponPool!"),
 									(int32)WeaponType);
+}
+
+void UWeaponUnlocking::UnlockingWeapon(EWeaponType WeaponType, FWeaponState& State)
+{
+	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
+	if (!Gun)
+	{
+		// If gun is not in pool, spawn it temporarily to query cost
+		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
+	}
+	int32 UnlockCost = Gun ? Gun->GetUpgradeCost(1) : INT_MAX;
+	if (ResourceComponent->HasEnoughResources(UnlockCost))
+	{
+		UnlockingWeaponSuccess(WeaponType, State, UnlockCost);
+	}
+	else
+	{
+		UnlockingWeaponFailed(Gun);
+	}
+}
+void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponState& State, int32 UnlockCost)
+{
+	ResourceComponent->SpendResources(UnlockCost);
+	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+	State.bUnlocked = true;
+	State.Level = 1;
+	EquipWeapon(WeaponType);
+	if (SuccessfulUnlockSound)
+	{
+		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
+		UGameplayStatics::PlaySoundAtLocation(this,
+			SuccessfulUnlockSound,
+			CharacterOwner->GetActorLocation(), 
+			SoundVolume, 
+			RandomPitch);
+	}
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
+}
+void UWeaponUnlocking::UnlockingWeaponFailed(const AGun* Gun) const
+{
+	if (FailedUnlockSound)
+	{
+		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
+		UGameplayStatics::PlaySoundAtLocation(this,
+			FailedUnlockSound,
+			CharacterOwner->GetActorLocation(), 
+			SoundVolume, 
+			RandomPitch);
+	}
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock %s"),
+							*Gun->GetName());
+}
+
+void UWeaponUnlocking::UpgradingWeapon(EWeaponType WeaponType, FWeaponState& State)
+{
+	if (AGun* Gun = WeaponPool[WeaponType])
+	{
+		int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
+		if (ResourceComponent->HasEnoughResources(UpgradeCost))
+		{
+			UpgradingWeaponSuccess(Gun, State, UpgradeCost);
+		}
+		else
+		{
+			UpgradingWeaponFailed(Gun, State);
+		}
+	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
+								(int32)WeaponType);
+}
+
+void UWeaponUnlocking::UpgradingWeaponSuccess(AGun* Gun, FWeaponState& State, int32 UpgradeCost) const
+{
+	ResourceComponent->SpendResources(UpgradeCost);
+	//CanAffordUpgrade(WeaponType);
+	State.Level += 1;
+	Gun->ApplyUpgrade(State.Level);
+	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+	if (SuccessfulUpgradeSound)
+	{
+		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
+		UGameplayStatics::PlaySoundAtLocation(this,
+			SuccessfulUpgradeSound,
+			CharacterOwner->GetActorLocation(), 
+			SoundVolume, 
+			RandomPitch);
+	}
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] %s upgraded!"),
+						*Gun->GetName());
+}
+void UWeaponUnlocking::UpgradingWeaponFailed(const AGun* Gun, const FWeaponState& State) const
+{
+	if (FailedUpgradeSound)
+	{
+		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
+		UGameplayStatics::PlaySoundAtLocation(this,
+			FailedUpgradeSound,
+			CharacterOwner->GetActorLocation(), 
+			SoundVolume, 
+			RandomPitch);
+	}
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade %s from level %d to  %d"),
+						*Gun->GetName(),
+						State.Level,
+						State.Level+1);
 }
 
 bool UWeaponUnlocking::CanAffordUpgrade(EWeaponType WeaponType)
@@ -392,7 +458,15 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		CurrentGun->StopPendingActions();
 	}
 
-	if (SwitchSound) UGameplayStatics::PlaySoundAtLocation(this, SwitchSound, CharacterOwner->GetActorLocation());
+	if (SwitchSound)
+	{
+		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
+		UGameplayStatics::PlaySoundAtLocation(this,
+			SwitchSound,
+			CharacterOwner->GetActorLocation(), 
+			SoundVolume, 
+			RandomPitch);
+	}
 
 	PooledGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
 	PooledGun->SetActorHiddenInGame(false);
