@@ -31,12 +31,14 @@ protected:
 	
 	FDroneState* State;
 	ADroneSpawn* Spawner;
-	
+	UPROPERTY(EditAnywhere)
+	USoundBase* ShootSound;
 	UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AHealthPickUp> HealthPickUpClass;
     UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
 	AActor* Player;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -54,6 +56,7 @@ public:
 	void MoveTo(FVector TargetLocation);
 	
 	//Get
+	USoundBase* GetShootSound() {return ShootSound;}
 	UStaticMeshComponent* GetBody() {return BodyMesh;}
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}

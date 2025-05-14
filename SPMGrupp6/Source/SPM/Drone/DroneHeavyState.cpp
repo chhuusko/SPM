@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DroneHeavyState.h"
+#include "Kismet/GameplayStatics.h"
 
 void FDroneHeavyStateIdle::Exit()
 {
@@ -51,6 +52,7 @@ void FDroneHeavyStateAttack::Shoot()
 		//ADroneMissile* Missile = GetWorld()->SpawnActor<ADroneMissile>(MissileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
 		Bullet->SetOwner(Drone);
 		//Missile->SetOwner(this);
+		UGameplayStatics::PlaySound2D(Drone, Drone->GetShootSound());
 	}
 }
 
