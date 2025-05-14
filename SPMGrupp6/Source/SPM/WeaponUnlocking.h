@@ -99,10 +99,12 @@ private:
 	FName WeaponSocketName = TEXT("WeaponSocket");
 	
 	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
-
 	
 	UFUNCTION()
 	void OnCurrencyPickup();
+
+	UFUNCTION()
+	void GetResourceComponent();
 	
 	UPROPERTY()
 	TMap<EWeaponType, FWeaponState> WeaponStates;

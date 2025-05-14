@@ -155,6 +155,19 @@ void UWeaponUnlocking::OnCurrencyPickup()
 	OnPickup.Broadcast(ResourceComponent->GetResourceAmount());
 }
 
+void UWeaponUnlocking::GetResourceComponent()
+{
+	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
+	if (ResourceComponent)
+	{
+		ResourceComponent->ResourceModified.AddDynamic(this, &UWeaponUnlocking::OnCurrencyPickup);
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponUnlocking::GetResourceComponent);
+	}
+}
+
 bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
 {
 	const FWeaponState* State = WeaponStates.Find(WeaponType);
@@ -185,11 +198,11 @@ void UWeaponUnlocking::BeginPlay()
 	InitializeWeaponUnlockingSystem();
 
 	// Add the resource instance to check for changes in.
-	ResourceComponent->ResourceModified.AddDynamic(this, &UWeaponUnlocking::OnCurrencyPickup);
+	GetResourceComponent();
 }
 void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 {
-	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
+	GetResourceComponent();
 	if (!ResourceComponent) return;
 	
 	APlayerController* PC = Cast<AShooterPlayerController>(CharacterOwner->GetController());
