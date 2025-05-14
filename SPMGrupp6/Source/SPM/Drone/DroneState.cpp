@@ -36,12 +36,15 @@ void FDroneStateAttack::Move()
 	if (!Drone->SeeTarget())
 	{
 		Drone->StartAggroTimeHandler();
-	} else
+	}else
 	{
-		LastPosition = Target->GetActorLocation();
 		Drone->CancellAggroTimeHandler();
+		if (FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) < MaxSpawnDistance)
+		{
+			NewLocation = Target->GetActorLocation();
+			Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+		}
 	}
-	Drone->MoveTo(LastPosition+DesiredElevation);
 }
 
 void FDroneStateAttack::Rotate()
@@ -64,14 +67,6 @@ void FDroneStateAttack::Shoot()
 		Bullet->SetOwner(Drone);
 		//Missile->SetOwner(this);
 		UGameplayStatics::PlaySound2D(Drone, Drone->GetShootSound());
-	}
-}
-
-void FDroneStateAttack::Exit()
-{
-	if (Spawner && FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) > MaxSpawnDistance)
-	{
-		Drone->ChangeState(new FDroneStateReturn(Drone, Spawner, PreviousPositions));
 	}
 }
 
