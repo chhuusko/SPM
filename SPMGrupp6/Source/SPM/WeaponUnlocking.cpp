@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "UI/HUDWidget.h"
 #include "ShooterPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UWeaponUnlocking::UWeaponUnlocking()
@@ -370,6 +371,8 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		CurrentGun->SetActorHiddenInGame(true);
 		CurrentGun->StopWeaponAbility();
 	}
+
+	UGameplayStatics::PlaySoundAtLocation(this, SwitchSound, CharacterOwner->GetActorLocation());
 
 	PooledGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
 	PooledGun->SetActorHiddenInGame(false);
