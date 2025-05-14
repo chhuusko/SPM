@@ -82,11 +82,16 @@ void AGun::Fire()
 	// Checks if weapon can fire.
 	if (!bCanFire || !bIsWeaponEquipped) return;
 
-	// Reloads automatically if bullets are 0.
+	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
-		UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+		if (bCanPlayEmptyMagSound)
+		{
+			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+			bCanPlayEmptyMagSound = false;
+			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
+		}
 		Reload();
 		return;
 	}
@@ -153,8 +158,14 @@ void AGun::Fire()
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
-		UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+		if (bCanPlayEmptyMagSound)
+		{
+			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+			bCanPlayEmptyMagSound = false;
+			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
+		}
 		Reload();
+		return;
 	}
 
 	// Stops possibility to fire between shots.
@@ -363,5 +374,11 @@ void AGun::SetWeaponEquipped(const bool bIsEquipped)
 {
 	bIsWeaponEquipped = bIsEquipped;
 }
+
+void AGun::EnableCanPlayEmptyMagSound()
+{
+	bCanPlayEmptyMagSound = true;
+}
+
 
 

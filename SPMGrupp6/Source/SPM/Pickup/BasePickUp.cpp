@@ -26,7 +26,6 @@ ABasePickUp::ABasePickUp()
 	Collision->SetCollisionResponseToChannel(ECC_Pawn, ECollisionResponse::ECR_Overlap); // Overlap with pawns
 	
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABasePickUp::OverlapInteract);
-	
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), FoundActors);
 }
 
@@ -60,6 +59,13 @@ void ABasePickUp::Tick(float DeltaTime)
 				TargetActor = Actor;
 				//SetSimulatePhysics(false);
 				Collision->SetSimulatePhysics(false);
+				Collision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+				MeshComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+				MeshComp->SetCollisionResponseToAllChannels(ECR_Overlap);
+
+				// Prevent character from stepping up
+				MeshComp->CanCharacterStepUpOn = ECB_No;
+
 					
 			}
 		}
