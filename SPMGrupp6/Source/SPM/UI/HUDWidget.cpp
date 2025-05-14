@@ -67,7 +67,8 @@ void UHUDWidget::GetWeaponUnlocking()
 	if (WeaponUnlocking)
 	{
 		WeaponUnlocking->OnWeaponSwap.AddDynamic(this, &UHUDWidget::UpdateEquippedWeapon);
-		WeaponUnlocking->OnUpgrade.AddDynamic(this, &UHUDWidget::UpdateCurrencyText);
+		WeaponUnlocking->OnUpgrade.AddDynamic(this, &UHUDWidget::UpgradeApplied);
+		WeaponUnlocking->OnPickup.AddDynamic(this, &UHUDWidget::OnPickup);
 	}
 	else
 	{
@@ -158,6 +159,12 @@ void UHUDWidget::DashCooldownFinished()
 	bHasDashCooldown = false;
 }
 
+void UHUDWidget::OnPickup(int32 NewCurrencyAmount)
+{
+	UpdateCurrencyText(NewCurrencyAmount);
+	UpdateWeaponUpgradeUI();
+}
+
 // Set progress bar color.
 void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor)
 {
@@ -227,43 +234,53 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	}
 }
 
-// Display the upgrade icon over the weapon.
-void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
+UImage* UHUDWidget::GetUpgradeIconFromWeapon(EWeaponType Weapon)
 {
-	// Get the image to change the icon for.
-	UImage* UpgradableImage;
 	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
-		UpgradableImage = AutoPistolPadlock;
-		break;
+		return AutoPistolPadlock;
 	case EWeaponType::Shotgun:
-		UpgradableImage = ShotgunPadlock;
-		break;
+		return ShotgunPadlock;
 	case EWeaponType::SniperRifle:
-		UpgradableImage = SniperRiflePadlock;
-		break;
+		return SniperRiflePadlock;
 	case EWeaponType::AssaultRifle:
-		UpgradableImage = AssaultRiflePadlock;
-		break;
+		return AssaultRiflePadlock;
 	default:
-		return;
+		return nullptr;
 	}
+}
 
-	// Change image from padlock to upgrade icon if it hasn't already.
-	if (UpgradableImage->GetBrush().GetResourceObject() != UpgradeTexture)
-	{
-		UpgradableImage->SetBrushFromAtlasInterface(UpgradeTexture);
-	}
+// Display the upgrade icon over the weapon.
+void UHUDWidget::UpdateWeaponUpgradeUI()
+{
+	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
+	TArray<EWeaponType> WeaponKeys;
+	Guns.GenerateKeyArray(WeaponKeys);
 	
-	UpgradableImage->SetVisibility(ESlateVisibility::Visible);
+	for (EWeaponType WeaponType : WeaponKeys)
+	{
+		UImage* UpgradeIcon = GetUpgradeIconFromWeapon(WeaponType);
+		if (UpgradeIcon)
+		{
+			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
+			{
+				UpgradeIcon->SetBrushFromAtlasInterface(UpgradeTexture);
+				UpgradeIcon->SetVisibility(ESlateVisibility::Visible);
+			}
+			else
+			{
+				UpgradeIcon->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+	}
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.
-void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue)
+void UHUDWidget::UpgradeApplied(int32 NewCurrencyValue)
 {
 	UpdateCurrencyText(NewCurrencyValue);
-	HideWeaponUpgradeUI(Weapon);
+	UpdateWeaponUpgradeUI();
 }
 
 // Hides symbols in UI when upgrade is applied.

@@ -20,7 +20,6 @@ ADrone::ADrone()
 	TurretMesh->SetupAttachment(BodyMesh);
 	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawn->SetupAttachment(TurretMesh);
-	
 }
 
 // Called when the game starts or when spawned
@@ -28,12 +27,17 @@ void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
-	TestRays();
+	//TestRays();
 }
 // Called every frame
 void ADrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (Players.Num() < 2)
+	{
+		//TODO Tempfix 
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Players);
+	}
 	if (State)
 	{
 		State->Move();
