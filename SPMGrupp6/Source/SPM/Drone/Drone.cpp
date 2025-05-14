@@ -20,6 +20,7 @@ ADrone::ADrone()
 	TurretMesh->SetupAttachment(BodyMesh);
 	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawn->SetupAttachment(TurretMesh);
+	
 }
 
 // Called when the game starts or when spawned
