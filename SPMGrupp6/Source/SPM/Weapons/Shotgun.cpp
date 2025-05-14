@@ -9,7 +9,7 @@
 
 void AShotgun::Fire()
 {
-	if (!bCanFire) return;
+	if (!bCanFire || !bIsWeaponEquipped) return;
 
 	if (BulletsLeft <= 0)
 	{
@@ -71,7 +71,10 @@ void AShotgun::Fire()
 		if (LastHitActor)
 		{
 			OnHit.Broadcast(LastHitActor);
-			UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			if (Cast<APawn>(LastHitActor))
+			{
+				UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			}
 		}
 	}
 	

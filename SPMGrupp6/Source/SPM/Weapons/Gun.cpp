@@ -74,7 +74,7 @@ int AGun::GetMagazineSize() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire) return;
+	if (!bCanFire || !bIsWeaponEquipped) return;
 
 	// Reloads automatically if bullets are 0.
 	if (BulletsLeft <= 0)
@@ -111,7 +111,10 @@ void AGun::Fire()
 		if(HitActor)
 		{
 			OnHit.Broadcast(HitActor);
-			UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			if (Cast<APawn>(HitActor))
+			{
+				UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			}
 			if (HitActor->ActorHasTag("Button"))
 			{
 				// Call the ActivateButton event in the Blueprint
@@ -159,7 +162,7 @@ void AGun::ResetCanFire()
 
 void AGun::PullTrigger()
 {
-	if (!bCanFire) return;
+	if (!bCanFire || !bIsWeaponEquipped) return;
 	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
@@ -338,6 +341,18 @@ float AGun::CalculateDamageFalloff(float TraceLength)
 	
 	// Return Calculated damage between min damage and original damage
 	return FMath::RoundToInt(FMath::Clamp(CalculatedDamage, MinimumDamage, Damage));
+}
+
+void AGun::StopPendingActions()
+{
+	StopReload();
+	ReleaseTrigger();
+	StopWeaponAbility();
+	bIsWeaponEquipped = false;
+}
+void AGun::SetWeaponEquipped(const bool bIsEquipped)
+{
+	bIsWeaponEquipped = bIsEquipped;
 }
 
 

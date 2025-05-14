@@ -34,12 +34,18 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 	{
 		FrameCounter = 0;
 		SceneCaptureRef->CaptureScene();
-		if (AlwaysShowPlayers)
+	}
+	
+	if (AlwaysShowPlayers)
+	{
+		PlayerPingProgress += InDeltaTime;
+		if(PlayerPingProgress >= PlayerPingInterval)
 		{
+			PlayerPingProgress = 0.f;
 			OnRedPlayerFire();
 			OnBluePlayerFire();
 		}
-	}
+	} else PlayerPingProgress = 0.f;
 }
 
 void UCombinedMinimap::InitializeMap()

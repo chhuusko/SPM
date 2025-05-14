@@ -9,7 +9,7 @@
 void APistol::Fire()
 {
 		// Checks if weapon can fire.
-		if (!bCanFire) return;
+		if (!bCanFire || !bIsWeaponEquipped) return;
 
 		// Reloads automatically if bullets are 0.
 		if (BulletsLeft <= 0)
@@ -46,7 +46,10 @@ void APistol::Fire()
 			if(HitActor)
 			{
 				OnHit.Broadcast(HitActor);
-				UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+				if (Cast<APawn>(HitActor))
+				{
+					UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+				}
 				if (HitActor->ActorHasTag("Button"))
 				{
 					// Call the ActivateButton event in the Blueprint
