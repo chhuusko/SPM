@@ -3,12 +3,12 @@
 
 #include "DroneSpawn.h"
 
+bool ADroneSpawn::CanSpawn = true;
 // Sets default values
 ADroneSpawn::ADroneSpawn()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 bool ADroneSpawn::IsDroneRespawnTimerActive() const
@@ -38,7 +38,15 @@ void ADroneSpawn::Tick(float DeltaTime)
 
 void ADroneSpawn::DroneDestroyed()
 {
-	GetWorldTimerManager().SetTimer(DroneSpawnTimerHandle, this, &ADroneSpawn::Spawn, SpawnTime, false);
+	if (CanSpawn)
+	{
+		GetWorldTimerManager().SetTimer(DroneSpawnTimerHandle, this, &ADroneSpawn::Spawn, SpawnTime, false);
+	}
+}
+
+void ADroneSpawn::LootBoxDestroyed()
+{
+	ADroneSpawn::CanSpawn = false;
 }
 
 void ADroneSpawn::Spawn()

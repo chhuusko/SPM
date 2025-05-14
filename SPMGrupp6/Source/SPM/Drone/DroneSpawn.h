@@ -31,13 +31,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void DroneDestroyed();
+	static void LootBoxDestroyed();
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ADrone> DroneClass;
 	UPROPERTY(EditAnywhere)
 	float SpawnTime;
 	FTimerHandle DroneSpawnTimerHandle;
-	
+	static bool CanSpawn;
 	void Spawn();
 	
 };

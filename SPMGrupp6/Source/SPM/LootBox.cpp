@@ -6,6 +6,7 @@
 #include "ShooterGameInstance.h"
 #include "SPM/Pickup/ResourcePickUp.h"
 #include "Components/BoxComponent.h"
+#include "Drone/DroneSpawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "Minimap/CombinedMinimap.h"
 
@@ -28,6 +29,7 @@ void ALootBox::BeginPlay()
 float ALootBox::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
 	DropLoot();
+	ADroneSpawn::LootBoxDestroyed();
 	Destroy();
 	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
