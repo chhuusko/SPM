@@ -11,7 +11,7 @@
 void AResourcePickUp::PlayerInteraction(AShooterCharacter* Player)
 {
 	if (!Player) return;
-
+	Super::PlayerInteraction(Player);
 	if(UResources* PlayerResources = Player->FindComponentByClass<UResources>())
 	{
 		PlayerResources->ModifyResourceAmount(ResourceAmount);

@@ -29,7 +29,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float RemoveTime = 20.0f;
 	FTimerHandle RemoveTimerHandle;
-
+	UPROPERTY(EditAnywhere)
+	USoundBase* PickupSound;
 	UPROPERTY(EditAnywhere)
     float VacuumDistance;
 	TArray<AActor*> FoundActors;

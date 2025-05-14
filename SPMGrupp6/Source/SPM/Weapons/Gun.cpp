@@ -111,7 +111,10 @@ void AGun::Fire()
 		if(HitActor)
 		{
 			OnHit.Broadcast(HitActor);
-			UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			if (Cast<APawn>(HitActor))
+			{
+				UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			}
 			if (HitActor->ActorHasTag("Button"))
 			{
 				// Call the ActivateButton event in the Blueprint
