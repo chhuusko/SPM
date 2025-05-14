@@ -19,6 +19,10 @@ private:
 	virtual void WeaponAbility() override;
 	virtual void StopWeaponAbility() override;
 	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength) override;
+
+	UPROPERTY(EditAnywhere, Category="Sounds")
+	USoundBase* StopScopingSound;
+	
 	FTimerHandle AimTimerHandle;
 	float ScopeToEyeDuration = 0.3;
 	bool bIsAimingDownSight = false;

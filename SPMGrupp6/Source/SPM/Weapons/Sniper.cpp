@@ -30,6 +30,7 @@ void ASniper::StopWeaponAbility()
 	// Stop scoping or stop the character trying to scope.
 	if (bIsAimingDownSight)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), StopScopingSound, GetActorLocation());
 		SetCameraFOV(OriginalPLayerFOV);
 		DisableZoomInSensitivity();
 		if (PlayerController)
