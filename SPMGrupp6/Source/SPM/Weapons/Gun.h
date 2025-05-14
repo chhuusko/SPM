@@ -98,6 +98,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bCanFire = true;
 
+	UPROPERTY(VisibleAnywhere)
+	bool bIsWeaponEquipped = true;
+
 	UPROPERTY(EditAnywhere)
 	bool bDebugWeapon = true;
 
@@ -152,4 +155,6 @@ public:
 	void UpdateAmmoText();
 	float CalculateDamageFalloff(float TraceLength);
     int32 GetUpgradeCost(int Level) const;
+	void StopPendingActions();
+	void SetWeaponEquipped(const bool bIsEquipped);
 };
