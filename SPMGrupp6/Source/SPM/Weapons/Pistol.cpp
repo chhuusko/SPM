@@ -9,7 +9,7 @@
 void APistol::Fire()
 {
 		// Checks if weapon can fire.
-		if (!bCanFire && !bIsWeaponEquipped) return;
+		if (!bCanFire || !bIsWeaponEquipped) return;
 
 		// Reloads automatically if bullets are 0.
 		if (BulletsLeft <= 0)
