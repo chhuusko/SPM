@@ -39,6 +39,7 @@ void AUpgradedPistol::WeaponAbility()
 				{
 					Minimap->OnRedPlayerFire();
 				}
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), AltFireSound, GetActorLocation());
 			} else failed = true;
 		} else failed = true;
 	} else failed = true;

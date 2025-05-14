@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Sniper.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "SPM/ShooterCharacter.h"
 #include "SPM/ShooterPlayerController.h"
 
@@ -50,6 +52,7 @@ void ASniper::ZoomIn()
 
 	if (PlayerController)
 	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), AltFireSound, GetActorLocation());
 		PlayerController->AddSniperScope();
 	}
 }

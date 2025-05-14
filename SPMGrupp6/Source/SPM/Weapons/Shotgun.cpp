@@ -11,8 +11,16 @@ void AShotgun::Fire()
 {
 	if (!bCanFire || !bIsWeaponEquipped) return;
 
+	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
+		if (bCanPlayEmptyMagSound)
+		{
+			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+			bCanPlayEmptyMagSound = false;
+			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
+		}
 		Reload();
 		return;
 	}
