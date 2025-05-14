@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include <vector>
 #include "SVOGrid.generated.h"
 
 class FOctNode;
@@ -26,11 +27,19 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 private:
+	void CreateStandardGrid();
+	// Temp Grid
+	static const int GridLength = 64;
+	float Quarter = AreaSize.X / GridLength;
+	
+	// Declare and initialize all to false
+	TArray<TArray<TArray<bool>>> BoolArray;
+	
 	FOctNode* RootNode;
 	void CreateGrid();
 	bool HasObjectWithin(FOctNode* Node);
 	UPROPERTY(EditDefaultsOnly)
-	FVector AreaLocation;
+	FVector AreaPosition;
 	UPROPERTY(EditDefaultsOnly)
 	FVector AreaSize;
 	UPROPERTY(EditDefaultsOnly)

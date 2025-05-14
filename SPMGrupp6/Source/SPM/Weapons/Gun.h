@@ -44,8 +44,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* MuzzleFlash;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Sounds")
 	USoundBase* MuzzleSound;
+
+	UPROPERTY(EditDefaultsOnly, Category="Sounds")
+	USoundBase* HitMarkerSound;
 	
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ImpactParticles;
