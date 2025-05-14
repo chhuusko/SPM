@@ -87,9 +87,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
 	int32 UpdateEveryNFrame = 5;
     int32 FrameCounter = 0;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
     bool AlwaysShowPlayers = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
+	float PlayerPingInterval = 1.f;
+	float PlayerPingProgress = 0.f;
 
-protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Minimap")
 	AShooterCharacter* RedPlayer;
 	UPROPERTY(BlueprintReadOnly, Category = "Minimap")

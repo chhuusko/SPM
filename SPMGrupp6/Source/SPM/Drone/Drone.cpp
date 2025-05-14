@@ -27,12 +27,17 @@ void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
-	TestRays();
+	//TestRays();
 }
 // Called every frame
 void ADrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (Players.Num() < 2)
+	{
+		//TODO Tempfix 
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Players);
+	}
 	if (State)
 	{
 		State->Move();

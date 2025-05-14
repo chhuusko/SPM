@@ -9,7 +9,7 @@
 
 void AShotgun::Fire()
 {
-	if (!bCanFire && !bIsWeaponEquipped) return;
+	if (!bCanFire || !bIsWeaponEquipped) return;
 
 	if (BulletsLeft <= 0)
 	{

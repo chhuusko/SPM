@@ -3,8 +3,11 @@
 
 #include "HealthPickUp.h"
 
-void AHealthPickUp::PlayerInteraction(AShooterCharacter* player)
+
+void AHealthPickUp::PlayerInteraction(AShooterCharacter* Player)
 {
-	player->Heal(HealAmount);
+	if (!Player)return;
+	Super::PlayerInteraction(Player);
+	Player->Heal(HealAmount);
 	Destroy();
 }

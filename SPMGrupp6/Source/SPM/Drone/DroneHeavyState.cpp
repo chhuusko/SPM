@@ -9,6 +9,7 @@ void FDroneHeavyStateIdle::Exit()
 		Drone->SetTarget(Player);
 		if (FVector::Dist(Drone->GetActorLocation(), Player->GetActorLocation()) < Drone->GetAggroDistance() && Drone->SeeTarget())
 		{
+			
 			UE_LOG(LogTemp, Warning, TEXT("Player Movement Detected"));
 			
 			Drone->ChangeState(new FDroneHeavyStateAttack(Drone, Spawner, Player));
@@ -32,8 +33,8 @@ void FDroneHeavyStateAttack::Rotate()
 {
 	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
 	FVector ToTarget = Target->GetActorLocation() - Drone->GetTurret()->GetComponentLocation();
-	FRotator LookAtRotation = FRotator(0, ToTarget.Rotation().Yaw+90, ToTarget.Rotation().Pitch+35);
-	Drone->GetTurret()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
+	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
 }
 
 void FDroneHeavyStateAttack::Shoot()

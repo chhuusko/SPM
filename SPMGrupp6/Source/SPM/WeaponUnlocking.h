@@ -112,6 +112,15 @@ private:
 	UPROPERTY()
 	TMap<EWeaponType, AGun*> WeaponPool;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* SwitchSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* LockedSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* FailedUnlockSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* FailedUpgradeSound;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* WeaponUpgradeMappingContext;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
