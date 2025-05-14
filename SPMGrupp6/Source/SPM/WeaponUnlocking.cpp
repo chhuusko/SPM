@@ -368,10 +368,11 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 	{
 		CurrentGun->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 		CurrentGun->SetActorHiddenInGame(true);
-		CurrentGun->StopWeaponAbility();
+		CurrentGun->StopPendingActions();
 	}
 
 	PooledGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
 	PooledGun->SetActorHiddenInGame(false);
 	CharacterOwner->SetGun(PooledGun);
+	PooledGun->SetWeaponEquipped(true);
 }
