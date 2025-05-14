@@ -23,7 +23,13 @@ UWeaponUnlocking::UWeaponUnlocking()
 
 void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 {
-	if (!CharacterOwner || !IsWeaponUnlocked(WeaponType)) return;
+	if (!CharacterOwner) return;
+
+	if (!IsWeaponUnlocked(WeaponType))
+	{
+		if (LockedSound) UGameplayStatics::PlaySoundAtLocation(this, LockedSound, CharacterOwner->GetActorLocation());
+		return;
+	}
 	
 	if (WeaponClasses.Contains(WeaponType))
 	{
@@ -85,8 +91,13 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 			State.Level = 1;
 			EquipWeapon(WeaponType);
 			UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
-		} else UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock Weapon %d"),
+		}
+		else
+		{
+			if (FailedUnlockSound) UGameplayStatics::PlaySoundAtLocation(this, FailedUnlockSound, CharacterOwner->GetActorLocation());
+			UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock Weapon %d"),
 									(int32)WeaponType);
+		}
 	}
 	else if (WeaponPool.Contains(WeaponType))
 	{
@@ -102,10 +113,15 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 				OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d upgraded!"),
 									(int32)WeaponType);
-			}else UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade Weapon %d from level %d to  %d"),
+			}
+			else
+			{
+				if (FailedUpgradeSound) UGameplayStatics::PlaySoundAtLocation(this, FailedUpgradeSound, CharacterOwner->GetActorLocation());
+				UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade Weapon %d from level %d to  %d"),
 									(int32)WeaponType,
 									State.Level,
 									State.Level+1);
+			}
 		} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
 									(int32)WeaponType);
 	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d is not in WeaponPool!"),
@@ -372,7 +388,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		CurrentGun->StopPendingActions();
 	}
 
-	UGameplayStatics::PlaySoundAtLocation(this, SwitchSound, CharacterOwner->GetActorLocation());
+	if (SwitchSound) UGameplayStatics::PlaySoundAtLocation(this, SwitchSound, CharacterOwner->GetActorLocation());
 
 	PooledGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
 	PooledGun->SetActorHiddenInGame(false);

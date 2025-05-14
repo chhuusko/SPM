@@ -111,6 +111,10 @@ private:
 	USoundBase* SwitchSound;
 	UPROPERTY(EditDefaultsOnly, Category = "Sound")
 	USoundBase* LockedSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* FailedUnlockSound;
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	USoundBase* FailedUpgradeSound;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputMappingContext* WeaponUpgradeMappingContext;
