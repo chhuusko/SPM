@@ -36,6 +36,7 @@ protected:
     TSubclassOf<class AHealthPickUp> HealthPickUpClass;
     UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
+	AActor* Player;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -88,7 +89,7 @@ private:
 	float FireRate;
 	UPROPERTY(EditAnywhere)
 	float AggroDistance;
-	AActor* Player;
+	
 	
 	UPROPERTY(EditAnywhere)
 	int32 Health;
