@@ -79,6 +79,15 @@ void APulseGrenade::Explode()
 			{
 				FVector LaunchDirection = (HitCharacter->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 				HitCharacter->LaunchCharacter(LaunchDirection * Force, true, true);
+
+				APlayerController* PlayerController = Cast<APlayerController>(HitCharacter->GetController());
+				if (ExplosionCameraShake && PlayerController)
+				{
+					// Plays camera shake if hit actor is a shooter character.
+						PlayerController->ClientStartCameraShake(ExplosionCameraShake);
+					
+					// Would be nice to get more camera shake the closer you are to explosion
+				}
 			}
 		}
 	}
