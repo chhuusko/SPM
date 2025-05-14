@@ -25,6 +25,7 @@ enum class EWeaponType : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponSwap, EWeaponType, WeaponType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpgrade, int32, NewCurrencyValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, int32, NewCurrencyValue);
 
 USTRUCT(BlueprintType)
 struct FWeaponState
@@ -52,6 +53,11 @@ public:
 	bool IsWeaponUnlocked(EWeaponType WeaponType) const;
 	FOnWeaponSwap OnWeaponSwap;
 	FOnUpgrade OnUpgrade;
+	FOnPickup OnPickup;
+
+	TMap<EWeaponType, AGun*> GetWeaponPool() { return WeaponPool; }
+	UFUNCTION()
+	bool CanAffordUpgrade(EWeaponType WeaponType);
 
 protected:
 	// Called when the game starts
@@ -93,11 +99,12 @@ private:
 	FName WeaponSocketName = TEXT("WeaponSocket");
 	
 	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
-
-	UFUNCTION()
-	void CanAffordUpgrade();
+	
 	UFUNCTION()
 	void OnCurrencyPickup();
+
+	UFUNCTION()
+	void GetResourceComponent();
 	
 	UPROPERTY()
 	TMap<EWeaponType, FWeaponState> WeaponStates;

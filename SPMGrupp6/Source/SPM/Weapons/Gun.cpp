@@ -21,6 +21,9 @@ AGun::AGun()
 
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+
+	MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePosition"));
+	MuzzlePosition->SetupAttachment(Mesh);
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +34,9 @@ void AGun::BeginPlay()
 	
 	GetPlayerController();
 	GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
+	
+	MuzzleLocation = MuzzlePosition->GetComponentLocation();
+	MuzzleRotation = MuzzlePosition->GetComponentRotation();
 }
 
 // Called every frame
@@ -84,8 +90,8 @@ void AGun::Fire()
 	}
 	
 	
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, Mesh, TEXT("MuzzleFlashSocket"));
-	UGameplayStatics::SpawnSoundAttached(MuzzleSound, Mesh, TEXT("MuzzleFlashSocket"));
+	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
+	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	
 	FHitResult Hit;
 	FVector ShotDirection;
