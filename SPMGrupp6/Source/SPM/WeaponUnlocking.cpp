@@ -131,30 +131,6 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 
 bool UWeaponUnlocking::CanAffordUpgrade(EWeaponType WeaponType)
 {
-	// AGun* Gun;
-	// // Loop through all weapons.
-	// for (int32 EnumValue = 0; EnumValue <= static_cast<int32>(EWeaponType::SniperRifle); ++EnumValue)
-	// {
-	// 	EWeaponType WeaponType = static_cast<EWeaponType>(EnumValue);
-	//
-	// 	// This weapon hasn't been unlocked yet.
-	// 	if (!WeaponPool.Contains(WeaponType))
-	// 	{
-	// 		continue;
-	// 	}
-	// 	
-	// 	Gun = WeaponPool[WeaponType];
-	// 	if (Gun)
-	// 	{
-	// 		FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
-	// 		int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
-	// 		if (ResourceComponent->HasEnoughResources(UpgradeCost))
-	// 		{
-	// 			
-	// 		}
-	// 	}
-	// }
-
 	if (!WeaponPool.Contains(WeaponType))
 	{
 		return false;
