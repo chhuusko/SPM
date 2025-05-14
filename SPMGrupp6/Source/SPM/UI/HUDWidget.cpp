@@ -262,9 +262,8 @@ void UHUDWidget::ShowWeaponUpgradeUI(EWeaponType Weapon)
 // Calls helper methods to update the UI when an upgrade gets applied.
 void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue)
 {
-	UE_LOG(LogTemp, Warning, TEXT("New currency: %i"), NewCurrencyValue);
-	HideWeaponUpgradeUI(Weapon);
 	UpdateCurrencyText(NewCurrencyValue);
+	HideWeaponUpgradeUI(Weapon);
 }
 
 // Hides symbols in UI when upgrade is applied.

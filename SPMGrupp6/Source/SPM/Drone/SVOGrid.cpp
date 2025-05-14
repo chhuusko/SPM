@@ -14,7 +14,7 @@ ASVOGrid::ASVOGrid()
 // Called when the game starts or when spawned
 void ASVOGrid::BeginPlay()
 {
-	CreateGrid();
+	CreateStandardGrid();
 	Super::BeginPlay();
 }
 
@@ -25,25 +25,32 @@ void ASVOGrid::Tick(float DeltaTime)
 
 }
 
+void ASVOGrid::CreateStandardGrid()
+{
+	
+	for (int x = -1*GridLength; x <= GridLength; x += 2) {
+		for (int y = -1*GridLength; y <= GridLength; y += 2) {
+			for (int z = -1*GridLength; z <= GridLength; z += 2) {
+				FVector Offset(x * Quarter, y * Quarter, z * Quarter);
+				FOctNode* ChildCube = new FOctNode(AreaPosition+Offset, AreaSize / GridLength);
+				HasObjectWithin(ChildCube);
+				
+			}
+		}
+	}
+}
+
 void ASVOGrid::CreateGrid()
 {
-	RootNode = new FOctNode(AreaLocation, AreaSize);
+	RootNode = new FOctNode(AreaPosition, AreaSize);
 	if (HasObjectWithin(RootNode))
 	{
-		DrawDebugBox(GetWorld(), AreaLocation, AreaSize, FColor::Red, true, 5.f, 0, 10);
+		DrawDebugBox(GetWorld(), AreaPosition, AreaSize, FColor::Red, true, 5.f, 0, 10);
 	}
 	for(int i = 0; i <= MaxDepth; i++)
 	{
 		RootNode->AddChildren();
-		
 	} 
-	for (FOctNode* Node : RootNode->Children[0]->Children)
-    {
-    	if (Node != nullptr)
-    	{
-    		DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
-    	}
-    }
 }
 
 
@@ -52,14 +59,19 @@ bool ASVOGrid::HasObjectWithin(FOctNode* Node)
 	FRotator Rotation = FRotator::ZeroRotator;
 	FCollisionShape Box = FCollisionShape::MakeBox(Node->Size);
 
-	bool bHit = GetWorld()->SweepTestByChannel(
-		Node->Size,
-		Node->Size, // No sweep, just test at a point
-		Rotation.Quaternion(),
-		ECC_WorldStatic,
-		Box
+	bool bHit = GetWorld()->OverlapBlockingTestByChannel(
+	Node->Position,
+	Rotation.Quaternion(),
+	ECC_WorldStatic,
+	Box
 	);
 	
+	if (bHit)
+	{
+		//TODO BoolArray[Node->Position.X+1*GridLength][Node->Position.Y+1*GridLength][Node->Position.Z+1*GridLength] = true;
+		//DrawDebugSolidBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0);
+		//DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
+	}
 	return bHit;
 }
 
