@@ -11,12 +11,19 @@ void APistol::Fire()
 		// Checks if weapon can fire.
 		if (!bCanFire || !bIsWeaponEquipped) return;
 
-		// Reloads automatically if bullets are 0.
-		if (BulletsLeft <= 0)
+	// Reloads automatically if bullets reach 0.
+	if (BulletsLeft <= 0)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
+		if (bCanPlayEmptyMagSound)
 		{
-			Reload();
-			return;
+			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+			bCanPlayEmptyMagSound = false;
+			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
 		}
+		Reload();
+		return;
+	}
 	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
@@ -78,11 +85,19 @@ void APistol::Fire()
 		TimesFired++;
 		UpdateAmmoText();
 
-		// Reloads automatically if bullets reach 0.
-		if (BulletsLeft <= 0)
+	// Reloads automatically if bullets reach 0.
+	if (BulletsLeft <= 0)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
+		if (bCanPlayEmptyMagSound)
 		{
-			Reload();
+			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+			bCanPlayEmptyMagSound = false;
+			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
 		}
+		Reload();
+		return;
+	}
 
 		// Stops possibility to fire between shots.
 		bCanFire = false;

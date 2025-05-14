@@ -54,7 +54,7 @@ protected:
 	USoundBase* MuzzleSound;
 
 	UPROPERTY(EditAnywhere, Category="Sounds")
-	USoundBase* AltMuzzleSound;
+	USoundBase* AltFireSound;
 
 	UPROPERTY(EditDefaultsOnly, Category="Sounds")
 	USoundBase* HitMarkerSound;
