@@ -67,9 +67,6 @@ public:
 
 	UFUNCTION()
 	void UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize);
-
-	UFUNCTION()
-	void UpdateCurrencyText(int32 NewValue);
 	
 	UFUNCTION(BlueprintCallable)
 	void StartDashTimer(float CooldownTime);
@@ -80,14 +77,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
-	UFUNCTION()
-	void UpdateEquippedWeapon(EWeaponType Weapon);
-
-	UFUNCTION()
-	void ShowWeaponUpgradeUI(EWeaponType Weapon);
-
-	UFUNCTION()
-	void UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue);
+	
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -111,6 +101,21 @@ private:
 
 	UFUNCTION()
 	void DashCooldownFinished();
+	
+	UFUNCTION()
+	void OnPickup(int32 NewCurrencyAmount);
+	
+	UFUNCTION()
+	void UpgradeApplied(int32 NewCurrencyValue);
+
+	UFUNCTION()
+	void UpdateEquippedWeapon(EWeaponType Weapon);
+	
+	UFUNCTION()
+	void UpdateCurrencyText(int32 NewValue);
+	
+	UFUNCTION()
+	void UpdateWeaponUpgradeUI();
 
 	UFUNCTION()
 	void HideWeaponUpgradeUI(EWeaponType Weapon);
@@ -129,6 +134,9 @@ private:
 
 	UFUNCTION()
 	void GetPlayerCharacter();
+
+	UFUNCTION()
+	UImage* GetUpgradeIconFromWeapon(EWeaponType Weapon);
 	
 	UPROPERTY()
 	float ElapsedDashTime;

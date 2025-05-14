@@ -18,38 +18,10 @@
   <component name="ChangeListManager">
     <list default="true" id="b441fb19-a1f3-4497-9424-896203807a4e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_CraneMiddle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_CraneMiddle.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_CraneTopFront_NotClean.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_CraneTopFront_NotClean.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_TrafficCone_low.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_TrafficCone_low.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_doorway_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_doorway_300x300x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_floor_100x100x30.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_floor_100x100x30.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_floor_300x300x40.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_floor_300x300x40.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_pillar_330x50x50.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_pillar_330x50x50.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_leftcorner_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_leftcorner_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_roof_rightcorner_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_roof_rightcorner_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_300x150x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_300x150x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_window_300x150x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_short_wall_window_300x150x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_sideroof_300x300x300.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_sideroof_300x300x300.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_stairs_150x170x100.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_stairs_150x170x100.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_steelbeam_300x30x50.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_steelbeam_300x30x50.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_wall_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_wall_300x300x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Meshes/SM_wall_window_300x300x20.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Meshes/SM_wall_window_300x300x20.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__ambientocclusion.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__ambientocclusion.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__basecolor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__basecolor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__height.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__height.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__normal.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__normal.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/Ground/Ground__roughness.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/Ground/Ground__roughness.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_BaseColor.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_BaseColor.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_Normal.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_Normal.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_OcclusionRoughnessMetallic.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Textures/TrafficCone/T_SM_TrafficCone_low_TrafficCone_OcclusionRoughnessMetallic.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dash.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dash.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Down_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Down_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Left_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Left_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Right_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Right_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Up_scaled.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Dpad_Up_scaled.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/Upgrade.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/Upgrade.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/UI/Icons/padlock.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/UI/Icons/padlock.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SPM/UI/HUDWidget.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/UI/HUDWidget.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SPM/UI/HUDWidget.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/UI/HUDWidget.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SPM/WeaponUnlocking.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/WeaponUnlocking.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SPM/WeaponUnlocking.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/WeaponUnlocking.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,7 +48,7 @@
     "C/C++ Project.SPM.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "prog__Malte2",
+    "git-widget-placeholder": "prog__joppa",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
