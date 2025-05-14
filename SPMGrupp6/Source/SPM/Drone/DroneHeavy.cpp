@@ -28,7 +28,7 @@ void ADroneHeavy::LostPlayer()
 float ADroneHeavy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,class AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	ChangeState(new FDroneHeavyStateAttack(this, Spawner, DamageCauser));
+	ChangeState(new FDroneStateAttack(this, Spawner, Player)); 
 	return NULL;
 }
 

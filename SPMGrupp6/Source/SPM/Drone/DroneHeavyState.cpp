@@ -20,13 +20,18 @@ void FDroneHeavyStateAttack::Move()
 {
 	if (!Drone->SeeTarget())
 	{
-		Drone->StartAggroTimeHandler();
-	} else
+	    Drone->StartAggroTimeHandler();
+	}else
 	{
 		Drone->CancellAggroTimeHandler();
-		NewLocation = Target->GetActorLocation();
-		Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+		if (FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) < MaxSpawnDistance)
+	    {
+	         NewLocation = Target->GetActorLocation();
+	         Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+	    }
 	}
+		
+	
 }
 
 void FDroneHeavyStateAttack::Rotate()
@@ -42,19 +47,10 @@ void FDroneHeavyStateAttack::Shoot()
 	if (Drone != nullptr)
 	if (!Drone->GetBulletClass() && !Drone->GetProjectileSpawn()){return;}
 	{
-		
 		ADroneBullet* Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawn()->GetComponentLocation(), Drone->GetProjectileSpawn()->GetComponentRotation());
 		//ADroneMissile* Missile = GetWorld()->SpawnActor<ADroneMissile>(MissileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
 		Bullet->SetOwner(Drone);
 		//Missile->SetOwner(this);
-	}
-}
-
-void FDroneHeavyStateAttack::Exit()
-{
-	if (Spawner && FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) > MaxSpawnDistance)
-	{
-		Drone->ChangeState(new FDroneHeavyStateReturn(Drone, Spawner));
 	}
 }
 

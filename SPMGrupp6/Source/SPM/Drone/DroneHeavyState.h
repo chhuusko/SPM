@@ -28,7 +28,6 @@ public:
 	virtual void Move() override;
 	virtual void Rotate() override;
 	virtual void Shoot() override;
-	virtual void Exit() override;
 private:
 	float MaxSpawnDistance = 2000;
 	FVector DesiredElevation = FVector(0,0,250);
