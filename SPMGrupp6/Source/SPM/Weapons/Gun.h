@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Sounds")
 	USoundBase* MuzzleSound;
 
+	UPROPERTY(EditAnywhere, Category="Sounds")
+	USoundBase* AltMuzzleSound;
+
 	UPROPERTY(EditDefaultsOnly, Category="Sounds")
 	USoundBase* HitMarkerSound;
 
@@ -125,6 +128,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsReloading = false;
 
+	UPROPERTY(VisibleAnywhere)
+	bool bCanPlayEmptyMagSound = false;
+
 	UPROPERTY()
 	class UHUDWidget* HUDWidget;
 	
@@ -133,6 +139,7 @@ protected:
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
 	FTimerHandle ReloadTimer;
+	FTimerHandle EnableEmptyMagTimer;
 	
 	AController* GetOwnerController() const;
 	void AddRecoil();
@@ -169,4 +176,5 @@ public:
     int32 GetUpgradeCost(int Level) const;
 	void StopPendingActions();
 	void SetWeaponEquipped(const bool bIsEquipped);
+	void EnableCanPlayEmptyMagSound();
 };
