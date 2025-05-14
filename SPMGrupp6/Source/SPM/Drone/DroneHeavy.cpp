@@ -30,7 +30,7 @@ float ADroneHeavy::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (Player != nullptr)
 	{
-		ChangeState(new FDroneStateAttack(this, Spawner, Player)); 
+		ChangeState(new FDroneHeavyStateAttack(this, Spawner, Player)); 
 	}
 	return NULL;
 }
