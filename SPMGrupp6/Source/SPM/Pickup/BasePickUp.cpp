@@ -60,6 +60,7 @@ void ABasePickUp::Tick(float DeltaTime)
 				TargetActor = Actor;
 				//SetSimulatePhysics(false);
 				Collision->SetSimulatePhysics(false);
+				Collision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 					
 			}
 		}
