@@ -74,7 +74,7 @@ int AGun::GetMagazineSize() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire && !bIsWeaponEquipped) return;
+	if (!bCanFire || !bIsWeaponEquipped) return;
 
 	// Reloads automatically if bullets are 0.
 	if (BulletsLeft <= 0)
@@ -159,7 +159,7 @@ void AGun::ResetCanFire()
 
 void AGun::PullTrigger()
 {
-	if (!bCanFire && !bIsWeaponEquipped) return;
+	if (!bCanFire || !bIsWeaponEquipped) return;
 	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
