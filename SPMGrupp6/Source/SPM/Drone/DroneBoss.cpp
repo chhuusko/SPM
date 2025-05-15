@@ -3,6 +3,8 @@
 
 #include "DroneBoss.h"
 
+#include "Kismet/GameplayStatics.h"
+
 ADroneBoss::ADroneBoss()
 {
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Players);

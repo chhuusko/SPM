@@ -5,6 +5,7 @@
 #include "DroneState.h"
 #include "DroneHeavyState.h"
 #include "DroneSpawn.h"
+
 class FDroneState;
 class FDroneHeavyStateIdle;
 
@@ -28,9 +29,9 @@ void ADroneHeavy::LostPlayer()
 float ADroneHeavy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent,class AController* EventInstigator, AActor* DamageCauser)
 {
 	Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-	if (Player != nullptr)
+	if (Target != nullptr)
 	{
-		ChangeState(new FDroneHeavyStateAttack(this, Spawner, Player)); 
+		ChangeState(new FDroneHeavyStateAttack(this, Spawner, Target)); 
 	}
 	return NULL;
 }

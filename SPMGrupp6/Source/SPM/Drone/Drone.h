@@ -7,9 +7,7 @@
 #include "DroneMissile.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "SPM/Pickup/ResourcePickUp.h"
-#include "SPM/ShooterCharacter.h"
 #include "GameFramework/Pawn.h"
-#include "Kismet/GameplayStatics.h"
 #include "Drone.generated.h"
 
 class FDroneState;
@@ -26,19 +24,21 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-    void Shoot();
 	virtual void LostPlayer();
 	
-	FDroneState* State;
+	//State
+	TArray<AActor*> Players;
+	AActor* Target;
 	ADroneSpawn* Spawner;
+	FDroneState* State;
+	
+	//Add in editor
 	UPROPERTY(EditAnywhere)
-	USoundBase* ShootSound;
-	UPROPERTY(EditDefaultsOnly, Category="PickUp")
+    USoundBase* ShootSound;
+    UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AHealthPickUp> HealthPickUpClass;
     UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
-	AActor* Player;
-	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -46,14 +46,22 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-	virtual void SetSpawner(ADroneSpawn* Spawn);
-	void ChangeState(FDroneState* newState);
+	
+	//bool
 	virtual bool SeeTarget();
-	virtual void TestRays();
+
+	//Timehandlers
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
-	void SetTarget(AActor* Target);
+
+	//State Functions
 	void MoveTo(FVector TargetLocation);
+	void Shoot();
+	
+	//Set
+	void ChangeState(FDroneState* newState);
+	virtual void SetSpawner(ADroneSpawn* Spawn);
+	void SetTarget(AActor* Target);
 	
 	//Get
 	USoundBase* GetShootSound() {return ShootSound;}
@@ -62,8 +70,10 @@ public:
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 	float GetAggroDistance() const {return AggroDistance;}
+	TArray<AActor*> GetPlayers() {return Players;}
+	AActor* GetTarget() {return Target;}
 	
-	TArray<AActor*> Players;
+	
 private:
 	virtual void LootDrop();
 	
@@ -74,27 +84,26 @@ private:
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
-
-	//
 	
 	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneMissile> MissileClass;
-	
+
+	//Timehandler
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
 
+	//Properties
 	UPROPERTY(EditAnywhere)
 	FVector PreferedHeightOverPlayer;
 	UPROPERTY(EditAnywhere)
 	float FireRate;
 	UPROPERTY(EditAnywhere)
 	float AggroDistance;
-	
-	
 	UPROPERTY(EditAnywhere)
 	int32 Health;
+	
 	
 };

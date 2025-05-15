@@ -4,9 +4,7 @@
 #include "Drone.h"
 #include "DroneState.h"
 #include "SPM/Pickup/HealthPickUp.h"
-#include "DroneBullet.h"
 #include "DroneSpawn.h"
-#include "SceneRenderTargetParameters.h"
 
 
 // Sets default values
@@ -27,7 +25,7 @@ void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
-	//TestRays();
+	
 }
 // Called every frame
 void ADrone::Tick(float DeltaTime)
@@ -61,7 +59,7 @@ void ADrone::Shoot()
 }
 float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	Player = Cast<AShooterCharacter>(DamageCauser->GetOwner());
+	Target = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
 	
 	if (Health <= 0)
@@ -73,9 +71,9 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 		LootDrop();
 		Destroy();
 	}
-	if (Player != nullptr)
+	if (Target != nullptr)
 	{
-		ChangeState(new FDroneStateAttack(this, Spawner, Player));
+		ChangeState(new FDroneStateAttack(this, Spawner, Target));
 	}
 	return NULL;
 }
@@ -89,28 +87,6 @@ void ADrone::SetSpawner(ADroneSpawn* Spawn)
 void ADrone::ChangeState(FDroneState* newState)
 {
 	State = newState;
-}
-
-void ADrone::TestRays()
-{
-	int numDir = 10;
-	FVector* directions = new FVector[numDir];
-
-	float goldenRatio = (1 + FMath::Sqrt(5.0f)) / 2;
-	float angleIncrement = PI * 2 * goldenRatio;
-
-	for (int i = 0; i < numDir; i++) {
-		float t = (float) i / numDir;
-		float inclination = FMath::Acos (1 - 2 * t);
-		float azimuth = angleIncrement * i;
-
-		float x = FMath::Sin (inclination) * FMath::Cos (azimuth);
-		float y = FMath::Sin (inclination) * FMath::Sin (azimuth);
-		float z = FMath::Cos (inclination);
-		directions[i] = FVector(x, y, z)*200;
-		//DrawDebugSphere(GetWorld(), directions[i]+ this->GetActorLocation(), 4.f, 12, FColor::Red, false, 10.0f);
-		
-	}
 }
 
 void ADrone::LootDrop()
@@ -135,9 +111,9 @@ void ADrone::CancellAggroTimeHandler()
 	}
 }
 
-void ADrone::SetTarget(AActor* Target)
+void ADrone::SetTarget(AActor* NewTarget)
 {
-	this->Player = Target;
+	this->Target = NewTarget;
 }
 
 void ADrone::MoveTo(FVector Location)
@@ -156,11 +132,11 @@ void ADrone::LostPlayer()
 
 bool ADrone::SeeTarget()
 {
-	if (Player)
+	if (Target)
 	{
 		FHitResult HitResult;
         FVector Start = GetActorLocation();
-        FVector End = Player->GetActorLocation();
+        FVector End = Target->GetActorLocation();
         FCollisionQueryParams Params;
         Params.AddIgnoredActor(this);
     
@@ -173,7 +149,7 @@ bool ADrone::SeeTarget()
         );
 		
         if (bHit) {
-        	if (HitResult.GetActor()->GetActorLocation() == Player->GetActorLocation())
+        	if (HitResult.GetActor()->GetActorLocation() == Target->GetActorLocation())
         	{
         		//DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 0.1f);
         		return true;
