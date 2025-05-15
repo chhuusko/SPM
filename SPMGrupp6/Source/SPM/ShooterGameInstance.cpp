@@ -77,6 +77,11 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
 }
 
+void UShooterGameInstance::LoadCMainMnenu()
+{
+		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+}
+
 void UShooterGameInstance::CheckGameWon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("RedScore %d : BlueScore %d"), RedScore, BlueScore);
@@ -85,7 +90,8 @@ void UShooterGameInstance::CheckGameWon()
 		Round = 0;
      	BlueScore = 0;
      	RedScore = 0;
-		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UShooterGameInstance::LoadCMainMnenu, 5.f, false);
 		
 		///TODO ta Bort alla värden
 		///TODO Skapar ERROR

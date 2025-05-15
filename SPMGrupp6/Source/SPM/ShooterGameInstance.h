@@ -38,6 +38,7 @@ private:
 
 	void OnPostLoadMap(UWorld* LoadedWorld);
 	void LoadCombinedMinimap();
+	void LoadCMainMnenu();
 	
 	UPROPERTY(BlueprintGetter = GetGlobalMinimapWidget)
 	TObjectPtr<class UCombinedMinimap> GlobalMinimapWidget;
