@@ -197,30 +197,13 @@ void UWeaponUnlocking::UpgradingWeaponFailed(const AGun* Gun, const FWeaponState
 
 bool UWeaponUnlocking::CanAffordUpgrade(EWeaponType WeaponType)
 {
-	// if (!WeaponPool.Contains(WeaponType))
-	// {
-	// 	return false;
-	// }
-	//
-	// AGun* Gun = WeaponPool[WeaponType];
-	// if (Gun)
-	// {
-	// 	FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
-	// 	int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
-	// 	if (ResourceComponent->HasEnoughResources(UpgradeCost))
-	// 	{
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
-	// return false;
-
 	int32 UpgradeCost = GetUpgradeCost(WeaponType);
 	return ResourceComponent->HasEnoughResources(UpgradeCost);
 }
 
 int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 {
+	// If the weapon is already unlocked, return the unlock cost.
 	if (WeaponPool.Contains(WeaponType))
 	{
 		if (AGun* Gun = WeaponPool[WeaponType])
@@ -230,10 +213,10 @@ int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 		}
 	}
 
+	// If the weapon hasn't been unlocked, spawn it temporarily to get cost.
 	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
 	if (!Gun)
 	{
-		// If gun is not in pool, spawn it temporarily to query cost
 		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
 	}
 	return Gun ? Gun->GetUpgradeCost(1) : -1;

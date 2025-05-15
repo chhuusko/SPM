@@ -149,9 +149,6 @@ private:
 
 	UFUNCTION()
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
-
-	UFUNCTION()
-	void SetUpgradeCostColors();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
