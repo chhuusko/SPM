@@ -52,7 +52,7 @@ void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
 	FString CleanMapName = UGameplayStatics::GetCurrentLevelName(this, true);
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance] Starting OnPostLoadMap on [%s]"),
 										*CleanMapName);
-	if (CombinedRadarEnabled && CleanMapName != TEXT("MainMenuMap"))
+	if (CombinedRadarEnabled && !CleanMapName.Contains(TEXT("MainMenuMap")))
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::LoadCombinedMinimap);
 	}
