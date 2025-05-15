@@ -59,6 +59,9 @@ public:
 	UFUNCTION()
 	bool CanAffordUpgrade(EWeaponType WeaponType);
 
+	UFUNCTION()
+	int32 GetUpgradeCost(EWeaponType WeaponType);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
