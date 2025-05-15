@@ -48,6 +48,7 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	}
 }
 
+// Initialize gun variable.
 void UHUDWidget::GetGun()
 {
 	Gun = PlayerCharacter->GetGun();
@@ -62,6 +63,7 @@ void UHUDWidget::GetGun()
 	}
 }
 
+// Initialize weapon unlocking variable.
 void UHUDWidget::GetWeaponUnlocking()
 {
 	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
@@ -77,6 +79,7 @@ void UHUDWidget::GetWeaponUnlocking()
 	}
 }
 
+// Initialize player character variable.
 void UHUDWidget::GetPlayerCharacter()
 {
 	APlayerController* PC = GetOwningPlayer();
@@ -270,11 +273,6 @@ UTextBlock* UHUDWidget::GetUpgradeCostTextFromWeapon(EWeaponType Weapon)
 	}
 }
 
-void UHUDWidget::SetUpgradeCostColors()
-{
-	
-}
-
 // Display the upgrade icon over the weapon.
 void UHUDWidget::UpdateWeaponUpgradeUI()
 {
@@ -284,7 +282,7 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 	
 	for (EWeaponType WeaponType : WeaponKeys)
 	{
-		// Change upgrade icon.
+		// Change upgrade icon for already equipped weapons.
 		if (UImage* UpgradeIcon = GetUpgradeIconFromWeapon(WeaponType))
 		{
 			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
@@ -299,9 +297,9 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 		}
 	}
 
+	// Loop through all weapons.
 	UEnum* WeaponEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
 	if (!WeaponEnum) return;
-	
 	for (int32 i = 0; i < WeaponEnum->GetMaxEnumValue(); ++i)
 	{
 		if (!WeaponEnum->IsValidEnumValue(i)) continue;
