@@ -9,8 +9,12 @@
 
 int32 UShooterGameInstance::GetIncrementedRound()
 {
-	CheckGameWon();
 	return ++Round;
+}
+
+int32 UShooterGameInstance::GetRound()
+{
+	return Round;
 }
 
 void UShooterGameInstance::IncrementBlueScore()
@@ -77,24 +81,14 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
 }
 
-void UShooterGameInstance::LoadCMainMnenu()
+bool UShooterGameInstance::HasMatchEnded()
 {
-		UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+	return (RedScore >= ScoreMax || BlueScore >= ScoreMax);
 }
 
-void UShooterGameInstance::CheckGameWon()
+void UShooterGameInstance::ResetScore()
 {
-	UE_LOG(LogTemp, Warning, TEXT("RedScore %d : BlueScore %d"), RedScore, BlueScore);
-	if (1+RedScore >= ScoreMax || 1+BlueScore >= ScoreMax)
-	{
-		Round = 0;
-     	BlueScore = 0;
-     	RedScore = 0;
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UShooterGameInstance::LoadCMainMnenu, 5.f, false);
-		
-		///TODO ta Bort alla värden
-		///TODO Skapar ERROR
-		
-	}
+	Round = 0;
+	BlueScore = 0;
+	RedScore = 0;
 }

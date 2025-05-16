@@ -16,11 +16,11 @@ public:
 	virtual void Init() override;
 	
 	int32 GetIncrementedRound();
+	int32 GetRound();
 	void IncrementBlueScore();
 	void IncrementRedScore();
 	int32 GetBlueScore() const;
 	int32 GetRedScore() const;
-	void CheckGameWon();
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> GlobalMinimapWidgetClass;
 
@@ -30,6 +30,9 @@ public:
     UFUNCTION(BlueprintGetter)
 	UCombinedMinimap* GetGlobalMinimapWidget() const { return GlobalMinimapWidget; }
 
+	bool HasMatchEnded();
+	void ResetScore();
+
 private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
@@ -38,8 +41,7 @@ private:
 
 	void OnPostLoadMap(UWorld* LoadedWorld);
 	void LoadCombinedMinimap();
-	void LoadCMainMnenu();
-	
+
 	UPROPERTY(BlueprintGetter = GetGlobalMinimapWidget)
 	TObjectPtr<class UCombinedMinimap> GlobalMinimapWidget;
 };

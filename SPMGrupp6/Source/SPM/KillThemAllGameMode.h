@@ -25,4 +25,15 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUserWidget> GameOverScreenClass;
+
+	UPROPERTY(EditAnywhere)
+	float EndDelay = 5;
+	FTimerHandle EndTimer;
+	UPROPERTY(EditAnywhere)
+	float RestartDelay = 5;
+	FTimerHandle RestartTimer;
+	
+	void CheckGameWon();
+	void LoadMainMenu();
+	void RestartLevel();
 };

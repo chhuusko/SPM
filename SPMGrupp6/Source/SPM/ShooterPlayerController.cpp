@@ -7,8 +7,10 @@
 #include "UI/HUDWidget.h"
 #include "KillThemAllGameMode.h"
 #include "ShooterCharacter.h"
+#include "ShooterGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Kismet/GameplayStatics.h"
 #include "UI/HitIndicatorWidget.h"
 #include "UI/SniperScopeWidget.h"
 
@@ -100,7 +102,7 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 	{
 		HUDWidget->RemoveFromParent();
 	}
-	
+
 	// Only add game over screen once.
 	if (bIsWinner)
 	{
@@ -111,9 +113,6 @@ void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner
 			GameOverWidget->UpdateGameOverScreen(this == GetWorld()->GetFirstPlayerController());
 		}
 	}
-	
-	GetWorldTimerManager().SetTimer(RestartTimer, this, &APlayerController::RestartLevel, RestartDelay);
-	UE_LOG(LogTemp, Warning, TEXT("Game Ended!"));
 }
 
 void AShooterPlayerController::UpdateAimAssist(float DeltaTime)

@@ -52,11 +52,6 @@ private:
 	
 	UPROPERTY()
 	USniperScopeWidget* ScopeWidget;
-	
-	UPROPERTY(EditAnywhere)
-	float RestartDelay = 5;
-
-	FTimerHandle RestartTimer;
 
 	UPROPERTY(EditAnywhere)
 	float AssistSphereRadius = 500;
