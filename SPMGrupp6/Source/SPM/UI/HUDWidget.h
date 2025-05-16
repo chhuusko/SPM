@@ -24,6 +24,18 @@ public:
 	class UTextBlock* CurrencyText;
 
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AutoPistolUpgradeCost;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* ShotgunUpgradeCost;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AssaultRifleUpgradeCost;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* SniperRifleUpgradeCost;
+
+	UPROPERTY(meta = (BindWidget))
 	class UBorder* AutoPistolBorder;
 
 	UPROPERTY(meta = (BindWidget))
@@ -118,9 +130,6 @@ private:
 	void UpdateWeaponUpgradeUI();
 
 	UFUNCTION()
-	void HideWeaponUpgradeUI(EWeaponType Weapon);
-
-	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
 	
 	UFUNCTION()
@@ -137,6 +146,9 @@ private:
 
 	UFUNCTION()
 	UImage* GetUpgradeIconFromWeapon(EWeaponType Weapon);
+
+	UFUNCTION()
+	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
 	
 	UPROPERTY()
 	float ElapsedDashTime;

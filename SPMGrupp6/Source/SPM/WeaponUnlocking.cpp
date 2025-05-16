@@ -112,10 +112,10 @@ void UWeaponUnlocking::UnlockingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponState& State, int32 UnlockCost)
 {
 	ResourceComponent->SpendResources(UnlockCost);
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 	State.bUnlocked = true;
 	State.Level = 1;
 	EquipWeapon(WeaponType);
+	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 	if (SuccessfulUnlockSound)
 	{
 		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
@@ -197,23 +197,29 @@ void UWeaponUnlocking::UpgradingWeaponFailed(const AGun* Gun, const FWeaponState
 
 bool UWeaponUnlocking::CanAffordUpgrade(EWeaponType WeaponType)
 {
-	if (!WeaponPool.Contains(WeaponType))
+	int32 UpgradeCost = GetUpgradeCost(WeaponType);
+	return ResourceComponent->HasEnoughResources(UpgradeCost);
+}
+
+int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
+{
+	// If the weapon is already unlocked, return the unlock cost.
+	if (WeaponPool.Contains(WeaponType))
 	{
-		return false;
-	}
-	
-	AGun* Gun = WeaponPool[WeaponType];
-	if (Gun)
-	{
-		FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
-		int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
-		if (ResourceComponent->HasEnoughResources(UpgradeCost))
+		if (AGun* Gun = WeaponPool[WeaponType])
 		{
-			return true;
+			FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
+			return Gun ? Gun->GetUpgradeCost(State.Level + 1) : -1;
 		}
-		return false;
 	}
-	return false;
+
+	// If the weapon hasn't been unlocked, spawn it temporarily to get cost.
+	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
+	if (!Gun)
+	{
+		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
+	}
+	return Gun ? Gun->GetUpgradeCost(1) : -1;
 }
 
 void UWeaponUnlocking::OnCurrencyPickup()

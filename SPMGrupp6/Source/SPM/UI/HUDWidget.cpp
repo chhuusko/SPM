@@ -3,6 +3,7 @@
 
 #include "HUDWidget.h"
 
+#include "MovieSceneSection.h"
 #include "SPM/ShooterCharacter.h"
 #include "SPM/WeaponUnlocking.h"
 #include "Components/Border.h"
@@ -47,6 +48,7 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	}
 }
 
+// Initialize gun variable.
 void UHUDWidget::GetGun()
 {
 	Gun = PlayerCharacter->GetGun();
@@ -61,6 +63,7 @@ void UHUDWidget::GetGun()
 	}
 }
 
+// Initialize weapon unlocking variable.
 void UHUDWidget::GetWeaponUnlocking()
 {
 	WeaponUnlocking = PlayerCharacter->FindComponentByClass<UWeaponUnlocking>();
@@ -76,6 +79,7 @@ void UHUDWidget::GetWeaponUnlocking()
 	}
 }
 
+// Initialize player character variable.
 void UHUDWidget::GetPlayerCharacter()
 {
 	APlayerController* PC = GetOwningPlayer();
@@ -159,6 +163,7 @@ void UHUDWidget::DashCooldownFinished()
 	bHasDashCooldown = false;
 }
 
+// Calls helper methods to update UI.
 void UHUDWidget::OnPickup(int32 NewCurrencyAmount)
 {
 	UpdateCurrencyText(NewCurrencyAmount);
@@ -251,6 +256,23 @@ UImage* UHUDWidget::GetUpgradeIconFromWeapon(EWeaponType Weapon)
 	}
 }
 
+UTextBlock* UHUDWidget::GetUpgradeCostTextFromWeapon(EWeaponType Weapon)
+{
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		return AutoPistolUpgradeCost;
+	case EWeaponType::Shotgun:
+		return ShotgunUpgradeCost;
+	case EWeaponType::SniperRifle:
+		return SniperRifleUpgradeCost;
+	case EWeaponType::AssaultRifle:
+		return AssaultRifleUpgradeCost;
+	default:
+		return nullptr;
+	}
+}
+
 // Display the upgrade icon over the weapon.
 void UHUDWidget::UpdateWeaponUpgradeUI()
 {
@@ -260,8 +282,8 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 	
 	for (EWeaponType WeaponType : WeaponKeys)
 	{
-		UImage* UpgradeIcon = GetUpgradeIconFromWeapon(WeaponType);
-		if (UpgradeIcon)
+		// Change upgrade icon for already equipped weapons.
+		if (UImage* UpgradeIcon = GetUpgradeIconFromWeapon(WeaponType))
 		{
 			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
 			{
@@ -274,6 +296,32 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 			}
 		}
 	}
+
+	// Loop through all weapons.
+	UEnum* WeaponEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
+	if (!WeaponEnum) return;
+	for (int32 i = 0; i < WeaponEnum->GetMaxEnumValue(); ++i)
+	{
+		if (!WeaponEnum->IsValidEnumValue(i)) continue;
+
+		EWeaponType WeaponType = static_cast<EWeaponType>(i);
+		
+		// Update weapon upgrade cost.
+		if (UTextBlock* UpgradeCostText = GetUpgradeCostTextFromWeapon(WeaponType))
+		{
+			int32 UpgradeCost = WeaponUnlocking->GetUpgradeCost(WeaponType);
+			FText UpgradeCostString = FText::AsNumber(UpgradeCost);
+			UpgradeCostText->SetText(UpgradeCostString);
+			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
+			{
+				UpgradeCostText->SetColorAndOpacity(FSlateColor(FColor::Green));
+			}
+			else
+			{
+				UpgradeCostText->SetColorAndOpacity(FSlateColor(FColor::Red));
+			}
+		}
+	}
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.
@@ -281,38 +329,6 @@ void UHUDWidget::UpgradeApplied(int32 NewCurrencyValue)
 {
 	UpdateCurrencyText(NewCurrencyValue);
 	UpdateWeaponUpgradeUI();
-}
-
-// Hides symbols in UI when upgrade is applied.
-void UHUDWidget::HideWeaponUpgradeUI(EWeaponType Weapon)
-{
-	UImage* Image = nullptr;
-	for (int32 EnumValue = 0; EnumValue <= static_cast<int32>(EWeaponType::SniperRifle); ++EnumValue)
-	{
-		// Hide icons for all other weapons.
-		if (EWeaponType WeaponType = static_cast<EWeaponType>(EnumValue); WeaponType != Weapon)
-		{
-			switch (WeaponType)
-			{
-			case EWeaponType::Pistol:
-				Image = AutoPistolPadlock;
-				break;
-			case EWeaponType::Shotgun:
-				Image = ShotgunPadlock;
-				break;
-			case EWeaponType::AssaultRifle:
-				Image = AssaultRiflePadlock;
-				break;
-			case EWeaponType::SniperRifle:
-				Image = SniperRiflePadlock;
-				break;
-			}
-			if (Image->GetBrush().GetResourceObject() == UpgradeTexture && Image->IsVisible())
-			{
-				Image->SetVisibility(ESlateVisibility::Hidden);
-			}
-		}
-	}
 }
 
 // Show the hit marker for a limited time.

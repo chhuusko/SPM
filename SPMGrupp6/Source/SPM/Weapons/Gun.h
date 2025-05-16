@@ -117,7 +117,7 @@ protected:
 	bool bIsWeaponEquipped = true;
 
 	UPROPERTY(EditAnywhere)
-	bool bDebugWeapon = true;
+	bool bDebugWeapon = false;
 
 	UPROPERTY(EditAnywhere)
 	bool bDebugDamageFalloff = false;
