@@ -29,9 +29,9 @@ public:
 		this->Target = Target;
 		Cast<ADroneHeavy>(Drone)->StartTelegrahTimeHandler();
 	};
-	
+	virtual void Move() override;
 	virtual void Rotate() override;
-protected:
+private:
 	float MaxSpawnDistance = 2000;
 	FVector DesiredElevation = FVector(0,0,250);
 	AActor* Target;
@@ -41,7 +41,6 @@ class SPM_API FDroneHeavyStateAttack : public FDroneHeavyStateTelegraphAttack
 {
 public:
 	FDroneHeavyStateAttack(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneHeavyStateTelegraphAttack(Drone, Spawner, Target) {};
-	virtual void Move() override;
 	virtual void Shoot() override;
 };
 

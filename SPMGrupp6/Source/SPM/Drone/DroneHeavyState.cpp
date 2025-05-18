@@ -16,7 +16,7 @@ void FDroneHeavyStateIdle::Exit()
 	}
 }
 
-void FDroneHeavyStateAttack::Move()
+void FDroneHeavyStateTelegraphAttack::Move()
 {
 	if (!Drone->SeeTarget())
 	{
