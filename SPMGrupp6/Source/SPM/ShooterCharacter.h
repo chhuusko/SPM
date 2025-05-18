@@ -132,6 +132,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Weapons")
 	void OnWeaponUnlocked(EWeaponType WeaponType);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
+	void OnWeaponUpgraded();
 	
 private:
 	void SetPlayerController();

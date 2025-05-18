@@ -172,6 +172,12 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(AGun* Gun, FWeaponState& State, in
 	State.Level += 1;
 	Gun->ApplyUpgrade(State.Level);
 	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+
+	if (CharacterOwner)
+	{
+		CharacterOwner->OnWeaponUpgraded();
+	}
+	
 	if (SuccessfulUpgradeSound)
 	{
 		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
