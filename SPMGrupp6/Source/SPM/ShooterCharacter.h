@@ -124,6 +124,9 @@ public:
 	bool bCanMove = true;
 	UPROPERTY(BlueprintReadOnly)
 	bool bSliding = false;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlayerPickup();
 	
 private:
 	void SetPlayerController();
@@ -178,8 +181,8 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchSpeed = 300;
-
-	UPROPERTY(EditDefaultsOnly)
 	float SlideDuration = 0.3;
 	FTimerHandle StopSlideTimerHandle;
+
+
 };

@@ -15,6 +15,7 @@ void AResourcePickUp::PlayerInteraction(AShooterCharacter* Player)
 	if(UResources* PlayerResources = Player->FindComponentByClass<UResources>())
 	{
 		PlayerResources->ModifyResourceAmount(ResourceAmount);
+		Player->OnPlayerPickup();
 	}
 
 	Destroy();

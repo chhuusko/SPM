@@ -18,5 +18,5 @@ protected:
 	UPROPERTY(EditAnywhere)
 	int ResourceAmount;
 	virtual void PlayerInteraction(AShooterCharacter* player) override;
-	
+
 };
