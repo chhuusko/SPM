@@ -53,7 +53,7 @@ public:
 	//Timehandlers
 	void StartAggroTimeHandler();
     void CancellAggroTimeHandler();
-
+	
 	//State Functions
 	void MoveTo(FVector TargetLocation);
 	void Shoot();
@@ -64,7 +64,7 @@ public:
 	void SetTarget(AActor* Target);
 	
 	//Get
-	USoundBase* GetShootSound() {return ShootSound;}
+	USoundBase* GetShootSound() const {return ShootSound;}
 	UStaticMeshComponent* GetBody() {return BodyMesh;}
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
@@ -72,6 +72,8 @@ public:
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
 	AActor* GetTarget() {return Target;}
+	
+	
 	
 	
 private:
@@ -94,7 +96,7 @@ private:
 	//Timehandler
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
-
+	
 	//Properties
 	UPROPERTY(EditAnywhere)
 	FVector PreferedHeightOverPlayer;

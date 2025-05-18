@@ -36,6 +36,19 @@ float ADroneHeavy::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 	return NULL;
 }
 
+void ADroneHeavy::StartTelegrahTimeHandler()
+{
+	if (!GetWorldTimerManager().IsTimerActive(TelegrahTimeHandle))
+	{
+		CancellAggroTimeHandler();
+		GetWorldTimerManager().SetTimer(TelegrahTimeHandle, this, &ADroneHeavy::ChangeStateAttack, 2.f, false);
+	}
+}
+void ADroneHeavy::ChangeStateAttack()
+{
+	ChangeState(new FDroneHeavyStateAttack(this, Spawner, Target));
+}
+
 void ADroneHeavy::LootDrop()
 {
 	//Will fix later

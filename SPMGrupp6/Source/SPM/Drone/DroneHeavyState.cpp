@@ -10,7 +10,8 @@ void FDroneHeavyStateIdle::Exit()
 		Drone->SetTarget(Player);
 		if (FVector::Dist(Drone->GetActorLocation(), Player->GetActorLocation()) < Drone->GetAggroDistance() && Drone->SeeTarget())
 		{
-			Drone->ChangeState(new FDroneHeavyStateAttack(Drone, Spawner, Player));
+			Drone->ChangeState(new FDroneHeavyStateTelegraphAttack(Drone, Spawner, Player));
+			return;
 		}
 	}
 }
@@ -31,7 +32,7 @@ void FDroneHeavyStateAttack::Move()
 	}
 }
 
-void FDroneHeavyStateAttack::Rotate()
+void FDroneHeavyStateTelegraphAttack::Rotate()
 {
 	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
 	FVector ToTarget = Target->GetActorLocation() - Drone->GetTurret()->GetComponentLocation();
