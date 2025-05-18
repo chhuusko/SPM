@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "WeaponUnlocking.h"
 #include "ShooterCharacter.generated.h"
+
 
 class AShooterPlayerController;
 class AGun;
@@ -127,6 +129,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPlayerPickup();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapons")
+	void OnWeaponUnlocked(EWeaponType WeaponType);
 	
 private:
 	void SetPlayerController();

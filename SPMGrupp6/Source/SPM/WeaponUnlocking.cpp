@@ -116,6 +116,12 @@ void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponSta
 	State.Level = 1;
 	EquipWeapon(WeaponType);
 	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+
+	if (CharacterOwner)
+	{
+		CharacterOwner->OnWeaponUnlocked(WeaponType);
+	}
+	
 	if (SuccessfulUnlockSound)
 	{
 		float RandomPitch = FMath::FRandRange(0.95f, 1.05f);
