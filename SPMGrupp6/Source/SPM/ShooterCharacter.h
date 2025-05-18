@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "WeaponUnlocking.h"
 #include "ShooterCharacter.generated.h"
+
 
 class AShooterPlayerController;
 class AGun;
@@ -124,6 +126,15 @@ public:
 	bool bCanMove = true;
 	UPROPERTY(BlueprintReadOnly)
 	bool bSliding = false;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnPlayerPickup();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapons")
+	void OnWeaponUnlocked(EWeaponType WeaponType);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
+	void OnWeaponUpgraded();
 	
 private:
 	void SetPlayerController();
@@ -178,8 +189,8 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchSpeed = 300;
-
-	UPROPERTY(EditDefaultsOnly)
 	float SlideDuration = 0.3;
 	FTimerHandle StopSlideTimerHandle;
+
+
 };
