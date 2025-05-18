@@ -6,6 +6,7 @@
 #include "EngineUtils.h"
 #include "ShooterAIController.h"
 #include "ShooterCharacter.h"
+#include "ShooterGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
@@ -43,4 +44,34 @@ void AKillThemAllGameMode::EndGame(bool bIsPlayerWinner)
 		bool bIsWinner = Controller->IsPlayerController() == !Character->IsDead();
 		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
+	CheckGameWon();
+}
+
+void AKillThemAllGameMode::CheckGameWon()
+{
+	UShooterGameInstance* GI = Cast<UShooterGameInstance>(GetGameInstance());
+	if(!GI) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("[KillThemAllGameMode] RedScore %d : BlueScore %d"), GI->GetRedScore(), GI->GetBlueScore());
+	if(GI->HasMatchEnded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[KillThemAllGameMode] Match Ended!"));
+		GI->ResetScore();
+		GetWorld()->GetTimerManager().SetTimer(EndTimer, this, &AKillThemAllGameMode::LoadMainMenu, EndDelay, false);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[KillThemAllGameMode] Round Ended!"));
+		GetWorld()->GetTimerManager().SetTimer(RestartTimer, this, &AKillThemAllGameMode::RestartLevel, RestartDelay, false);
+	}
+}
+
+void AKillThemAllGameMode::LoadMainMenu()
+{
+	UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
+}
+
+void AKillThemAllGameMode::RestartLevel()
+{
+	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
