@@ -33,6 +33,7 @@ public:
 	virtual void Rotate() override;
 private:
 	float MaxSpawnDistance = 2000;
+	float DesiredDistance = 1000;
 	FVector DesiredElevation = FVector(0,0,250);
 	AActor* Target;
 };

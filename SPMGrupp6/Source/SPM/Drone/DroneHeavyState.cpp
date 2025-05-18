@@ -24,11 +24,14 @@ void FDroneHeavyStateTelegraphAttack::Move()
 	}else
 	{
 		Drone->CancellAggroTimeHandler();
-		if (FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) < MaxSpawnDistance)
+		NewLocation = Target->GetActorLocation() + DesiredElevation;
+		if (FVector::Dist(NewLocation, Spawner->GetActorLocation()) <= MaxSpawnDistance && FVector::Dist(Drone->GetActorLocation(), NewLocation) > DesiredDistance)
 	    {
-	         NewLocation = Target->GetActorLocation();
-	         Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
-	    }
+	         if (MaxSpawnDistance && FVector::Dist(Drone->GetActorLocation(), NewLocation) > DesiredDistance)
+	         {
+		         Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+	         }
+	    } 
 	}
 }
 
