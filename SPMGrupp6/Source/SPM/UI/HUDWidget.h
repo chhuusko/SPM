@@ -52,6 +52,9 @@ public:
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* JetpackFuelBar;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* AutoPistolPadlock;
@@ -67,9 +70,6 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* HitMarker;
-
-	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* JetpackFuelSlider;
 
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* PadlockTexture;
@@ -89,6 +89,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateHealth(AShooterCharacter* Player);
 
+	
+
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
@@ -96,9 +98,6 @@ private:
 
 	UFUNCTION()
 	void SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor);
-
-	UFUNCTION()
-	void SetSliderColor(URadialSlider* Slider, float Percent, FLinearColor StartColor);
 
 	UPROPERTY()
 	float ElapsedJetpackTime;
@@ -159,6 +158,9 @@ private:
 
 	UPROPERTY()
 	FLinearColor HealthBarStartColor;
+	
+	UPROPERTY()
+	FLinearColor JetpackFuelStartColor;
 
 	UPROPERTY()
 	AShooterCharacter* PlayerCharacter;
