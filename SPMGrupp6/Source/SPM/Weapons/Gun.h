@@ -131,9 +131,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bCanPlayEmptyMagSound = false;
 
-	UPROPERTY(EditAnywhere)
-	float AbilityCooldown = 5.0f;
-
 	UPROPERTY()
 	class UHUDWidget* HUDWidget;
 	
