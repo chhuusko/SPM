@@ -20,7 +20,7 @@ void AUpgradedPistol::WeaponAbility()
 		AbilityCooldownTimerHandle, 
 		this, 
 		&AUpgradedPistol::ResetAbilityCooldown, 
-		AbilityCooldown, 
+		GetAbilityCooldown(), 
 		false
 	);
 

@@ -14,7 +14,7 @@ void AUpgradedAssaultRifle::WeaponAbility()
 		AbilityCooldownTimerHandle, 
 		this, 
 		&AUpgradedAssaultRifle::ResetAbilityCooldown, 
-		AbilityCooldown, 
+		GetAbilityCooldown(), 
 		false
 	);
 
