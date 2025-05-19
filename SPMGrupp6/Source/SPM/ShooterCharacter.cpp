@@ -50,8 +50,6 @@ void AShooterCharacter::BeginPlay()
 
 		if (bIsInTutorial)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("IsInTutorial is TRUE, searching for BP_TutorialComponent"));
-
 			for (UActorComponent* Component : GetComponents())
 			{
 				if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
@@ -63,10 +61,6 @@ void AShooterCharacter::BeginPlay()
 			}
 
 			UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("IsInTutorial is FALSE, skipping tutorial progress."));
 		}
 	}, 0.2f, false);
 
