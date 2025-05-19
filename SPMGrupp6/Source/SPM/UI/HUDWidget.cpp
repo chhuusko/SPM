@@ -11,6 +11,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
+#include "DSP/EventQuantizer.h"
 #include "SPM/Weapons/Gun.h"
 
 void UHUDWidget::NativeConstruct()
@@ -22,7 +23,6 @@ void UHUDWidget::NativeConstruct()
 
 	// Set the start color from the assigned value in the widget blueprint.
 	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
-	JetpackFuelStartColor = JetpackFuelBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
 
 	// Get the player at start, so we don't need to cast each tick.
 	GetPlayerCharacter();
@@ -123,21 +123,23 @@ void UHUDWidget::StartDashTimer(float CooldownTime)
 void UHUDWidget::StartJetpackUpdate()
 {
 	bJetpackFuelFull = false;
+	JetpackFuelSlider->SetSliderBarColor(FLinearColor(.2f, .2f, .2f, .7f));
 }
 
 // Set the jetpack fuel bar in HUD.
 void UHUDWidget::UpdateJetpackCooldown()
 {
 	float FuelPercent = PlayerCharacter->GetJetpackPercentage();
-	
-	JetpackFuelBar->SetPercent(FuelPercent);
+	JetpackFuelSlider->SetValue(FuelPercent);
 
-	SetBarColor(JetpackFuelBar, FuelPercent, JetpackFuelStartColor);
+	SetSliderColor(JetpackFuelSlider, FuelPercent, FLinearColor::White);
 
 	// The jetpack has full fuel, so there's no need to update the fuel bar.
-	if (JetpackFuelBar->GetPercent() >= 1.f)
+	if (FuelPercent >= 1.f)
 	{
 		bJetpackFuelFull = true;
+		JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
+		JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
 	}
 }
 
@@ -183,6 +185,14 @@ void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor Star
 	Color.A = .6f;
 	FSlateColor TintColor(Color);
 	Bar->WidgetStyle.BackgroundImage.TintColor = TintColor;
+}
+
+void UHUDWidget::SetSliderColor(URadialSlider* Slider, float Percent, FLinearColor StartColor)
+{
+	FLinearColor EndColor = FLinearColor::Red;
+	FLinearColor Color = FLinearColor::LerpUsingHSV(StartColor, EndColor, FMath::Clamp(1.1f - Percent, 0.f, 1.f));
+
+	Slider->SetSliderProgressColor(Color);
 }
 
 // Update health bar value.
