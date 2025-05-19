@@ -31,26 +31,47 @@ void AShooterCharacter::BeginPlay()
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &AShooterCharacter::SetPlayerController);
 	}
-	
+
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
 	MouseRotationRate = MouseDefaultRotationRate;
 	SetCrouch(false);
 
-	// Try to find and call ProgressTutorial on the Blueprint-only component
-	// Look through all components to find the one named "BP_TutorialComponent"
-	for (UActorComponent* Component : GetComponents())
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
 	{
-		if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Found component: %s"), *Component->GetName());
-			Component->CallFunctionByNameWithArguments(TEXT("ProgressTutorial"), *GLog, nullptr, true);
-			return;
-		}
-	}
+		bool bIsInTutorial = false;
 
-	UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
+		FProperty* Property = GetClass()->FindPropertyByName(FName("IsInTutorial"));
+		if (FBoolProperty* BoolProperty = CastField<FBoolProperty>(Property))
+		{
+			bIsInTutorial = BoolProperty->GetPropertyValue_InContainer(this);
+		}
+
+		if (bIsInTutorial)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IsInTutorial is TRUE, searching for BP_TutorialComponent"));
+
+			for (UActorComponent* Component : GetComponents())
+			{
+				if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Found component: %s"), *Component->GetName());
+					Component->CallFunctionByNameWithArguments(TEXT("ProgressTutorial"), *GLog, nullptr, true);
+					return;
+				}
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IsInTutorial is FALSE, skipping tutorial progress."));
+		}
+	}, 0.2f, false);
+
 }
+
 
 void AShooterCharacter::SetPlayerController()
 {
