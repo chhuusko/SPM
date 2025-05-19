@@ -31,29 +31,26 @@ void AShooterCharacter::BeginPlay()
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &AShooterCharacter::SetPlayerController);
 	}
-
+	
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
 	MouseRotationRate = MouseDefaultRotationRate;
 	SetCrouch(false);
 
-	// Add a small delay before searching for the tutorial component and calling ProgressTutorial
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+	// Try to find and call ProgressTutorial on the Blueprint-only component
+	// Look through all components to find the one named "BP_TutorialComponent"
+	for (UActorComponent* Component : GetComponents())
 	{
-		for (UActorComponent* Component : GetComponents())
+		if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
 		{
-			if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Found component: %s"), *Component->GetName());
-				Component->CallFunctionByNameWithArguments(TEXT("ProgressTutorial"), *GLog, nullptr, true);
-				return;
-			}
+			UE_LOG(LogTemp, Warning, TEXT("Found component: %s"), *Component->GetName());
+			Component->CallFunctionByNameWithArguments(TEXT("ProgressTutorial"), *GLog, nullptr, true);
+			return;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
-	}, 0.2f, false);
-}
+	}
 
+	UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
+}
 
 void AShooterCharacter::SetPlayerController()
 {
