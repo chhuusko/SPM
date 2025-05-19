@@ -35,7 +35,21 @@ void AShooterCharacter::BeginPlay()
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
 	MouseRotationRate = MouseDefaultRotationRate;
-	SetCrouch((false));
+	SetCrouch(false);
+
+	// Try to find and call ProgressTutorial on the Blueprint-only component
+	// Look through all components to find the one named "BP_TutorialComponent"
+	for (UActorComponent* Component : GetComponents())
+	{
+		if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Found component: %s"), *Component->GetName());
+			Component->CallFunctionByNameWithArguments(TEXT("ProgressTutorial"), *GLog, nullptr, true);
+			return;
+		}
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
 }
 
 void AShooterCharacter::SetPlayerController()

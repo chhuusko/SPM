@@ -10,6 +10,7 @@
 
 class AShooterPlayerController;
 class AGun;
+class UTutorialComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTakeDamage);
