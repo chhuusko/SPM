@@ -131,9 +131,6 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	bool bCanPlayEmptyMagSound = false;
 
-	UPROPERTY(EditAnywhere)
-	float AbilityCooldown = 5.0f;
-
 	UPROPERTY()
 	class UHUDWidget* HUDWidget;
 	
@@ -160,6 +157,13 @@ protected:
 
 	UFUNCTION()
 	void GetPlayerController();
+
+	float GetAbilityCooldown() { return AbilityCooldown; }
+	void SetAbilityCooldown(float Cooldown) {AbilityCooldown = Cooldown; }
+
+private:
+	UPROPERTY(EditAnywhere)
+	float AbilityCooldown = 5.0f;
 	
 public:	
 	// Called every frame
