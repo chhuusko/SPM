@@ -128,8 +128,8 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bSliding = false;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnPlayerPickup();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pickup")
+	void OnPlayerPickup(AShooterCharacter* PlayerCharacter);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Weapons")
 	void OnWeaponUnlocked(EWeaponType WeaponType);

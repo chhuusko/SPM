@@ -293,12 +293,31 @@ void AGun::UpdateAmmoText()
 
 void AGun::WeaponAbility()
 {
-	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
+	//UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
+	if (!IsAbilityOnCooldown())
+	{
+		RemainingAbilityCooldown = GetAbilityCooldown();
+		GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, 1.0f, true);
+	}
 }
 void AGun::StopWeaponAbility()
 {
 	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
 }
+
+void AGun::UpdateWeaponAbilityCooldown()
+{
+	if (RemainingAbilityCooldown > 0.0f)
+	{
+		RemainingAbilityCooldown -= 1.0f;
+	}
+	else
+	{
+		bIsAbilityOnCooldown = false;
+		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
+	}
+}
+
 
 void AGun::ApplyUpgrade(int NewLevel)
 {

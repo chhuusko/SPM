@@ -159,13 +159,22 @@ protected:
 	UFUNCTION()
 	void GetPlayerController();
 
-	float GetAbilityCooldown() { return AbilityCooldown; }
+	float GetAbilityCooldown() const { return AbilityCooldown; }
 	void SetAbilityCooldown(float Cooldown) {AbilityCooldown = Cooldown; }
+
+	bool IsAbilityOnCooldown() const { return bIsAbilityOnCooldown; }
+	void SetAbilityCooldown(bool Cooldown) { bIsAbilityOnCooldown = Cooldown; }
 
 private:
 	UPROPERTY(EditAnywhere)
 	float AbilityCooldown = 5.0f;
+
+	float RemainingAbilityCooldown;
 	
+	bool bIsAbilityOnCooldown = false;
+
+	FTimerHandle AbilityCooldownTimerHandle;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -175,6 +184,7 @@ public:
 	virtual void WeaponAbility();
 	virtual void StopWeaponAbility();
 	virtual void ApplyUpgrade(int NewLevel);
+	void UpdateWeaponAbilityCooldown();
 	void ResetCanFire();
 	void ReleaseTrigger();
 	void Reload();
