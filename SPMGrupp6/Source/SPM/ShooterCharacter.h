@@ -106,6 +106,11 @@ public:
 	float GetJetpackCharge();
 	UFUNCTION(BlueprintCallable)
 	float GetJetpackPercentage();
+
+	UPROPERTY(EditDefaultsOnly)
+	float JetPackChargeConsumptionPerTap = 10.0f;
+	UFUNCTION(BlueprintCallable)
+	void ConsumeJetpackChargeTap();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float MouseRotationRate = 1;
