@@ -8,9 +8,9 @@ public class SPM : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG", "Niagara" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AdvancedWidgets", "AdvancedWidgets", "Paper2D" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AdvancedWidgets", "AdvancedWidgets", "Paper2D", "Niagara" });
 
 		// Uncomment if you are using Slate UI
 		 PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

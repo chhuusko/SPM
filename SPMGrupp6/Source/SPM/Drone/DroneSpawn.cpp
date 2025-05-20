@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 #include "DroneSpawn.h"
 
 bool ADroneSpawn::CanSpawn = true;
@@ -51,6 +52,30 @@ void ADroneSpawn::LootBoxDestroyed()
 
 void ADroneSpawn::Spawn()
 {
+	if (SpawnBeam)
+ 		{
+ 			FHitResult HitResult;
+ 			FCollisionQueryParams CollisionParams;
+ 			CollisionParams.AddIgnoredActor(this); // Ignore self
+ 
+ 			// Perform the line trace
+ 			bool bHit = GetWorld()->LineTraceSingleByChannel(
+ 				HitResult,
+ 				GetActorLocation(),
+ 				GetActorLocation()+FVector(0, 0, -400),
+ 				ECC_Visibility,
+ 				CollisionParams
+ 			);
+ 			if (bHit)
+ 			{
+ 				UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+ 				GetWorld(),
+ 				SpawnBeam,
+ 				HitResult.Location,
+ 				GetActorRotation()
+ 				);
+ 			}
+ 		}
 	if (ADrone* Drone = GetWorld()->SpawnActor<ADrone>(DroneClass, GetActorLocation(), GetActorRotation()))
 	{
 		Drone->SetSpawner(this);
