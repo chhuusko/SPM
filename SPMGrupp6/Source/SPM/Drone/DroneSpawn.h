@@ -43,6 +43,7 @@ private:
 	float SpawnTime;
 	FTimerHandle DroneSpawnTimerHandle;
 	static bool CanSpawn;
+	bool isFirstSpawn;
 	void Spawn();
 	
 };
