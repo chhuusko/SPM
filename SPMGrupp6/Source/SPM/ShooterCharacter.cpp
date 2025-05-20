@@ -31,12 +31,41 @@ void AShooterCharacter::BeginPlay()
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &AShooterCharacter::SetPlayerController);
 	}
-	
+
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
 	MouseRotationRate = MouseDefaultRotationRate;
-	SetCrouch((false));
+	SetCrouch(false);
+
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		bool bIsInTutorial = false;
+
+		FProperty* Property = GetClass()->FindPropertyByName(FName("IsInTutorial"));
+		if (FBoolProperty* BoolProperty = CastField<FBoolProperty>(Property))
+		{
+			bIsInTutorial = BoolProperty->GetPropertyValue_InContainer(this);
+		}
+
+		if (bIsInTutorial)
+		{
+			for (UActorComponent* Component : GetComponents())
+			{
+				if (Component && Component->GetName().Contains(TEXT("BP_TutorialComponent")))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Found component: %s"), *Component->GetName());
+					Component->CallFunctionByNameWithArguments(TEXT("ProgressTutorial"), *GLog, nullptr, true);
+					return;
+				}
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
+		}
+	}, 0.2f, false);
+
 }
+
 
 void AShooterCharacter::SetPlayerController()
 {

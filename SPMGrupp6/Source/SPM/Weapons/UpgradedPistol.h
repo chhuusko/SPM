@@ -20,8 +20,8 @@ protected:
 
 private:
 
-	UPROPERTY(EditAnywhere)
-	float AbilityCooldown = 5.0f;
+	// UPROPERTY(EditAnywhere)
+	// float AbilityCooldown = 5.0f;
 
 	void ResetAbilityCooldown();
 	bool bCanUseAbility = true;
