@@ -106,6 +106,11 @@ public:
 	float GetJetpackCharge();
 	UFUNCTION(BlueprintCallable)
 	float GetJetpackPercentage();
+
+	UPROPERTY(EditDefaultsOnly)
+	float JetPackChargeConsumptionPerTap = 10.0f;
+	UFUNCTION(BlueprintCallable)
+	void ConsumeJetpackChargeTap();
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float MouseRotationRate = 1;
@@ -128,14 +133,17 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool bSliding = false;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnPlayerPickup();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Pickup")
+	void OnPlayerPickup(AShooterCharacter* PlayerCharacter);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Weapons")
 	void OnWeaponUnlocked(EWeaponType WeaponType);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
 	void OnWeaponUpgraded();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsFirstCharacter(); 
 	
 private:
 	void SetPlayerController();
