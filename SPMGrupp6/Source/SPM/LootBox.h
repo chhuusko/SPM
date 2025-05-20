@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "LootBox.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
 class AResourcePickUp;
 
 UCLASS()
@@ -26,10 +28,14 @@ public:
 	virtual void Tick(float DeltaTime) override;
 private:
 	UPROPERTY(EditDefaultsOnly)
+	UNiagaraSystem* SpawnBeam;
+	UNiagaraComponent* BeamComponent;
+	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* Box;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AResourcePickUp> ResourcePickUpClass;
 	UPROPERTY(EditDefaultsOnly)
 	int lootAmount;
 	void DropLoot();
+	
 };
