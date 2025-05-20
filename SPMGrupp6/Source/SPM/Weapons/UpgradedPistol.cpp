@@ -22,17 +22,20 @@ void AUpgradedPistol::Tick(float DeltaTime)
 
 void AUpgradedPistol::WeaponAbility()
 {
-    if (!bCanUseAbility) return;
+   Super::WeaponAbility();
+   
+    if (IsAbilityOnCooldown()) return;
 
-    bCanUseAbility = false;
-    GetWorldTimerManager().SetTimer(
-       AbilityCooldownTimerHandle, 
-       this, 
-       &AUpgradedPistol::ResetAbilityCooldown, 
-       GetAbilityCooldown(), 
-       false
-    );
-
+    // bCanUseAbility = false;
+    // GetWorldTimerManager().SetTimer(
+    //    AbilityCooldownTimerHandle, 
+    //    this, 
+    //    &AUpgradedPistol::ResetAbilityCooldown, 
+    //    GetAbilityCooldown(), 
+    //    false
+    // );
+   SetAbilityCooldown(true);
+   
     bool failed = false;
     if (UShooterGameInstance* GI = Cast<UShooterGameInstance>(UGameplayStatics::GetGameInstance(this)))
     {

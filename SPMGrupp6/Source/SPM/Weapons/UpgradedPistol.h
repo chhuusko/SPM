@@ -34,8 +34,6 @@ private:
 
 	bool bCanUseAbility = true;
 	bool bAbilityIsActive = false;
-
-	FTimerHandle AbilityCooldownTimerHandle;
 	FTimerHandle AbilityEffectTimerHandle;
 };
 
