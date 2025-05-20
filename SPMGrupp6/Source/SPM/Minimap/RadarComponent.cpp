@@ -212,13 +212,14 @@ void URadarComponent::UpdateMap()
 	}
 }
 
-void URadarComponent::Pulse()
+TArray<AShooterCharacter*> URadarComponent::Pulse()
 {
-	if (!Enabled) return;
+	TArray<AShooterCharacter*> TargetCharacters;
+	if (!Enabled) return TargetCharacters;
 	if (!Owner)
 	{
 		Owner = GetOwner();
-		if (!Owner) return;
+		if (!Owner) return TargetCharacters;
 	}
 
 	if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Tries to do Pulse"), *GetOwner()->GetName());
@@ -228,7 +229,7 @@ void URadarComponent::Pulse()
     if (Enemies.IsEmpty())
     {
     	if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Found no enemy characters"), *GetOwner()->GetName());
-	    return;
+	    return TargetCharacters;
     }
     	
 	for (AActor* Enemy : Enemies)
@@ -238,11 +239,16 @@ void URadarComponent::Pulse()
 		if (FVector::Dist(Enemy->GetActorLocation(), Owner->GetActorLocation()) <= TrackingDistance)
 		{
 			CreateRedDotOnTarget(Enemy);
+			if (AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(Enemy))
+			{
+				TargetCharacters.Add(ShooterCharacter);
+			}
 		}
 		else if (PrintDebug) UE_LOG(LogTemp, Log, TEXT("[Radar] %s: Enemy %s is too far away"),
 														*GetOwner()->GetName(),
 														*Enemy->GetName());
 	}
+	return TargetCharacters;
 }
 
 void URadarComponent::ShowIconOnRadar(AActor* Target)

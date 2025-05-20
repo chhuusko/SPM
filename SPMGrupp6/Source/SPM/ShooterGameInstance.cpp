@@ -27,6 +27,11 @@ void UShooterGameInstance::IncrementRedScore()
 	++RedScore;
 }
 
+void UShooterGameInstance::SetMaxScore(int NewMaxScore)
+{
+	ScoreMax = NewMaxScore;
+}
+
 int32 UShooterGameInstance::GetBlueScore() const
 {
 	return BlueScore;

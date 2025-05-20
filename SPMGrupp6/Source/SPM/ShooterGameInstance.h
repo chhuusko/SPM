@@ -19,6 +19,11 @@ public:
 	int32 GetRound();
 	void IncrementBlueScore();
 	void IncrementRedScore();
+	
+	UFUNCTION(BlueprintCallable)
+	void SetMaxScore(int NewMaxScore);
+	UFUNCTION(BlueprintCallable)
+	int32 GetMaxScore() const { return ScoreMax; }
 	int32 GetBlueScore() const;
 	int32 GetRedScore() const;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")

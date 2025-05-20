@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "RadarComponent.generated.h"
 
+class AShooterCharacter;
 class URadarEnemyIcon;
 class UCanvasPanel;
 class AShooterPlayerController;
@@ -44,7 +45,7 @@ public:
 	TMap<AActor*, URadarEnemyIcon*> TrackedIcons;
 	
 	UFUNCTION(BlueprintCallable, Category="Radar")
-	void Pulse();
+	TArray<AShooterCharacter*> Pulse();
 	
 protected:
 	// Called when the game starts
