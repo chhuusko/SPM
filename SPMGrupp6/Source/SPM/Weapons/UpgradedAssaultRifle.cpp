@@ -5,6 +5,8 @@
 
 #include "Kismet/GameplayStatics.h"
 
+
+
 void AUpgradedAssaultRifle::WeaponAbility()
 {
 	if (!bCanUseAbility) return;

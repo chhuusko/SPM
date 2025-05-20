@@ -3,6 +3,7 @@
 
 #include "Gun.h"
 
+#include "HairStrandsInterface.h"
 #include "SPM/UI/HUDWidget.h"
 #include "MathUtil.h"
 #include "SPM/ShooterCharacter.h"
@@ -71,6 +72,10 @@ void AGun::GetPlayerController()
 	}
 }
 
+USkeletalMeshComponent* AGun::GetMesh() const 
+{
+	return Mesh;
+}
 
 int AGun::GetMagazineSize() const
 {

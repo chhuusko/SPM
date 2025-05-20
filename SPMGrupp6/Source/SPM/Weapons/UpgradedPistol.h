@@ -6,6 +6,8 @@
 #include "Pistol.h"
 #include "UpgradedPistol.generated.h"
 
+class AShooterCharacter;
+
 /**
  * 
  */
@@ -13,6 +15,8 @@ UCLASS()
 class SPM_API AUpgradedPistol : public APistol
 {
 	GENERATED_BODY()
+public:
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 	
@@ -20,11 +24,18 @@ protected:
 
 private:
 
-	// UPROPERTY(EditAnywhere)
-	// float AbilityCooldown = 5.0f;
+	UPROPERTY(EditAnywhere)
+	float AbilityEffectTime = 2.5f;
 
 	void ResetAbilityCooldown();
+	void SetRenderCustomDepth(bool bRenderCustomDepth);
+	void ResetRenderCustomDepth();
+	TArray<AShooterCharacter*> TargetCharacters;
+
 	bool bCanUseAbility = true;
+	bool bAbilityIsActive = false;
 
 	FTimerHandle AbilityCooldownTimerHandle;
+	FTimerHandle AbilityEffectTimerHandle;
 };
+

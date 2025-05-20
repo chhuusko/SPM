@@ -9,57 +9,115 @@
 #include "SPM/Minimap/RadarComponent.h"
 
 
+void AUpgradedPistol::Tick(float DeltaTime)
+{
+   Super::Tick(DeltaTime);
 
+   if (bAbilityIsActive)
+   {
+      
+   }
+   
+}
 
 void AUpgradedPistol::WeaponAbility()
 {
-	if (!bCanUseAbility) return;
+    if (!bCanUseAbility) return;
 
-	bCanUseAbility = false;
-	GetWorldTimerManager().SetTimer(
-		AbilityCooldownTimerHandle, 
-		this, 
-		&AUpgradedPistol::ResetAbilityCooldown, 
-		GetAbilityCooldown(), 
-		false
-	);
+    bCanUseAbility = false;
+    GetWorldTimerManager().SetTimer(
+       AbilityCooldownTimerHandle, 
+       this, 
+       &AUpgradedPistol::ResetAbilityCooldown, 
+       GetAbilityCooldown(), 
+       false
+    );
 
-	bool failed = false;
-	if (UShooterGameInstance* GI = Cast<UShooterGameInstance>(UGameplayStatics::GetGameInstance(this)))
-	{
-		if(UCombinedMinimap* Minimap = GI->GetGlobalMinimapWidget())
-		{
-			if (AShooterCharacter* OwnerPawn = Cast<AShooterCharacter>(GetOwner()))
-			{
-				if (OwnerPawn == Minimap->GetRedPlayer())
-				{
-					Minimap->OnBluePlayerFire();
-				}
-				else
-				{
-					Minimap->OnRedPlayerFire();
-				}
-				UGameplayStatics::PlaySoundAtLocation(GetWorld(), AltFireSound, GetActorLocation());
-			} else failed = true;
-		} else failed = true;
-	} else failed = true;
+    bool failed = false;
+    if (UShooterGameInstance* GI = Cast<UShooterGameInstance>(UGameplayStatics::GetGameInstance(this)))
+    {
+       if(UCombinedMinimap* Minimap = GI->GetGlobalMinimapWidget())
+       {
+          if (AShooterCharacter* OwnerPawn = Cast<AShooterCharacter>(GetOwner()))
+          {
+             if (OwnerPawn == Minimap->GetRedPlayer())
+             {
+                Minimap->OnBluePlayerFire();
+                TargetCharacters.Add(Minimap->GetBluePlayer());
+             }
+             else
+             {
+                Minimap->OnRedPlayerFire();
+                TargetCharacters.Add(Minimap->GetRedPlayer());
+             }
+             SetRenderCustomDepth(true);
+             bAbilityIsActive = true;
+             GetWorldTimerManager().SetTimer(AbilityEffectTimerHandle, this, &AUpgradedPistol::ResetRenderCustomDepth, AbilityEffectTime, false);
+             UGameplayStatics::PlaySoundAtLocation(GetWorld(), AltFireSound, GetActorLocation());
+          } else failed = true;
+       } else failed = true;
+    } else failed = true;
 
-	if (failed)
-	{
-		if (APawn* OwnerPawn = Cast<APawn>(GetOwner()))
-		{
-			URadarComponent* Radar = OwnerPawn->FindComponentByClass<URadarComponent>();
-			if (Radar)
-			{
-				Radar->Pulse();
-				UE_LOG(LogTemp, Display, TEXT("Pulse metod körs"));
-			}
-		}
-	}
+    if (failed)
+    {
+       if (APawn* OwnerPawn = Cast<APawn>(GetOwner()))
+       {
+          URadarComponent* Radar = OwnerPawn->FindComponentByClass<URadarComponent>();
+          if (Radar)
+          {
+             TargetCharacters = Radar->Pulse();
+             bAbilityIsActive = true;
+             GetWorldTimerManager().SetTimer(AbilityEffectTimerHandle, this, &AUpgradedPistol::ResetRenderCustomDepth, AbilityEffectTime, false);
+             UGameplayStatics::PlaySoundAtLocation(GetWorld(), AltFireSound, GetActorLocation());
+             UE_LOG(LogTemp, Display, TEXT("Pulse metod körs"));
+          }
+       }
+    }
 }
 
 
 void AUpgradedPistol::ResetAbilityCooldown()
 {
-	bCanUseAbility = true;
+    bCanUseAbility = true;
+}
+
+void AUpgradedPistol::SetRenderCustomDepth(bool bRenderCustomDepth)
+{
+    // Set PostProcessRendering in order to start or end the effect. 
+    for (AShooterCharacter* Character : TargetCharacters)
+    {
+       USkeletalMeshComponent* CharacterMesh = Character->GetMesh();
+       if (CharacterMesh)
+       {
+          CharacterMesh->SetRenderCustomDepth(bRenderCustomDepth);
+       }
+
+       // Här kan man hämta karaktärens alla vapnen, hämta deras meshar och ändra custom depth på samtliga
+       if (UWeaponUnlocking* WeaponUnlocking = Character->FindComponentByClass<UWeaponUnlocking>())
+       {
+          for (TPair<EWeaponType, AGun*>& Pair: WeaponUnlocking->GetWeaponPool())
+          {
+             if (AGun* Gun = Pair.Value)
+             {
+                if (USkeletalMeshComponent* GunMesh = Gun->GetMesh())
+                {
+                   GunMesh->SetRenderCustomDepth(bRenderCustomDepth);
+                }
+             }
+          }
+       }
+    }
+
+    // Reset list after effect is done.
+    if (!bRenderCustomDepth)
+    {
+       TargetCharacters.Empty();
+    }
+}
+
+void AUpgradedPistol::ResetRenderCustomDepth()
+{
+    // Gets called by timer to disable Custom Depth.
+    SetRenderCustomDepth(false);
+    bAbilityIsActive = false;
 }
