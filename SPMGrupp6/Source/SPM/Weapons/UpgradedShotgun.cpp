@@ -7,17 +7,19 @@
 
 void AUpgradedShotgun::WeaponAbility()
 {
-	if (!bCanUseAbility || !PulseGrenadeClass) return;
-
-	bCanUseAbility = false;
-	GetWorldTimerManager().SetTimer(
-		AbilityCooldownTimerHandle, 
-		this, 
-		&AUpgradedShotgun::ResetAbilityCooldown, 
-		GetAbilityCooldown(), 
-		false
-	);
-		 
+	Super::WeaponAbility();
+	
+	if (IsAbilityOnCooldown() || !PulseGrenadeClass) return;
+	
+	// bCanUseAbility = false;
+	// GetWorldTimerManager().SetTimer(
+	// 	AbilityCooldownTimerHandle, 
+	// 	this, 
+	// 	&AUpgradedShotgun::ResetAbilityCooldown, 
+	// 	GetAbilityCooldown(), 
+	// 	false
+	// );
+	SetAbilityCooldown(true);
 		AController* OwnerController = GetOwnerController();
 		if (!OwnerController) return;
 
