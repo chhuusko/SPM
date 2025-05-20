@@ -67,6 +67,11 @@ void AShooterCharacter::BeginPlay()
 }
 
 
+bool AShooterCharacter::IsFirstCharacter()
+{
+	return this->GetController() == GetWorld()->GetFirstPlayerController();
+}
+
 void AShooterCharacter::SetPlayerController()
 {
 	PlayerController = Cast<AShooterPlayerController>(GetController());

@@ -136,6 +136,9 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Weapon")
 	void OnWeaponUpgraded();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsFirstCharacter(); 
 	
 private:
 	void SetPlayerController();
