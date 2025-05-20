@@ -21,6 +21,7 @@ public:
 	// Sets default values for this actor's properties
 	AGun();
 
+	USkeletalMeshComponent* GetMesh() const;
 	int GetMagazineSize() const;
 
 	UPROPERTY(BlueprintAssignable, Category = "Fire")
