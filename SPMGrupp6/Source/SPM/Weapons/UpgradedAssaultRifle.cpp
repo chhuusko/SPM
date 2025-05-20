@@ -9,17 +9,20 @@
 
 void AUpgradedAssaultRifle::WeaponAbility()
 {
-	if (!bCanUseAbility) return;
+	Super::WeaponAbility();
+	
+	if (IsAbilityOnCooldown()) return;
 
-	bCanUseAbility = false;
-	GetWorldTimerManager().SetTimer(
-		AbilityCooldownTimerHandle, 
-		this, 
-		&AUpgradedAssaultRifle::ResetAbilityCooldown, 
-		GetAbilityCooldown(), 
-		false
-	);
-
+	// bCanUseAbility = false;
+	// GetWorldTimerManager().SetTimer(
+	// 	AbilityCooldownTimerHandle, 
+	// 	this, 
+	// 	&AUpgradedAssaultRifle::ResetAbilityCooldown, 
+	// 	GetAbilityCooldown(), 
+	// 	false
+	// );
+	SetAbilityCooldown(true);
+	
 	AController* OwnerController = GetOwnerController();
 	if (!OwnerController) return;
 

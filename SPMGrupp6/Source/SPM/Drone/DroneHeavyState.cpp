@@ -37,7 +37,6 @@ void FDroneHeavyStateTelegraphAttack::Move()
 
 void FDroneHeavyStateTelegraphAttack::Rotate()
 {
-	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
 	FVector ToTarget = Target->GetActorLocation() - Drone->GetTurret()->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
 	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
