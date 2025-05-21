@@ -82,6 +82,11 @@ int AGun::GetMagazineSize() const
 	return MagazineSize;
 }
 
+float AGun::GetCooldownPercentage() const
+{
+	return RemainingAbilityCooldown / GetAbilityCooldown();
+}
+
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
@@ -310,14 +315,16 @@ void AGun::UpdateWeaponAbilityCooldown()
 	if (RemainingAbilityCooldown > 0.0f)
 	{
 		RemainingAbilityCooldown -= 1.0f;
+		OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 	}
 	else
 	{
 		bIsAbilityOnCooldown = false;
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
+		SetAbilityCooldown(AbilityCooldown);
+		OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 	}
 }
-
 
 void AGun::ApplyUpgrade(int NewLevel)
 {
@@ -403,6 +410,3 @@ void AGun::EnableCanPlayEmptyMagSound()
 {
 	bCanPlayEmptyMagSound = true;
 }
-
-
-

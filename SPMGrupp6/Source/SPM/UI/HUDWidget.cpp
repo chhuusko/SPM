@@ -30,6 +30,8 @@ void UHUDWidget::NativeConstruct()
 	// Get the components and bind to their delegates.
 	GetWeaponUnlocking();
 	GetGun();
+
+	CurrentWeapon = EWeaponType::Pistol;
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -55,7 +57,10 @@ void UHUDWidget::GetGun()
 	if (Gun)
 	{
 		Gun->OnHit.Clear();
+		// Vet inte om jag ska rensa här...
+		Gun->OnCooldownUpdated.Clear();
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
+		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
 	}
 	else
 	{
@@ -212,6 +217,7 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	GetGun();
 	UBorder* NextWeaponBorder;
 	UImage* Image;
+	CurrentWeapon = Weapon;
 	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
@@ -332,6 +338,29 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 			}
 		}
 	}
+}
+
+// Update weapon cooldown in the corresponding slider.
+void UHUDWidget::UpdateWeaponCooldown(float CooldownPercentage)
+{
+	UProgressBar* CooldownBar;
+	switch (CurrentWeapon)
+	{
+	case EWeaponType::Pistol:
+		CooldownBar = AutoPistolAbilityCooldown;
+		break;
+	case EWeaponType::Shotgun:
+		CooldownBar = ShotgunAbilityCooldown;
+		break;
+	case EWeaponType::AssaultRifle:
+		CooldownBar = AssaultRifleAbilityCooldown;
+		break;
+	default:
+		CooldownBar = SniperRifleAbilityCooldown;
+		break;
+	}
+
+	CooldownBar->SetPercent(CooldownPercentage);
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.

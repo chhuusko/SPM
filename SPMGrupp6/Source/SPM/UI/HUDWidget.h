@@ -66,6 +66,18 @@ public:
 	class UImage* SniperRiflePadlock;
 
 	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* AutoPistolAbilityCooldown;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* ShotgunAbilityCooldown;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* AssaultRifleAbilityCooldown;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* SniperRifleAbilityCooldown;
+
+	UPROPERTY(meta = (BindWidget))
 	class UImage* HitMarker;
 
 	UPROPERTY(meta = (BindWidget))
@@ -131,6 +143,9 @@ private:
 	void UpdateWeaponUpgradeUI();
 
 	UFUNCTION()
+	void UpdateWeaponCooldown(float CooldownPercentage);
+
+	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
 	
 	UFUNCTION()
@@ -173,10 +188,11 @@ private:
 	float HitmarkerTime = 0.5f;
 
 	bool bHasDashCooldown;
-
 	bool bJetpackFuelFull = true;
 
 	UBorder* EquippedWeaponBorder;
 
 	FTimerHandle TimerHandle;
+
+	EWeaponType CurrentWeapon;
 };
