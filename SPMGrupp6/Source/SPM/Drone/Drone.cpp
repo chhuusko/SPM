@@ -7,6 +7,7 @@
 #include "DroneState.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "DroneSpawn.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 
 // Sets default values

@@ -4,8 +4,8 @@
 #include "HUDWidget.h"
 
 #include "MovieSceneSection.h"
-#include "SPM/ShooterCharacter.h"
-#include "SPM/WeaponUnlocking.h"
+#include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"

@@ -4,7 +4,7 @@
 #include "BTTask_Shoot.h"
 
 #include "AIController.h"
-#include "ShooterCharacter.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 
 UBTTask_Shoot::UBTTask_Shoot()

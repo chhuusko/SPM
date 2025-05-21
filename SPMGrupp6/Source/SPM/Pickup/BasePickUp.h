@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SPM/ShooterCharacter.h"
+#include "SPM/Characters/ShooterCharacter.h"
 #include "BasePickUp.generated.h"
 
 class UBoxComponent;

@@ -13,8 +13,8 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Engine/TextureRenderTarget2D.h"
-#include "SPM/ShooterCharacter.h"
-#include "SPM/ShooterPlayerController.h"
+#include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Characters/ShooterPlayerController.h"
 
 // Sets default values for this component's properties
 URadarComponent::URadarComponent()

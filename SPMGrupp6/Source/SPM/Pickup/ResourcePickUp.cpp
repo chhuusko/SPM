@@ -6,7 +6,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "SPM/Resources.h"
+#include "SPM/Systems/Resources.h"
 
 void AResourcePickUp::PlayerInteraction(AShooterCharacter* Player)
 {

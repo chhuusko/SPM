@@ -5,11 +5,11 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
-#include "ShooterGameInstance.h"
+#include "SPM/Game/ShooterGameInstance.h"
 #include "SPM/Pickup/ResourcePickUp.h"
-#include "Drone/DroneSpawn.h"
+#include "SPM/Drone/DroneSpawn.h"
 #include "Kismet/GameplayStatics.h"
-#include "Minimap/CombinedMinimap.h"
+#include "SPM/Minimap/CombinedMinimap.h"
 
 // Sets default values
 ALootBox::ALootBox()

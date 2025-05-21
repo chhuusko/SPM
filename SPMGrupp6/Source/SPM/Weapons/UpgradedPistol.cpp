@@ -3,8 +3,8 @@
 #include "UpgradedPistol.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "SPM/ShooterCharacter.h"
-#include "SPM/ShooterGameInstance.h"
+#include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Game/ShooterGameInstance.h"
 #include "SPM/Minimap/CombinedMinimap.h"
 #include "SPM/Minimap/RadarComponent.h"
 

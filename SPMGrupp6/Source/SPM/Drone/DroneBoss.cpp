@@ -4,6 +4,7 @@
 #include "DroneBoss.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 ADroneBoss::ADroneBoss()
 {

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "WeaponUnlocking.h"
+#include "SPM/Systems/WeaponUnlocking.h"
 #include "ShooterCharacter.generated.h"
 
 

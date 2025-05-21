@@ -5,7 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Kismet/GameplayStatics.h"
-#include "Minimap/CombinedMinimap.h"
+#include "SPM/Minimap/CombinedMinimap.h"
 
 int32 UShooterGameInstance::GetIncrementedRound()
 {

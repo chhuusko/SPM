@@ -5,6 +5,7 @@
 #include "DroneState.h"
 #include "DroneHeavyState.h"
 #include "DroneSpawn.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 class FDroneState;
 class FDroneHeavyStateIdle;
