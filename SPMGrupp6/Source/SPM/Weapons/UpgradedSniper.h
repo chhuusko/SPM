@@ -22,6 +22,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	int ObjectsToGoThrough = 1;
 	
-	float ShotRadius = 20;
+	float ShotRadius = 16;
 	
 };
