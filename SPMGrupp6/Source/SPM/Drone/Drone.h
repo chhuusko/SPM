@@ -85,8 +85,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* TurretMeshAlt;
+	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
-	
+	UPROPERTY(EditAnywhere)
+	USceneComponent* ProjectileSpawnAlt;
 	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
