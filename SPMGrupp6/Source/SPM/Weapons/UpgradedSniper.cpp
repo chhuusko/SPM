@@ -32,8 +32,16 @@ void AUpgradedSniper::Fire()
 	float TraceLength;
 
 	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength);
+	TSet<AActor*> AlreadyHitActors;
+
 	for (FHitResult Hit: Hits)
 	{
+		AActor* HitActor = Hit.GetActor();
+		if (!IsValid(HitActor)) continue;
+
+		if (AlreadyHitActors.Contains(HitActor)) continue;
+		AlreadyHitActors.Add(HitActor);
+		
 			if (bDebugWeapon)
 			{
 				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
@@ -48,7 +56,7 @@ void AUpgradedSniper::Fire()
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
 
 			
-			AActor* HitActor = Hit.GetActor();
+			HitActor = Hit.GetActor();
 			if(HitActor)
 			{
 				OnHit.Broadcast(HitActor);
