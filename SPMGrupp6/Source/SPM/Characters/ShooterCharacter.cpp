@@ -3,10 +3,10 @@
 
 #include "ShooterCharacter.h"
 
-#include "Weapons/Gun.h"
-#include "UI/HUDWidget.h"
+#include "SPM/Weapons/Gun.h"
+#include "SPM/UI/HUDWidget.h"
 #include "ShooterPlayerController.h"
-#include "SimpleShooterGameMode.h"
+#include "SPM/Game/SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 

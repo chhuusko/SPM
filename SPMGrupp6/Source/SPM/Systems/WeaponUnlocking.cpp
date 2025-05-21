@@ -2,12 +2,12 @@
 
 
 #include "WeaponUnlocking.h"
-#include "Weapons/Gun.h"
+#include "SPM/Weapons/Gun.h"
 #include "Resources.h"
-#include "ShooterCharacter.h"
+#include "SPM/Characters/ShooterCharacter.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-#include "ShooterPlayerController.h"
+#include "SPM/Characters/ShooterPlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties

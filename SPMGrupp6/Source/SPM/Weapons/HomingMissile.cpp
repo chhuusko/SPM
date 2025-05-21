@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Engine/DamageEvents.h"
-#include "SPM/ShooterCharacter.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 
 AHomingMissile::AHomingMissile()

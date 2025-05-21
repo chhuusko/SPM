@@ -3,8 +3,8 @@
 
 #include "HitIndicatorWidget.h"
 
-#include "SPM/ShooterCharacter.h"
-#include "SPM/ShooterPlayerController.h"
+#include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Characters/ShooterPlayerController.h"
 
 void UHitIndicatorWidget::NativeConstruct()
 {

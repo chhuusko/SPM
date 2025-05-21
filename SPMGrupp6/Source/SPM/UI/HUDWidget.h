@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "SPM/WeaponUnlocking.h"
+#include "SPM/Systems/WeaponUnlocking.h"
 #include "HUDWidget.generated.h"
 
 enum class EWeaponType : uint8;
@@ -64,6 +64,18 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* SniperRiflePadlock;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* AutoPistolAbilityCooldown;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* ShotgunAbilityCooldown;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* AssaultRifleAbilityCooldown;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* SniperRifleAbilityCooldown;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* HitMarker;
@@ -131,6 +143,9 @@ private:
 	void UpdateWeaponUpgradeUI();
 
 	UFUNCTION()
+	void UpdateWeaponCooldown(float CooldownPercentage);
+
+	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
 	
 	UFUNCTION()
@@ -173,10 +188,11 @@ private:
 	float HitmarkerTime = 0.5f;
 
 	bool bHasDashCooldown;
-
 	bool bJetpackFuelFull = true;
 
 	UBorder* EquippedWeaponBorder;
 
 	FTimerHandle TimerHandle;
+
+	EWeaponType CurrentWeapon;
 };

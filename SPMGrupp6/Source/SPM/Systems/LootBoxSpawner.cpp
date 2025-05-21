@@ -3,7 +3,7 @@
 
 #include "LootBoxSpawner.h"
 
-#include "LootBox.h"
+#include "SPM/Pickup/LootBox.h"
 
 // Sets default values
 ALootBoxSpawner::ALootBoxSpawner()

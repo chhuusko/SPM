@@ -6,8 +6,8 @@
 #include "HairStrandsInterface.h"
 #include "SPM/UI/HUDWidget.h"
 #include "MathUtil.h"
-#include "SPM/ShooterCharacter.h"
-#include "SPM/ShooterPlayerController.h"
+#include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Characters/ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -80,6 +80,11 @@ USkeletalMeshComponent* AGun::GetMesh() const
 int AGun::GetMagazineSize() const
 {
 	return MagazineSize;
+}
+
+float AGun::GetCooldownPercentage() const
+{
+	return RemainingAbilityCooldown / GetAbilityCooldown();
 }
 
 void AGun::Fire()
@@ -310,14 +315,16 @@ void AGun::UpdateWeaponAbilityCooldown()
 	if (RemainingAbilityCooldown > 0.0f)
 	{
 		RemainingAbilityCooldown -= 1.0f;
+		OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 	}
 	else
 	{
 		bIsAbilityOnCooldown = false;
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
+		SetAbilityCooldown(AbilityCooldown);
+		OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 	}
 }
-
 
 void AGun::ApplyUpgrade(int NewLevel)
 {
@@ -403,6 +410,3 @@ void AGun::EnableCanPlayEmptyMagSound()
 {
 	bCanPlayEmptyMagSound = true;
 }
-
-
-
