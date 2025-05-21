@@ -14,6 +14,12 @@ class SPM_API ASniper : public AGun
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(VisibleAnywhere)
+	bool bIsAimingDownSight = false;
+	UPROPERTY(EditAnywhere)
+	float ConeRadius = 15;
+	
 private:
 	virtual void BeginPlay() override;
 	virtual void WeaponAbility() override;
@@ -25,7 +31,6 @@ private:
 	
 	FTimerHandle AimTimerHandle;
 	float ScopeToEyeDuration = 0.3;
-	bool bIsAimingDownSight = false;
 
 	UPROPERTY(VisibleAnywhere)
 	float OriginalPLayerFOV;
@@ -33,8 +38,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	float ZoomInFOV = 25;
 
-	UPROPERTY(EditAnywhere)
-	float ConeRadius = 15;
 
 	UPROPERTY(EditAnywhere)
 	float MouseScopeInSensitivity = 0.5;
