@@ -181,7 +181,7 @@ void UHUDWidget::OnPickup(int32 NewCurrencyAmount)
 void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor)
 {
 	// Get the new color to set, as a clamped value between the start color and completely red.
-	FLinearColor EndColor = FLinearColor::Red;
+	FLinearColor EndColor = FLinearColor(1, 0, 0, .7f);
 	FLinearColor Color = FLinearColor::LerpUsingHSV(StartColor, EndColor, FMath::Clamp(1.1f - Percent, 0.f, 1.f));
 
 	Bar->WidgetStyle.FillImage.TintColor = FSlateColor(Color);
