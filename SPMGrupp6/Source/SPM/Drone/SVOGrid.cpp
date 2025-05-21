@@ -22,7 +22,6 @@ void ASVOGrid::BeginPlay()
 void ASVOGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ASVOGrid::CreateStandardGrid()
@@ -54,7 +53,10 @@ void ASVOGrid::CreateGrid()
 		RootNode->AddChildren();
 	} 
 }
-
+FVector ASVOGrid::GetNearbyGridPosition(FVector position)
+{
+	return FVector((position.X+(1*GridLength))/2, (position.Y+(1*GridLength))/2, position.Z+(1*GridLength));
+}
 
 bool ASVOGrid::HasObjectWithin(FOctNode* Node)
 {
