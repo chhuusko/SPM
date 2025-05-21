@@ -13,6 +13,7 @@
 #include "Components/TextBlock.h"
 #include "DSP/EventQuantizer.h"
 #include "SPM/Weapons/Gun.h"
+#include "SPM/Weapons/Sniper.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -215,6 +216,17 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
 	GetGun();
+
+	// Bind the function for updating the sniper scope.
+	if (Weapon == EWeaponType::SniperRifle)
+	{
+		Sniper = Cast<ASniper>(Gun);
+		if (Sniper)
+		{
+			Sniper->OnScope.AddDynamic(this, &UHUDWidget::ShowCrosshair);
+		}
+	}
+	
 	UBorder* NextWeaponBorder;
 	UImage* Image;
 	CurrentWeapon = Weapon;
@@ -386,4 +398,16 @@ void UHUDWidget::AddHitmarker(AActor* HitActor)
 void UHUDWidget::RemoveHitMarker()
 {
 	HitMarker->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UHUDWidget::ShowCrosshair(bool bShow)
+{
+	if (bShow)
+	{
+		Crosshair->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		Crosshair->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

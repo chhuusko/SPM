@@ -81,6 +81,9 @@ public:
 	class UImage* HitMarker;
 
 	UPROPERTY(meta = (BindWidget))
+	class UImage* Crosshair;
+
+	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* JetpackFuelSlider;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -165,6 +168,9 @@ private:
 
 	UFUNCTION()
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
+
+	UFUNCTION()
+	void ShowCrosshair(bool bShow);
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -180,6 +186,9 @@ private:
 
 	UPROPERTY()
 	AGun* Gun;
+
+	UPROPERTY()
+	class ASniper* Sniper;
 
 	UPROPERTY()
 	UWeaponUnlocking* WeaponUnlocking;
