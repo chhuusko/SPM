@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "SPM/WeaponUnlocking.h"
+#include "SPM/Systems/WeaponUnlocking.h"
 #include "HUDWidget.generated.h"
 
 enum class EWeaponType : uint8;

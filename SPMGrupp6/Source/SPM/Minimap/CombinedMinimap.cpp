@@ -8,8 +8,8 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Engine/SceneCapture2D.h"
 #include "Kismet/GameplayStatics.h"
-#include "SPM/LootBoxSpawner.h"
-#include "SPM/ShooterCharacter.h"
+#include "SPM/Systems/LootBoxSpawner.h"
+#include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Drone/DroneSpawn.h"
 #include "SPM/Weapons/Gun.h"
 

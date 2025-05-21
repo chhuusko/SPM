@@ -3,7 +3,7 @@
 
 #include "DroneMissile.h"
 
-#include "SPM/ShooterCharacter.h"
+#include "SPM/Characters/ShooterCharacter.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 

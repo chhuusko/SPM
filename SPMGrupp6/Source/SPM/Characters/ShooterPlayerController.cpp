@@ -3,16 +3,16 @@
 
 #include "ShooterPlayerController.h"
 
-#include "UI/GameOverScreen.h"
-#include "UI/HUDWidget.h"
-#include "KillThemAllGameMode.h"
+#include "SPM/UI/GameOverScreen.h"
+#include "SPM/UI/HUDWidget.h"
+#include "SPM/Game/KillThemAllGameMode.h"
 #include "ShooterCharacter.h"
-#include "ShooterGameInstance.h"
+#include "SPM/Game/ShooterGameInstance.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI/HitIndicatorWidget.h"
-#include "UI/SniperScopeWidget.h"
+#include "SPM/UI/HitIndicatorWidget.h"
+#include "SPM/UI/SniperScopeWidget.h"
 
 
 void AShooterPlayerController::BeginPlay()

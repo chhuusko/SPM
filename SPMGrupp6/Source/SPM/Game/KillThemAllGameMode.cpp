@@ -4,8 +4,8 @@
 #include "KillThemAllGameMode.h"
 
 #include "EngineUtils.h"
-#include "ShooterAIController.h"
-#include "ShooterCharacter.h"
+#include "SPM/Characters/ShooterAIController.h"
+#include "SPM/Characters/ShooterCharacter.h"
 #include "ShooterGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
