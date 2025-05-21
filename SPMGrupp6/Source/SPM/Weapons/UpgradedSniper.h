@@ -6,6 +6,8 @@
 #include "Sniper.h"
 #include "UpgradedSniper.generated.h"
 
+
+class UNiagaraSystem;
 /**
  * 
  */
@@ -23,5 +25,7 @@ private:
 	int ObjectsToGoThrough = 1;
 	
 	float ShotRadius = 16;
-	
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* SniperBeamEffect;
 };
