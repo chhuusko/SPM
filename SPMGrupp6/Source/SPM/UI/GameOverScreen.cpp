@@ -65,12 +65,12 @@ void UGameOverScreen::UpdateWinnerText(bool bBlueIsWinner)
 		WinnerText->SetText(FText::FromString(WinnerString));
 		
 		// Changes text to match player color.
-		WinnerText->SetColorAndOpacity(FSlateColor(FLinearColor(0.023529f, 0.0f, 0.764706f)));
+		//WinnerText->SetColorAndOpacity(FSlateColor(FLinearColor(0.023529f, 0.0f, 0.764706f)));
 	}
 	else
 	{
 		WinnerString = FString::Printf(TEXT("Player 2 wins!"));
 		WinnerText->SetText(FText::FromString(WinnerString));
-		WinnerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.0f, 0.0f)));
+		//WinnerText->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.0f, 0.0f)));
 	}
 }
