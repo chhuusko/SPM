@@ -30,7 +30,7 @@ void ASniper::StopWeaponAbility()
 	// Stop scoping or stop the character trying to scope.
 	if (bIsAimingDownSight)
 	{
-		
+		OnScope.Broadcast(true);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), StopScopingSound, GetActorLocation());
 		SetCameraFOV(OriginalPLayerFOV);
 		DisableZoomInSensitivity();
@@ -52,6 +52,7 @@ void ASniper::ZoomIn()
 	SetCameraFOV(ZoomInFOV);
 	ApplyZoomInSensitivity();
 	bIsAimingDownSight = true;
+	OnScope.Broadcast(false);
 	
 	if (PlayerController && Mesh)
 	{

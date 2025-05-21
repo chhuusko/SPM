@@ -174,6 +174,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	float AbilityCooldown = 5.0f;
 
+	UPROPERTY(EditDefaultsOnly)
+	int32 CooldownUpdateAmount = 10;
+
 	float RemainingAbilityCooldown;
 	
 	bool bIsAbilityOnCooldown = false;
