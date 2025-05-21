@@ -81,6 +81,9 @@ public:
 	class UImage* HitMarker;
 
 	UPROPERTY(meta = (BindWidget))
+	class UImage* Crosshair;
+
+	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* JetpackFuelSlider;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -120,6 +123,9 @@ private:
 
 	UFUNCTION()
 	void UpdateJetpackCooldown();
+
+	UFUNCTION()
+	void HideJetpackSlider();
 
 	UFUNCTION()
 	void UpdateDashCooldownTimer(float ElapsedTime);
@@ -165,6 +171,9 @@ private:
 
 	UFUNCTION()
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
+
+	UFUNCTION()
+	void ShowCrosshair(bool bShow);
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -182,6 +191,9 @@ private:
 	AGun* Gun;
 
 	UPROPERTY()
+	class ASniper* Sniper;
+
+	UPROPERTY()
 	UWeaponUnlocking* WeaponUnlocking;
 	
 	UPROPERTY(EditDefaultsOnly)
@@ -192,7 +204,8 @@ private:
 
 	UBorder* EquippedWeaponBorder;
 
-	FTimerHandle TimerHandle;
+	FTimerHandle HitmarkTimerHandle;
+	FTimerHandle JetpackTimerHandle;
 
 	EWeaponType CurrentWeapon;
 };

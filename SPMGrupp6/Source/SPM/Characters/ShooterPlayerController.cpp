@@ -65,7 +65,7 @@ void AShooterPlayerController::AddSniperScope()
 	ScopeWidget = CreateWidget<USniperScopeWidget>(this, ScopeWidgetClass);
 	if (ScopeWidget)
 	{
-		ScopeWidget->AddToPlayerScreen();
+		ScopeWidget->AddToPlayerScreen(0);
 	}
 }
 
@@ -84,7 +84,7 @@ void AShooterPlayerController::InitializeUI()
 	HUDWidget = CreateWidget<UHUDWidget>(this, HUDWidgetClass);
 	if (HUDWidget)
 	{
-		HUDWidget->AddToPlayerScreen();
+		HUDWidget->AddToPlayerScreen(1);
 	}
 
 	HitIndicatorWidget = CreateWidget<UHitIndicatorWidget>(this, HitIndicatorWidgetClass);

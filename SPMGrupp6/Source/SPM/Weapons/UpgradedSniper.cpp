@@ -2,6 +2,8 @@
 
 
 #include "UpgradedSniper.h"
+
+#include "AsyncTreeDifferences.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -52,9 +54,6 @@ void AUpgradedSniper::Fire()
 				Hit.Location,
 				ShotDirection.Rotation()			
 			);
-
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
-
 			
 			HitActor = Hit.GetActor();
 			if(HitActor)
@@ -85,6 +84,12 @@ void AUpgradedSniper::Fire()
 					}
 				}
 			}
+	}
+
+	// Only play sound from the first hit.
+	if (!Hits.IsEmpty())
+	{
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hits[0].Location);
 	}
 	
 	AddRecoil();
@@ -146,32 +151,51 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
 
+	FCollisionObjectQueryParams ObjectParams;
+	ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+
 	int ObjectsPassedThrough = 0;
 	FHitResult FinalHit;
 	FVector SphereEndLocation = RayEnd;
-	bool bLineHit = GetWorld()->LineTraceMultiByChannel(LineHits, Location, RayEnd, ECC_GameTraceChannel1, Params);
-
+	bool bLineHit = GetWorld()->LineTraceMultiByObjectType(LineHits, Location, RayEnd, ObjectParams, Params);
 	if (bLineHit)
 	{
+		// Sort the list of actors by distance to make sure the right objects gets counted for.
+		LineHits.Sort([](const FHitResult& A, const FHitResult& B) {
+		return A.Distance < B.Distance; });
+		
+		TSet<AActor*> AlreadyHitActors;
+		
 		// If something got hit, store the last hit objects location.
 		for (FHitResult Hit: LineHits)
 		{
+			UE_LOG(LogTemp, Display, TEXT("AllHits: %d"), LineHits.Num());
+
 			AActor* HitActor = Hit.GetActor();
 			if (!HitActor) continue;
 
-			if (ObjectsPassedThrough >= ObjectsToGoThrough)
+			if (AlreadyHitActors.Contains(HitActor)) continue;
+			AlreadyHitActors.Add(HitActor);
+
+			UE_LOG(LogTemp, Display, TEXT("HitActors: %d"), AlreadyHitActors.Num());
+
+			if (bDebugWeapon)
+			{
+				UE_LOG(LogTemp, Display, TEXT("Hit the actor: %s"), *HitActor->GetName());
+			}
+			UE_LOG(LogTemp, Display, TEXT("ObjectsToGoThrough: %d"), ObjectsToGoThrough);
+
+			if (ObjectsPassedThrough == ObjectsToGoThrough)
 			{
 				// After max limit of objects to go through is reached, return the last location hit.
 				FinalHit = Hit;
 				SphereEndLocation = FinalHit.Location;
+				UE_LOG(LogTemp, Display, TEXT("SphereEndLocation was set."));
 				break;
 			}
 			ObjectsPassedThrough++;
 		}
-	}
-	else
-	{
-		SphereEndLocation = RayEnd;
 	}
 
 	// Calculate TraceLength used for damage fall of calculation.
@@ -195,9 +219,11 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 	
 	if (bDebugWeapon)
 	{
-		DrawDebugLine(GetWorld(), Location, SphereEndLocation, FColor::Green, false, 1.0f, 0, 1.5f);
-		DrawDebugSphere(GetWorld(), SphereEndLocation, ShotRadius, 12, FColor::Yellow, false, 1.0f);
+		DrawDebugLine(GetWorld(), Location, SphereEndLocation, FColor::Green, false, 2, 0, 1);
+		DrawDebugSphere(GetWorld(), SphereEndLocation, ShotRadius, 12, FColor::Yellow, false, 2);
+		DrawDebugCylinder(GetWorld(),Location, SphereEndLocation, ShotRadius, 16, FColor::Cyan, false, 2.0f);
 	}
 	
 	return HitResults;
 }
+
