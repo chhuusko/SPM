@@ -360,7 +360,7 @@ void UHUDWidget::UpdateWeaponCooldown(float CooldownPercentage)
 		break;
 	}
 
-	CooldownBar->SetPercent(CooldownPercentage);
+	CooldownBar->SetPercent(1.f - CooldownPercentage);
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.
