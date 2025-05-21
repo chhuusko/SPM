@@ -21,6 +21,15 @@ public:
 	void IncrementRedScore();
 	
 	UFUNCTION(BlueprintCallable)
+	void SetPlayer1PlatformId(const FPlatformUserId& InId);
+	UFUNCTION(BlueprintCallable)
+	void SetPlayer2PlatformId(const FPlatformUserId& InId);
+	UFUNCTION(BlueprintPure)
+	FPlatformUserId GetPlayer1PlatformId() const;
+	UFUNCTION(BlueprintPure)
+	FPlatformUserId GetPlayer2PlatformId() const;
+	
+	UFUNCTION(BlueprintCallable)
 	void SetMaxScore(int NewMaxScore);
 	UFUNCTION(BlueprintCallable)
 	int32 GetMaxScore() const { return ScoreMax; }
@@ -43,6 +52,8 @@ private:
 	int32 BlueScore = 0;
 	int32 RedScore = 0;
 	int32 ScoreMax = 3;
+	FPlatformUserId Player1PlatformID;
+	FPlatformUserId Player2PlatformID;
 
 	void OnPostLoadMap(UWorld* LoadedWorld);
 	void LoadCombinedMinimap();
