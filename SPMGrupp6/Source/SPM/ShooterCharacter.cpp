@@ -67,6 +67,11 @@ void AShooterCharacter::BeginPlay()
 }
 
 
+bool AShooterCharacter::IsFirstCharacter()
+{
+	return this->GetController() == GetWorld()->GetFirstPlayerController();
+}
+
 void AShooterCharacter::SetPlayerController()
 {
 	PlayerController = Cast<AShooterPlayerController>(GetController());
@@ -199,7 +204,7 @@ void AShooterCharacter::UseJetpack()
 	
 	GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
 
-	UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
+	//UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 }
 
 float AShooterCharacter::GetJetpackCharge() {
@@ -208,6 +213,11 @@ float AShooterCharacter::GetJetpackCharge() {
 
 float AShooterCharacter::GetJetpackPercentage() {
 	return JetpackCharge / JetpackChargeMax;
+}
+
+void AShooterCharacter::ConsumeJetpackChargeTap()
+{
+	JetpackCharge -= JetPackChargeConsumptionPerTap;
 }
 
 

@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "DroneSpawn.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class SPM_API ADroneSpawn : public AActor
 {
@@ -33,12 +35,15 @@ public:
 	void DroneDestroyed();
 	static void LootBoxDestroyed();
 private:
+	UPROPERTY(EditDefaultsOnly)
+	UNiagaraSystem* SpawnBeam;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ADrone> DroneClass;
 	UPROPERTY(EditAnywhere)
 	float SpawnTime;
 	FTimerHandle DroneSpawnTimerHandle;
 	static bool CanSpawn;
+	bool isFirstSpawn;
 	void Spawn();
 	
 };

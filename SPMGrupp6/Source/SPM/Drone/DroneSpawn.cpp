@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "DroneSpawn.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
+
 
 bool ADroneSpawn::CanSpawn = true;
 // Sets default values
@@ -26,6 +27,7 @@ float ADroneSpawn::GetDroneRespawnTimeRemaining() const
 void ADroneSpawn::BeginPlay()
 {
 	Super::BeginPlay();
+	isFirstSpawn = true;
 	Spawn();
 }
 
@@ -51,9 +53,35 @@ void ADroneSpawn::LootBoxDestroyed()
 
 void ADroneSpawn::Spawn()
 {
+	
+	if (SpawnBeam && !isFirstSpawn)
+ 		{
+ 			FHitResult HitResult;
+ 			FCollisionQueryParams CollisionParams;
+ 			CollisionParams.AddIgnoredActor(this); // Ignore self
+ 
+ 			// Perform the line trace
+ 			bool bHit = GetWorld()->LineTraceSingleByChannel(
+ 				HitResult,
+ 				GetActorLocation(),
+ 				GetActorLocation()+FVector(0, 0, -800),
+ 				ECC_Visibility,
+ 				CollisionParams
+ 			);
+ 			if (bHit)
+ 			{
+ 				UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+ 				GetWorld(),
+ 				SpawnBeam,
+ 				HitResult.Location,
+ 				GetActorRotation()
+ 				);
+ 			}
+ 		}
 	if (ADrone* Drone = GetWorld()->SpawnActor<ADrone>(DroneClass, GetActorLocation(), GetActorRotation()))
 	{
 		Drone->SetSpawner(this);
+		isFirstSpawn = false;
 	}
 }
 
