@@ -125,6 +125,9 @@ private:
 	void UpdateJetpackCooldown();
 
 	UFUNCTION()
+	void HideJetpackSlider();
+
+	UFUNCTION()
 	void UpdateDashCooldownTimer(float ElapsedTime);
 
 	UFUNCTION()
@@ -201,7 +204,8 @@ private:
 
 	UBorder* EquippedWeaponBorder;
 
-	FTimerHandle TimerHandle;
+	FTimerHandle HitmarkTimerHandle;
+	FTimerHandle JetpackTimerHandle;
 
 	EWeaponType CurrentWeapon;
 };

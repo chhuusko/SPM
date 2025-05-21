@@ -144,9 +144,17 @@ void UHUDWidget::UpdateJetpackCooldown()
 	if (FuelPercent >= 1.f)
 	{
 		bJetpackFuelFull = true;
-		JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
-		JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
+		
+		// Hide the HUD after a small delay.
+		GetWorld()->GetTimerManager().SetTimer(JetpackTimerHandle, this, &UHUDWidget::HideJetpackSlider, 0.2f);
 	}
+}
+
+// Hides the jetpack slider from the HUD.
+void UHUDWidget::HideJetpackSlider()
+{
+	JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
+	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
 }
 
 void UHUDWidget::UpdateDashCooldownTimer(float DeltaTime)
@@ -391,7 +399,7 @@ void UHUDWidget::AddHitmarker(AActor* HitActor)
 		return;
 	}
 	HitMarker->SetVisibility(ESlateVisibility::Visible);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
+	GetWorld()->GetTimerManager().SetTimer(HitmarkTimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
 }
 
 // Remove hit marker.
