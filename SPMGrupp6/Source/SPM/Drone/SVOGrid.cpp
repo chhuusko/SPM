@@ -53,22 +53,11 @@ void ASVOGrid::CreateGrid()
 		RootNode->AddChildren();
 	} 
 }
-FVector ASVOGrid::GetNearbyGridPosition(FVector Position)
+FVector ASVOGrid::GetNearbyGridPosition(FVector position)
 {
-	DrawDebugSolidBox(GetWorld(),
-		Position,
-		AreaSize*600,
-		FColor::Red,
-		true,
-		5.f,
-		0);
-	
-	return FVector((Position.X+(1*GridLength))/2, (Position.Y+(1*GridLength))/2, Position.Z+(1*GridLength));
+	return FVector((position.X+(1*GridLength))/2, (position.Y+(1*GridLength))/2, position.Z+(1*GridLength));
 }
-TArray<FVector> ASVOGrid::GetAvailableNeighbors(FVector position)
-{
-	return TArray<FVector>();
-}
+
 bool ASVOGrid::HasObjectWithin(FOctNode* Node)
 {
 	FRotator Rotation = FRotator::ZeroRotator;
