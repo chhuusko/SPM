@@ -115,7 +115,7 @@ void UCombinedMinimap::SetSceneCapture()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		FVector Location(SceneCapturePosition);
+		FVector Location(0, 0, 5000);
 		FRotator Rotation(-90, -90, 0);
 
 		SceneCaptureActor = GetWorld()->SpawnActor<ASceneCapture2D>(ASceneCapture2D::StaticClass(), Location, Rotation, SpawnParams);
@@ -137,7 +137,7 @@ void UCombinedMinimap::SetSceneCapture()
 	SceneCaptureRef = CaptureComp;
 	
 	CaptureComp->ProjectionType = ECameraProjectionMode::Type::Orthographic;
-	CaptureComp->OrthoWidth = SceneCaptureOrtho;
+	CaptureComp->OrthoWidth = 10000.0f;
 	CaptureComp->bCaptureEveryFrame = false;
 	CaptureComp->bCaptureOnMovement = false;
     CaptureComp->TextureTarget = RenderTarget;

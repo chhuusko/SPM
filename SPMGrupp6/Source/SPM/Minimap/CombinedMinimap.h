@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/SceneCaptureComponent2D.h"
 #include "CombinedMinimap.generated.h"
 
 class AShooterCharacter;
@@ -106,19 +105,17 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "SceneCapture")
 	float SceneCaptureOrtho = 10000;
 	UPROPERTY(EditAnywhere, Category = "SceneCapture")
-	FVector SceneCapturePosition = FVector(0, 0, 10000);
+	FVector3d SceneCapturePosition = FVector3d(0, 0, 10000);
 
 public:
 	void SetSceneCaptureOrtho(float NewSceneCaptureOrtho)
 	{
 		SceneCaptureOrtho = NewSceneCaptureOrtho;
-		if (SceneCaptureRef) SceneCaptureRef->OrthoWidth = NewSceneCaptureOrtho;
 	}
 
 	void SetSceneCapturePosition(const FVector3d& NewSceneCapturePosition)
 	{
 		SceneCapturePosition = NewSceneCapturePosition;
-		if (SceneCaptureRef) SceneCaptureRef->GetOwner()->SetActorLocation(SceneCapturePosition);
 	}
 };
 

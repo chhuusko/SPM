@@ -24,7 +24,8 @@ protected:
 
 public:	
 	// Called every frame
-	FVector static GetNearbyGridPosition(FVector position);
+	TArray<FVector> GetAvailableNeighbors(FVector position);
+	FVector GetNearbyGridPosition(FVector position);
 	virtual void Tick(float DeltaTime) override;
 private:
 	void CreateStandardGrid();

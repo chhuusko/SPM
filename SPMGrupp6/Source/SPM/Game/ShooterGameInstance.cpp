@@ -70,30 +70,6 @@ void UShooterGameInstance::SetPlayerCount(int32 NewPlayerCount)
 	PlayerCount = NewPlayerCount;
 }
 
-void UShooterGameInstance::SetCombinedRadarEnabled(bool bCombinedRadarEnabled)
-{
-	CombinedRadarEnabled = bCombinedRadarEnabled;
-	if (CombinedRadarEnabled)
-	{
-		FString CleanMapName = UGameplayStatics::GetCurrentLevelName(this, true);
-		if (!CleanMapName.Contains(TEXT("MainMenu")))
-		{
-			if (!GlobalMinimapWidget)
-			{
-				GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::LoadCombinedMinimap);
-			}
-		}
-		else if (GlobalMinimapWidget)
-		{
-			GlobalMinimapWidget->RemoveFromParent();
-		}
-	}
-	else if (GlobalMinimapWidget)
-	{
-		GlobalMinimapWidget->RemoveFromParent();
-	}
-}
-
 void UShooterGameInstance::Init()
 {
 	Super::Init();

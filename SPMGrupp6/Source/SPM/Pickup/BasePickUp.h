@@ -33,13 +33,9 @@ protected:
 	USoundBase* PickupSound;
 	UPROPERTY(EditAnywhere)
     float VacuumDistance;
-	UPROPERTY(EditAnywhere)
-	FTimerHandle FreeModeHandle;
-	UPROPERTY(EditAnywhere)
-	float FreeModeTime = 0.5f;
 	TArray<AActor*> FoundActors;
 	AActor* TargetActor;
-	void CheckForPlayer();
+	
 public:	
 	// Called every frame
 	

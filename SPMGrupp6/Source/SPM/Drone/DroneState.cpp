@@ -50,10 +50,20 @@ void FDroneStateAttack::Move()
 void FDroneStateAttack::Rotate()
 {
 	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
-	FVector ToTarget = Target->GetActorLocation() - Drone->GetTurret()->GetComponentLocation();
+	
+	FVector ToTarget = Target->GetActorLocation() - Drone->GetBody()->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
-	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
-	//Drone->GetTurret()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetBody()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+	
+	if (FVector::Dist(Target->GetActorLocation(), Drone->GetActorLocation()) < 300.f) return;
+		
+	ToTarget = Target->GetActorLocation() - Drone->GetProjectileSpawn()->GetComponentLocation();
+	LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
+	Drone->GetTurret()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+
+	ToTarget = Target->GetActorLocation() - Drone->GetProjectileSpawnAlt()->GetComponentLocation();
+	LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
+	Drone->GetTurretAlt()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurretAlt()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
 }
 
 void FDroneStateAttack::Shoot()

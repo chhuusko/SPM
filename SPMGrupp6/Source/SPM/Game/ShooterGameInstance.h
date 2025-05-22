@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "SPM/Minimap/CombinedMinimap.h"
 #include "ShooterGameInstance.generated.h"
 
 class UCombinedMinimap;
@@ -42,22 +41,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetPlayerCount(int32 NewPlayerCount);
 	
-
-	UFUNCTION(BlueprintCallable)
-	void SetSceneCaptureOrtho(float NewSceneCaptureOrtho)
-	{
-		SceneCaptureOrtho = NewSceneCaptureOrtho;
-		if (GlobalMinimapWidget) GlobalMinimapWidget->SetSceneCaptureOrtho(NewSceneCaptureOrtho);
-	}
-	UFUNCTION(BlueprintCallable)
-	void SetSceneCapturePosition(const FVector& NewSceneCapturePosition)
-	{
-		SceneCapturePosition = NewSceneCapturePosition;
-		if (GlobalMinimapWidget) GlobalMinimapWidget->SetSceneCapturePosition(NewSceneCapturePosition);
-	}
-	UFUNCTION(BlueprintCallable)
-	void SetCombinedRadarEnabled(bool bCombinedRadarEnabled);
-
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float SceneCaptureOrtho = 10000;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FVector3d SceneCapturePosition = FVector3d(0, 0, 10000);
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> GlobalMinimapWidgetClass;
 
@@ -84,8 +71,4 @@ private:
 
 	UPROPERTY(BlueprintGetter = GetGlobalMinimapWidget)
 	TObjectPtr<class UCombinedMinimap> GlobalMinimapWidget;
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	float SceneCaptureOrtho = 10000;
-	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	FVector SceneCapturePosition = FVector(0, 0, 10000);
 };
