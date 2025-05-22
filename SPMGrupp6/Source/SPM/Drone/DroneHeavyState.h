@@ -26,8 +26,10 @@ class SPM_API FDroneHeavyStateTelegraphAttack : public FDroneHeavyState
 public:
 	FDroneHeavyStateTelegraphAttack(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneHeavyState(Drone, Spawner)
 	{
+		
 		this->Target = Target;
 		Cast<ADroneHeavy>(Drone)->StartTelegrahTimeHandler();
+		UGameplayStatics::PlaySound2D(Drone, Cast<ADroneHeavy>(Drone)->GetAggroSound());
 	};
 	virtual void Move() override;
 	virtual void Rotate() override;
@@ -38,11 +40,18 @@ private:
 	AActor* Target;
 };
 
-class SPM_API FDroneHeavyStateAttack : public FDroneHeavyStateTelegraphAttack
+class SPM_API FDroneHeavyStateAttack : public FDroneHeavyState
 {
 public:
-	FDroneHeavyStateAttack(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneHeavyStateTelegraphAttack(Drone, Spawner, Target) {};
+	FDroneHeavyStateAttack(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneHeavyState(Drone, Spawner){this->Target = Target;};
+	virtual void Move() override;
+	virtual void Rotate() override;
 	virtual void Shoot() override;
+private:
+	float MaxSpawnDistance = 2000;
+	float DesiredDistance = 1000;
+	FVector DesiredElevation = FVector(0,0,250);
+	AActor* Target;
 };
 
 class SPM_API FDroneHeavyStateReturn : public FDroneHeavyState

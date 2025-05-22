@@ -214,11 +214,14 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 		Params
 	);
 
-	UNiagaraComponent* Beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), SniperBeamEffect, Location);
-	if (Beam)
+	FVector ParticleDirection = (SphereEndLocation - Location).GetSafeNormal();
+	FRotator ParticleRotation = ParticleDirection.Rotation();
+
+	UParticleSystemComponent* Comp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SniperBulletParticle, Location, ParticleRotation, true);
+
+	if (Comp)
 	{
-		Beam->SetVectorParameter(FName("BeamStart"), Location);
-		Beam->SetVectorParameter(FName("BeamEnd"), SphereEndLocation);
+		Comp->SetVectorParameter(FName("Velocity"), ParticleDirection * 4000.0f); // Om du exponerar "Velocity" i Cascade
 	}
 	
 	if (bDebugWeapon)

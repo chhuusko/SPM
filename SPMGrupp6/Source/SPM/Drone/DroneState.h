@@ -50,6 +50,7 @@ private:
 	FVector DesiredElevation = FVector(0,0,250);
 	AActor* Target;
 	FVector LastPosition;
+	bool ShootWithRight;
 };
 
 class SPM_API FDroneStateReturn : public FDroneState

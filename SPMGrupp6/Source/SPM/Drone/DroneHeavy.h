@@ -16,6 +16,7 @@ class SPM_API ADroneHeavy : public ADrone
 public:
 	ADroneHeavy();
 	void StartTelegrahTimeHandler();
+	USoundBase* GetAggroSound(){return AggroSound;};
 protected:
 	virtual void SetSpawner(ADroneSpawn* Spawn) override;
 	virtual void LostPlayer() override;
@@ -24,6 +25,8 @@ protected:
 	
 	void ChangeStateAttack();
 	//Timehandlers
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* AggroSound; 
 	FTimerHandle TelegrahTimeHandle;
 	
 private:

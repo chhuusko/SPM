@@ -71,12 +71,18 @@ void FDroneStateAttack::Shoot()
 	if (Drone != nullptr)
 	if (!Drone->GetBulletClass() && !Drone->GetProjectileSpawn()){return;}
 	{
-		
-		ADroneBullet* Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawn()->GetComponentLocation(), Drone->GetProjectileSpawn()->GetComponentRotation());
-		//ADroneMissile* Missile = GetWorld()->SpawnActor<ADroneMissile>(MissileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
-		Bullet->SetOwner(Drone);
+		ADroneBullet* Bullet;
 		//Missile->SetOwner(this);
 		UGameplayStatics::PlaySound2D(Drone, Drone->GetShootSound());
+		if (ShootWithRight)
+		{
+			Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawn()->GetComponentLocation(), Drone->GetProjectileSpawn()->GetComponentRotation());
+		} else
+		{
+			Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawnAlt()->GetComponentLocation(), Drone->GetProjectileSpawnAlt()->GetComponentRotation());
+		}
+		Bullet->SetOwner(Drone);
+		ShootWithRight = !ShootWithRight;
 	}
 }
 

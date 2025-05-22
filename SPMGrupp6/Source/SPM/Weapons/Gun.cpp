@@ -6,10 +6,12 @@
 #include "HairStrandsInterface.h"
 #include "SPM/UI/HUDWidget.h"
 #include "MathUtil.h"
+#include "SEditorViewportToolBarMenu.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Characters/ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "Logging/LogMacros.h"
 
 // Sets default values
 AGun::AGun()
@@ -116,6 +118,10 @@ void AGun::Fire()
 	bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 	if(bSuccess)
 	{
+		UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
+		FName HitBone = Hit.BoneName;
+		UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());
+		
 		if (bDebugWeapon)
 		{
 			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
@@ -147,6 +153,7 @@ void AGun::Fire()
 			}
 			else
 			{
+				
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
 				FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
@@ -302,7 +309,10 @@ void AGun::WeaponAbility()
 	if (!IsAbilityOnCooldown())
 	{
 		RemainingAbilityCooldown = GetAbilityCooldown();
-		GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, GetAbilityCooldown() / CooldownUpdateAmount, true);
+		if (AbilityUnlocked)
+		{
+			GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, GetAbilityCooldown() / CooldownUpdateAmount, true);
+		}
 	}
 }
 void AGun::StopWeaponAbility()
@@ -411,4 +421,21 @@ void AGun::SetWeaponEquipped(const bool bIsEquipped)
 void AGun::EnableCanPlayEmptyMagSound()
 {
 	bCanPlayEmptyMagSound = true;
+}
+
+FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
+{
+	if (HitResult.Component->ComponentHasTag("Head"))
+	{
+		return "Head";
+	}
+	if (HitResult.Component->ComponentHasTag("Body"))
+	{
+		return "Body";
+	}
+	if (HitResult.Component->ComponentHasTag("Legs"))
+	{
+		return "Legs";
+	}
+	return HitResult.Component->GetName();
 }

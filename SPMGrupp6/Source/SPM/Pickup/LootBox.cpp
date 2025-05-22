@@ -26,28 +26,28 @@ void ALootBox::BeginPlay()
 {
 	Super::BeginPlay();
 	if (SpawnBeam)
-    	{
-    		FHitResult HitResult;
-    		FCollisionQueryParams CollisionParams;
-    		CollisionParams.AddIgnoredActor(this); // Ignore self
-     
-    		// Perform the line trace
-    		bool bHit = GetWorld()->LineTraceSingleByChannel(
-    			HitResult,
-    			GetActorLocation(),
-    			GetActorLocation()+FVector(0, 0, -800),
-    			ECC_Visibility,
-    			CollisionParams
-    		);
-    		
-		BeamComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			SpawnBeam,
-			GetActorLocation(),
-			GetActorRotation()
-			);
-    		
-    	}
+    {
+    	FHitResult HitResult;
+    	FCollisionQueryParams CollisionParams;
+    	CollisionParams.AddIgnoredActor(this); // Ignore self
+ 
+    	// Perform the line trace
+    	bool bHit = GetWorld()->LineTraceSingleByChannel(
+    		HitResult,
+    		GetActorLocation(),
+    		GetActorLocation()+FVector(0, 0, -800),
+    		ECC_Visibility,
+    		CollisionParams
+    	);
+    	
+	BeamComponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(),
+		SpawnBeam,
+		GetActorLocation(),
+		GetActorRotation()
+		);
+    	
+    }
 }
 
 float ALootBox::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
