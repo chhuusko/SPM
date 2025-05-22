@@ -229,6 +229,7 @@ void AGun::Reload()
 		bCanFire = false;
 		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
+		OnReload.Broadcast(ReloadTime);
 	}
 }
 void AGun::ResetAmmo()
