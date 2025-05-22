@@ -74,10 +74,7 @@ public:
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
 	AActor* GetTarget() {return Target;}
-	
-	
-	
-	
+
 private:
 	virtual void LootDrop();
 	
