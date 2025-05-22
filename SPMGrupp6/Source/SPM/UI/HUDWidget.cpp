@@ -14,12 +14,7 @@
 
 UHUDWidget::UHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	Timeline = NewObject<UTimelineComponent>(this, FName("ReloadCooldownTimeline"));
-
-	if (Timeline)
-	{
-		Timeline->CreationMethod = EComponentCreationMethod::Native;
-	}
+	
 }
 
 void UHUDWidget::NativeConstruct()
@@ -41,9 +36,19 @@ void UHUDWidget::NativeConstruct()
 
 	CurrentWeapon = EWeaponType::Pistol;
 
-	if (Timeline)
+	if (!Timeline)
 	{
-		Timeline->RegisterComponentWithWorld(GetWorld());
+		Timeline = NewObject<UTimelineComponent>(this, FName("ReloadCooldownTimeline"));
+
+		if (Timeline)
+		{
+			Timeline->CreationMethod = EComponentCreationMethod::Native;
+			Timeline->RegisterComponentWithWorld(GetWorld());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
+		}
 	}
 }
 
@@ -437,6 +442,16 @@ void UHUDWidget::ShowCrosshair(bool bShow)
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)
 {
+	if (!Timeline)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Timeline is null!"));
+		return;
+	}
+	if (!ReloadCurve)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
+	}
+	
 	// Bind function for updating reload slider.
 	OnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
 	Timeline->AddInterpFloat(ReloadCurve, OnTimelineFloat);
