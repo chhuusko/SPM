@@ -437,11 +437,6 @@ void UHUDWidget::ShowCrosshair(bool bShow)
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)
 {
-	if (!Timeline)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
-		return;
-	}
 	// Bind function for updating reload slider.
 	OnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
 	Timeline->AddInterpFloat(ReloadCurve, OnTimelineFloat);
@@ -454,8 +449,15 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 	FOnTimelineEvent TimelineEvent;
 	TimelineEvent.BindUFunction(this, FName("ReloadCooldownCompleted"));
 	Timeline->SetTimelineFinishedFunc(TimelineEvent);
-	
-	Timeline->PlayFromStart();
+
+	if (IsValid(Timeline) && Timeline->IsRegistered())
+	{
+		Timeline->PlayFromStart();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
+	}
 }
 
 // Updates cooldown indicator.
