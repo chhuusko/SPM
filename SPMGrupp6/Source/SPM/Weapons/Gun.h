@@ -33,12 +33,6 @@ public:
 
 	FOnHit OnHit;
 	FOnCooldownUpdated OnCooldownUpdated;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bHasReloadedManually = false;
-
-	UPROPERTY(BlueprintReadWrite)
-	bool bEnableManualReloadCheck = false;
 	
 protected:
 	// Called when the game starts or when spawned
