@@ -55,9 +55,9 @@ void ASVOGrid::CreateGrid()
 }
 FVector ASVOGrid::GetNearbyGridPosition(FVector Position)
 {
-	DrawDebugBox(GetWorld(),
+	DrawDebugSolidBox(GetWorld(),
 		Position,
-		AreaSize,
+		AreaSize*600,
 		FColor::Red,
 		true,
 		5.f,
