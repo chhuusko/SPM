@@ -62,6 +62,7 @@ void AKillThemAllGameMode::CheckGameWon()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[KillThemAllGameMode] Round Ended!"));
+		UGameplayStatics::PlaySound2D(this, GI->GetRoundOverSound());
 		GetWorld()->GetTimerManager().SetTimer(RestartTimer, this, &AKillThemAllGameMode::RestartLevel, RestartDelay, false);
 	}
 }
