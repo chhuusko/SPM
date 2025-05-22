@@ -302,7 +302,10 @@ void AGun::WeaponAbility()
 	if (!IsAbilityOnCooldown())
 	{
 		RemainingAbilityCooldown = GetAbilityCooldown();
-		GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, GetAbilityCooldown() / CooldownUpdateAmount, true);
+		if (AbilityUnlocked)
+		{
+			GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, GetAbilityCooldown() / CooldownUpdateAmount, true);
+		}
 	}
 }
 void AGun::StopWeaponAbility()
