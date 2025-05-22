@@ -7,6 +7,7 @@
 #include "DroneState.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "DroneSpawn.h"
+#include "Components/AudioComponent.h"
 #include "SPM/Characters/ShooterCharacter.h"
 
 
@@ -15,6 +16,12 @@ ADrone::ADrone()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
+    RootComponent = AudioComp;
+    AudioComp->bAutoActivate = false; // Don’t play on start unless you want to
+    AudioComp->bAllowSpatialization = true;
+    AudioComp->SetupAttachment(RootComponent);
+	
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
 	RootComponent = BodyMesh;
 	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
@@ -25,6 +32,8 @@ ADrone::ADrone()
 	ProjectileSpawn->SetupAttachment(TurretMesh);
 	ProjectileSpawnAlt = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnAltPoint"));
 	ProjectileSpawnAlt->SetupAttachment(TurretMeshAlt);
+
+	
 }
 
 // Called when the game starts or when spawned
