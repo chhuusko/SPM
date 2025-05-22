@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "DroneHeavy.h"
 #include "DroneState.h"
+#include "Components/AudioComponent.h"
 
 /**
  * 
@@ -27,9 +28,10 @@ public:
 	FDroneHeavyStateTelegraphAttack(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneHeavyState(Drone, Spawner)
 	{
 		
+		Drone->GetAudioComp()->SetSound(Cast<ADroneHeavy>(Drone)->GetAggroSound());
+		Drone->GetAudioComp()->Play();
 		this->Target = Target;
 		Cast<ADroneHeavy>(Drone)->StartTelegrahTimeHandler();
-		UGameplayStatics::PlaySoundAtLocation(Drone->GetWorld(), Cast<ADroneHeavy>(Drone)->GetAggroSound(), Drone->GetActorLocation());
 	};
 	virtual void Move() override;
 	virtual void Rotate() override;
