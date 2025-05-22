@@ -50,10 +50,20 @@ void FDroneStateAttack::Move()
 void FDroneStateAttack::Rotate()
 {
 	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
-	FVector ToTarget = Target->GetActorLocation() - Drone->GetTurret()->GetComponentLocation();
+	
+	FVector ToTarget = Target->GetActorLocation() - Drone->GetBody()->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
-	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
-	//Drone->GetTurret()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetBody()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+	
+	if (FVector::Dist(Target->GetActorLocation(), Drone->GetActorLocation()) < 300.f) return;
+		
+	ToTarget = Target->GetActorLocation() - Drone->GetProjectileSpawn()->GetComponentLocation();
+	LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
+	Drone->GetTurret()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+
+	ToTarget = Target->GetActorLocation() - Drone->GetProjectileSpawnAlt()->GetComponentLocation();
+	LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
+	Drone->GetTurretAlt()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurretAlt()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
 }
 
 void FDroneStateAttack::Shoot()
@@ -61,12 +71,18 @@ void FDroneStateAttack::Shoot()
 	if (Drone != nullptr)
 	if (!Drone->GetBulletClass() && !Drone->GetProjectileSpawn()){return;}
 	{
-		
-		ADroneBullet* Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawn()->GetComponentLocation(), Drone->GetProjectileSpawn()->GetComponentRotation());
-		//ADroneMissile* Missile = GetWorld()->SpawnActor<ADroneMissile>(MissileClass, ProjectileSpawn->GetComponentLocation(), ProjectileSpawn->GetComponentRotation());
-		Bullet->SetOwner(Drone);
+		ADroneBullet* Bullet;
 		//Missile->SetOwner(this);
 		UGameplayStatics::PlaySound2D(Drone, Drone->GetShootSound());
+		if (ShootWithRight)
+		{
+			Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawn()->GetComponentLocation(), Drone->GetProjectileSpawn()->GetComponentRotation());
+		} else
+		{
+			Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawnAlt()->GetComponentLocation(), Drone->GetProjectileSpawnAlt()->GetComponentRotation());
+		}
+		Bullet->SetOwner(Drone);
+		ShootWithRight = !ShootWithRight;
 	}
 }
 
