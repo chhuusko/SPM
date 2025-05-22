@@ -67,11 +67,12 @@ public:
 	USoundBase* GetShootSound() const {return ShootSound;}
 	UStaticMeshComponent* GetBody() {return BodyMesh;}
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
+	UStaticMeshComponent* GetTurretAlt() {return TurretMeshAlt;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
+	USceneComponent* GetProjectileSpawnAlt(){return ProjectileSpawnAlt;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
-	AActor* GetTarget() {return Target;}
 
 private:
 	virtual void LootDrop();
@@ -82,7 +83,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* TurretMesh;
 	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* TurretMeshAlt;
+	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawn;
+	UPROPERTY(EditAnywhere)
+	USceneComponent* ProjectileSpawnAlt;
 	
 	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")

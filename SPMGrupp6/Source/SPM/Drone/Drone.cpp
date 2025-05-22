@@ -17,10 +17,12 @@ ADrone::ADrone()
 	PrimaryActorTick.bCanEverTick = true;
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
 	RootComponent = BodyMesh;
-	TurretMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMesh"));
-	TurretMesh->SetupAttachment(BodyMesh);
+	TurretMeshAlt = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TurretMeshAlt"));
+	TurretMeshAlt->SetupAttachment(BodyMesh);
 	ProjectileSpawn = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnPoint"));
 	ProjectileSpawn->SetupAttachment(TurretMesh);
+	ProjectileSpawnAlt = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnAltPoint"));
+	ProjectileSpawnAlt->SetupAttachment(TurretMeshAlt);
 }
 
 // Called when the game starts or when spawned
