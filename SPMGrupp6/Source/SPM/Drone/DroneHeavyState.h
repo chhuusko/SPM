@@ -29,7 +29,7 @@ public:
 		
 		this->Target = Target;
 		Cast<ADroneHeavy>(Drone)->StartTelegrahTimeHandler();
-		UGameplayStatics::PlaySound2D(Drone, Cast<ADroneHeavy>(Drone)->GetAggroSound());
+		UGameplayStatics::PlaySoundAtLocation(Drone->GetWorld(), Cast<ADroneHeavy>(Drone)->GetAggroSound(), Drone->GetActorLocation());
 	};
 	virtual void Move() override;
 	virtual void Rotate() override;
