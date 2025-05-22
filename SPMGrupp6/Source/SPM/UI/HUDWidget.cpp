@@ -422,7 +422,7 @@ void UHUDWidget::RemoveHitMarker()
 	HitMarker->SetVisibility(ESlateVisibility::Hidden);
 }
 
-// Updates
+// Updates crosshair visibility.
 void UHUDWidget::ShowCrosshair(bool bShow)
 {
 	if (bShow)
