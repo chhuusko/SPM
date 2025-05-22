@@ -33,7 +33,7 @@ public:
 
 	FOnHit OnHit;
 	FOnCooldownUpdated OnCooldownUpdated;
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -104,10 +104,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> RecoilCameraShake;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int MagazineSize = 30;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	int BulletsLeft;
 
 	UPROPERTY(EditAnywhere)
@@ -177,9 +177,12 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	int32 CooldownUpdateAmount = 10;
 
+
 	float RemainingAbilityCooldown;
 	
 	bool bIsAbilityOnCooldown = false;
+
+	
 
 	FTimerHandle AbilityCooldownTimerHandle;
 
