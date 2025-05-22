@@ -27,6 +27,24 @@ void UShooterGameInstance::IncrementRedScore()
 	++RedScore;
 }
 
+void UShooterGameInstance::SetPlayer1PlatformId(const FPlatformUserId& InId)
+{
+	Player1PlatformID = InId;
+}
+FPlatformUserId UShooterGameInstance::GetPlayer1PlatformId() const
+{
+	return Player1PlatformID;
+}
+
+void UShooterGameInstance::SetPlayer2PlatformId(const FPlatformUserId& InId)
+{
+	Player2PlatformID = InId;
+}
+FPlatformUserId UShooterGameInstance::GetPlayer2PlatformId() const
+{
+	return Player2PlatformID;
+}
+
 void UShooterGameInstance::SetMaxScore(int NewMaxScore)
 {
 	ScoreMax = NewMaxScore;

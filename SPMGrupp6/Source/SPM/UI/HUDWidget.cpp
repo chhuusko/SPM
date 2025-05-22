@@ -13,6 +13,7 @@
 #include "Components/TextBlock.h"
 #include "DSP/EventQuantizer.h"
 #include "SPM/Weapons/Gun.h"
+#include "SPM/Weapons/Sniper.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -143,9 +144,17 @@ void UHUDWidget::UpdateJetpackCooldown()
 	if (FuelPercent >= 1.f)
 	{
 		bJetpackFuelFull = true;
-		JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
-		JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
+		
+		// Hide the HUD after a small delay.
+		GetWorld()->GetTimerManager().SetTimer(JetpackTimerHandle, this, &UHUDWidget::HideJetpackSlider, 0.2f);
 	}
+}
+
+// Hides the jetpack slider from the HUD.
+void UHUDWidget::HideJetpackSlider()
+{
+	JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
+	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
 }
 
 void UHUDWidget::UpdateDashCooldownTimer(float DeltaTime)
@@ -215,6 +224,17 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
 	GetGun();
+
+	// Bind the function for updating the sniper scope.
+	if (Weapon == EWeaponType::SniperRifle)
+	{
+		Sniper = Cast<ASniper>(Gun);
+		if (Sniper)
+		{
+			Sniper->OnScope.AddDynamic(this, &UHUDWidget::ShowCrosshair);
+		}
+	}
+	
 	UBorder* NextWeaponBorder;
 	UImage* Image;
 	CurrentWeapon = Weapon;
@@ -360,7 +380,7 @@ void UHUDWidget::UpdateWeaponCooldown(float CooldownPercentage)
 		break;
 	}
 
-	CooldownBar->SetPercent(CooldownPercentage);
+	CooldownBar->SetPercent(1.f - CooldownPercentage);
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.
@@ -379,11 +399,23 @@ void UHUDWidget::AddHitmarker(AActor* HitActor)
 		return;
 	}
 	HitMarker->SetVisibility(ESlateVisibility::Visible);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
+	GetWorld()->GetTimerManager().SetTimer(HitmarkTimerHandle, this, &UHUDWidget::RemoveHitMarker, HitmarkerTime);
 }
 
 // Remove hit marker.
 void UHUDWidget::RemoveHitMarker()
 {
 	HitMarker->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UHUDWidget::ShowCrosshair(bool bShow)
+{
+	if (bShow)
+	{
+		Crosshair->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		Crosshair->SetVisibility(ESlateVisibility::Hidden);
+	}
 }

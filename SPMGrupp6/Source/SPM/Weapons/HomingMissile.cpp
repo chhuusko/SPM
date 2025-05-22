@@ -2,6 +2,8 @@
 
 
 #include "HomingMissile.h"
+
+#include "Gun.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -116,6 +118,16 @@ void AHomingMissile::Explode()
 				float DistanceToTarget = FVector::Dist(GetActorLocation(), HitPawn->GetActorLocation());
 				float ActualDamage = CalculateDamage(DistanceToTarget, HitPawn);
 
+				if (Controller)
+				{
+					if (AShooterCharacter* Character = Cast<AShooterCharacter>(Controller->GetCharacter()))
+					{
+						if (AGun* Gun = Character->GetGun())
+						{
+							Gun->OnHit.Broadcast(HitActor);
+						}
+					}
+				}
 			
 				if (ActualDamage > 0)
 				{

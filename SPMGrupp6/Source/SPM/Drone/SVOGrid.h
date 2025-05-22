@@ -24,7 +24,7 @@ protected:
 
 public:	
 	// Called every frame
-	
+	FVector static GetNearbyGridPosition(FVector position);
 	virtual void Tick(float DeltaTime) override;
 private:
 	void CreateStandardGrid();
@@ -37,6 +37,7 @@ private:
 	
 	FOctNode* RootNode;
 	void CreateGrid();
+	
 	bool HasObjectWithin(FOctNode* Node);
 	UPROPERTY(EditDefaultsOnly)
 	FVector AreaPosition;
