@@ -141,4 +141,13 @@ void AUpgradedPistol::ResetRenderCustomDepth()
     // Gets called by timer to disable Custom Depth.
     SetRenderCustomDepth(false);
     bAbilityIsActive = false;
+   
+   // Update the eye parameter of the gun mesh material.
+   if (Mesh)
+   {
+      if (UMaterialInstanceDynamic* DynMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0))
+      {
+         DynMaterial->SetScalarParameterValue(FName("EmissiveEyeToggle"), 0.f);
+      }
+   }
 }
