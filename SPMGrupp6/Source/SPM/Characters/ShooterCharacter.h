@@ -191,6 +191,12 @@ private:
 	
 	void SetCanRechargeJetpack();
 	bool bCanRechargeJetpack = false;
+
+	//FTimeHandler
+	FTimerHandle SpeedReductionHandle;
+	void ReduceSpeed();
+	void RevokeSpeedReduction();
+	float SpeedMulti = 1.f;
 	
 	FTimerHandle JetpackRechargeAfterSecondsTimerHandle;
 	FTimerHandle JetpackRechargeNextIterationHandle;
