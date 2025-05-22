@@ -2,12 +2,7 @@
 
 
 #include "Gun.h"
-
-#include "HairStrandsInterface.h"
 #include "SPM/UI/HUDWidget.h"
-#include "MathUtil.h"
-#include "SEditorViewportToolBarMenu.h"
-#include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Characters/ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
