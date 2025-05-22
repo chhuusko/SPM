@@ -84,6 +84,9 @@ public:
 	class UImage* Crosshair;
 
 	UPROPERTY(meta = (BindWidget))
+	class URadialSlider* ReloadCooldown;
+
+	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* JetpackFuelSlider;
 
 	UPROPERTY(EditDefaultsOnly)

@@ -160,6 +160,10 @@ protected:
 	TArray<int32> MagazineSizePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	int AbilityUnlockedOnLevel = 2;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	bool AbilityUnlocked = false;
 
 	UFUNCTION()
 	void GetPlayerController();
