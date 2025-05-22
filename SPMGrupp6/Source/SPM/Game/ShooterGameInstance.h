@@ -36,6 +36,10 @@ public:
 	int32 GetBlueScore() const;
 	int32 GetRedScore() const;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	float SceneCaptureOrtho = 10000;
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	FVector3d SceneCapturePosition = FVector3d(0, 0, 10000);
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> GlobalMinimapWidgetClass;
 
 	UPROPERTY(EditAnywhere)
