@@ -71,6 +71,7 @@ public:
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
 	USceneComponent* GetProjectileSpawnAlt(){return ProjectileSpawnAlt;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
+	UAudioComponent* GetAudioComp(){return AudioComp;};
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
 
@@ -88,7 +89,8 @@ private:
 	USceneComponent* ProjectileSpawn;
 	UPROPERTY(EditAnywhere)
 	USceneComponent* ProjectileSpawnAlt;
-	
+	UPROPERTY()
+	UAudioComponent* AudioComp;
 	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;

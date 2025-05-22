@@ -2,9 +2,6 @@
 
 
 #include "UpgradedSniper.h"
-
-#include "AsyncTreeDifferences.h"
-#include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
