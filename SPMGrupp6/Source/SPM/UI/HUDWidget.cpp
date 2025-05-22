@@ -437,6 +437,11 @@ void UHUDWidget::ShowCrosshair(bool bShow)
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)
 {
+	if (!Timeline)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
+		return;
+	}
 	// Bind function for updating reload slider.
 	OnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
 	Timeline->AddInterpFloat(ReloadCurve, OnTimelineFloat);
