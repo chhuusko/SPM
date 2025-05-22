@@ -421,7 +421,7 @@ void AGun::EnableCanPlayEmptyMagSound()
 
 FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 {
-	if (HitResult.Component->ComponentHasTag("Head"))
+	if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
 	{
 		return "Head";
 	}
@@ -429,7 +429,7 @@ FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 	{
 		return "Body";
 	}
-	if (HitResult.Component->ComponentHasTag("Legs"))
+	if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
 	{
 		return "Legs";
 	}
