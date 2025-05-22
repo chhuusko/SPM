@@ -32,9 +32,11 @@ public:
 	virtual void Tick(float DeltaTime) override;
 private:
 	void SpawnLootBox();
-	FTimerHandle SpawnTimerHandle;
+	UPROPERTY(EditDefaultsOnly)
+	USoundBase* SpawnSound;
 	UPROPERTY(EditDefaultsOnly)
 	float SpawnDelay;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ALootBox> LootClass;
+	FTimerHandle SpawnTimerHandle;
 };

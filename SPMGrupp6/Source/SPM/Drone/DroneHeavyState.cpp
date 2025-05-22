@@ -42,6 +42,32 @@ void FDroneHeavyStateTelegraphAttack::Rotate()
 	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
 	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
 }
+void FDroneHeavyStateAttack::Move()
+{
+	if (!Drone->SeeTarget())
+	{
+		Drone->StartAggroTimeHandler();
+	}else
+	{
+		Drone->CancellAggroTimeHandler();
+		NewLocation = Target->GetActorLocation() + DesiredElevation;
+		if (FVector::Dist(NewLocation, Spawner->GetActorLocation()) <= MaxSpawnDistance && FVector::Dist(Drone->GetActorLocation(), NewLocation) > DesiredDistance)
+		{
+			if (MaxSpawnDistance && FVector::Dist(Drone->GetActorLocation(), NewLocation) > DesiredDistance)
+			{
+				Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+			}
+		} 
+	}
+}
+
+void FDroneHeavyStateAttack::Rotate()
+{   
+	if (Target == nullptr) return;
+	FVector ToTarget = Target->GetActorLocation() - Drone->GetTurret()->GetComponentLocation();
+	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
+	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+}
 
 void FDroneHeavyStateAttack::Shoot()
 {

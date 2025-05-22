@@ -12,6 +12,7 @@ class AShooterPlayerController;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, AActor*, HitActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCooldownUpdated, float, CooldownPercentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReload, float, ReloadTime);
 
 UCLASS()
 class SPM_API AGun : public AActor
@@ -33,6 +34,7 @@ public:
 
 	FOnHit OnHit;
 	FOnCooldownUpdated OnCooldownUpdated;
+	FOnReload OnReload;
 	
 protected:
 	// Called when the game starts or when spawned

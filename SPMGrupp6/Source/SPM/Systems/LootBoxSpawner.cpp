@@ -3,6 +3,7 @@
 
 #include "LootBoxSpawner.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "SPM/Pickup/LootBox.h"
 
 // Sets default values
@@ -38,6 +39,7 @@ void ALootBoxSpawner::Tick(float DeltaTime)
 
 void ALootBoxSpawner::SpawnLootBox()
 {
+	UGameplayStatics::PlaySound2D(this, SpawnSound);
 	GetWorld()->SpawnActor<ALootBox>(LootClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
 }
 

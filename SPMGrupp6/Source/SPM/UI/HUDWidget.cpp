@@ -2,8 +2,6 @@
 
 
 #include "HUDWidget.h"
-
-#include "MovieSceneSection.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Border.h"
@@ -11,9 +9,18 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
-#include "DSP/EventQuantizer.h"
 #include "SPM/Weapons/Gun.h"
 #include "SPM/Weapons/Sniper.h"
+
+UHUDWidget::UHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
+{
+	Timeline = NewObject<UTimelineComponent>(this, FName("ReloadCooldownTimeline"));
+
+	if (Timeline)
+	{
+		Timeline->CreationMethod = EComponentCreationMethod::Native;
+	}
+}
 
 void UHUDWidget::NativeConstruct()
 {
@@ -33,6 +40,11 @@ void UHUDWidget::NativeConstruct()
 	GetGun();
 
 	CurrentWeapon = EWeaponType::Pistol;
+
+	if (Timeline)
+	{
+		Timeline->RegisterComponentWithWorld(GetWorld());
+	}
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -60,8 +72,10 @@ void UHUDWidget::GetGun()
 		Gun->OnHit.Clear();
 		// Vet inte om jag ska rensa här...
 		Gun->OnCooldownUpdated.Clear();
+		Gun->OnReload.Clear();
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
+		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
 	}
 	else
 	{
@@ -408,6 +422,7 @@ void UHUDWidget::RemoveHitMarker()
 	HitMarker->SetVisibility(ESlateVisibility::Hidden);
 }
 
+// Updates crosshair visibility.
 void UHUDWidget::ShowCrosshair(bool bShow)
 {
 	if (bShow)
@@ -417,5 +432,42 @@ void UHUDWidget::ShowCrosshair(bool bShow)
 	else
 	{
 		Crosshair->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
+void UHUDWidget::StartReloadCooldown(float Cooldown)
+{
+	// Bind function for updating reload slider.
+	OnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
+	Timeline->AddInterpFloat(ReloadCurve, OnTimelineFloat);
+
+	// Set timeline length.
+	Timeline->SetTimelineLength(Cooldown);
+	Timeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
+
+	// Bind function for when timeline is finished.
+	FOnTimelineEvent TimelineEvent;
+	TimelineEvent.BindUFunction(this, FName("ReloadCooldownCompleted"));
+	Timeline->SetTimelineFinishedFunc(TimelineEvent);
+	
+	Timeline->PlayFromStart();
+}
+
+// Updates cooldown indicator.
+void UHUDWidget::UpdateReloadCooldown(float Output)
+{
+	if (ReloadCooldown)
+	{
+		ReloadCooldown->SetValue(Output);
+	}
+}
+
+// Finishes reload cooldown.
+void UHUDWidget::ReloadCooldownCompleted()
+{
+	// Resets cooldown slider.
+	if (ReloadCooldown)
+	{
+		ReloadCooldown->SetValue(0.f);
 	}
 }
