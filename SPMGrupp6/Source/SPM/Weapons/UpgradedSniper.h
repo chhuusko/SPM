@@ -27,5 +27,5 @@ private:
 	float ShotRadius = 16;
 
 	UPROPERTY(EditAnywhere)
-	UNiagaraSystem* SniperBeamEffect;
+	UParticleSystem* SniperBulletParticle;
 };
