@@ -108,14 +108,14 @@ protected:
 	FVector3d SceneCapturePosition = FVector3d(0, 0, 10000);
 
 public:
-	void SetSceneCaptureOrtho(float SceneCaptureOrtho)
+	void SetSceneCaptureOrtho(float NewSceneCaptureOrtho)
 	{
-		this->SceneCaptureOrtho = SceneCaptureOrtho;
+		SceneCaptureOrtho = NewSceneCaptureOrtho;
 	}
 
-	void SetSceneCapturePosition(const FVector3d& SceneCapturePosition)
+	void SetSceneCapturePosition(const FVector3d& NewSceneCapturePosition)
 	{
-		this->SceneCapturePosition = SceneCapturePosition;
+		SceneCapturePosition = NewSceneCapturePosition;
 	}
 };
 
