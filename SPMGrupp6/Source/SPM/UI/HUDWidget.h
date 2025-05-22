@@ -224,6 +224,7 @@ private:
 
 	EWeaponType CurrentWeapon;
 
+	UPROPERTY()
 	class UTimelineComponent* Timeline;
 
 	UPROPERTY(EditAnywhere)
