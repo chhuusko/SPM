@@ -181,10 +181,10 @@ private:
 	float RemainingAbilityCooldown;
 	
 	bool bIsAbilityOnCooldown = false;
-
-	
-
 	FTimerHandle AbilityCooldownTimerHandle;
+
+	FString WhichBodyPartWasHit(FHitResult& HitResult);
+
 
 public:	
 	// Called every frame
