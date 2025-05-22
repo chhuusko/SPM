@@ -60,6 +60,16 @@ int32 UShooterGameInstance::GetRedScore() const
 	return RedScore;
 }
 
+int32 UShooterGameInstance::GetPlayerCount()
+{
+	return PlayerCount;
+}
+
+void UShooterGameInstance::SetPlayerCount(int32 NewPlayerCount)
+{
+	PlayerCount = NewPlayerCount;
+}
+
 void UShooterGameInstance::Init()
 {
 	Super::Init();
@@ -91,6 +101,8 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
 		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
+		GlobalMinimapWidget->SetSceneCapturePosition(SceneCapturePosition);
+		GlobalMinimapWidget->SetSceneCaptureOrtho(SceneCaptureOrtho);
 		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
 		{
 			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())

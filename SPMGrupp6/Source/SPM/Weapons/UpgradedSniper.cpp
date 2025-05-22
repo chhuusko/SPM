@@ -4,6 +4,8 @@
 #include "UpgradedSniper.h"
 
 #include "AsyncTreeDifferences.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -170,28 +172,23 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 		// If something got hit, store the last hit objects location.
 		for (FHitResult Hit: LineHits)
 		{
-			UE_LOG(LogTemp, Display, TEXT("AllHits: %d"), LineHits.Num());
-
 			AActor* HitActor = Hit.GetActor();
 			if (!HitActor) continue;
 
 			if (AlreadyHitActors.Contains(HitActor)) continue;
 			AlreadyHitActors.Add(HitActor);
 
-			UE_LOG(LogTemp, Display, TEXT("HitActors: %d"), AlreadyHitActors.Num());
 
 			if (bDebugWeapon)
 			{
 				UE_LOG(LogTemp, Display, TEXT("Hit the actor: %s"), *HitActor->GetName());
 			}
-			UE_LOG(LogTemp, Display, TEXT("ObjectsToGoThrough: %d"), ObjectsToGoThrough);
 
 			if (ObjectsPassedThrough == ObjectsToGoThrough)
 			{
 				// After max limit of objects to go through is reached, return the last location hit.
 				FinalHit = Hit;
 				SphereEndLocation = FinalHit.Location;
-				UE_LOG(LogTemp, Display, TEXT("SphereEndLocation was set."));
 				break;
 			}
 			ObjectsPassedThrough++;
@@ -216,6 +213,13 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 		Sphere,
 		Params
 	);
+
+	UNiagaraComponent* Beam = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), SniperBeamEffect, Location);
+	if (Beam)
+	{
+		Beam->SetVectorParameter(FName("BeamStart"), Location);
+		Beam->SetVectorParameter(FName("BeamEnd"), SphereEndLocation);
+	}
 	
 	if (bDebugWeapon)
 	{
