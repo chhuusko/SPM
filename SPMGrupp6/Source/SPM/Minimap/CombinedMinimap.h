@@ -101,6 +101,22 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
 	USceneCaptureComponent2D* SceneCaptureRef;
+	
+	UPROPERTY(EditAnywhere, Category = "SceneCapture")
+	float SceneCaptureOrtho = 10000;
+	UPROPERTY(EditAnywhere, Category = "SceneCapture")
+	FVector3d SceneCapturePosition = FVector3d(0, 0, 10000);
+
+public:
+	void SetSceneCaptureOrtho(float SceneCaptureOrtho)
+	{
+		this->SceneCaptureOrtho = SceneCaptureOrtho;
+	}
+
+	void SetSceneCapturePosition(const FVector3d& SceneCapturePosition)
+	{
+		this->SceneCapturePosition = SceneCapturePosition;
+	}
 };
 
 

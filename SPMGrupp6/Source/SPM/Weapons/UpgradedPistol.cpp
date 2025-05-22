@@ -23,7 +23,7 @@ void AUpgradedPistol::Tick(float DeltaTime)
 void AUpgradedPistol::WeaponAbility()
 {
    Super::WeaponAbility();
-   
+	if (!AbilityUnlocked) return;
     if (IsAbilityOnCooldown()) return;
 
     // bCanUseAbility = false;

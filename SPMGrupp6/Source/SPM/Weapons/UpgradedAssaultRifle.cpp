@@ -10,7 +10,7 @@
 void AUpgradedAssaultRifle::WeaponAbility()
 {
 	Super::WeaponAbility();
-	
+	if (!AbilityUnlocked) return;
 	if (IsAbilityOnCooldown()) return;
 
 	// bCanUseAbility = false;

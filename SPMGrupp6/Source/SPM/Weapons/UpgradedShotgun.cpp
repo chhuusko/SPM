@@ -9,6 +9,7 @@ void AUpgradedShotgun::WeaponAbility()
 {
 	Super::WeaponAbility();
 	
+	if (!AbilityUnlocked) return;
 	if (IsAbilityOnCooldown() || !PulseGrenadeClass) return;
 	
 	// bCanUseAbility = false;

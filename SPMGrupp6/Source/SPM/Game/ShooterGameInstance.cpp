@@ -91,6 +91,8 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
 		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
+		GlobalMinimapWidget->SetSceneCapturePosition(SceneCapturePosition);
+		GlobalMinimapWidget->SetSceneCaptureOrtho(SceneCaptureOrtho);
 		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
 		{
 			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
