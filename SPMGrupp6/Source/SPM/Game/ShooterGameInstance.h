@@ -67,6 +67,7 @@ public:
     UFUNCTION(BlueprintGetter)
 	UCombinedMinimap* GetGlobalMinimapWidget() const { return GlobalMinimapWidget; }
 
+	USoundBase* GetRoundOverSound(){return RoundOverAudio;}
 	bool HasMatchEnded();
 	void ResetScore();
 
@@ -82,6 +83,8 @@ private:
 	void OnPostLoadMap(UWorld* LoadedWorld);
 	void LoadCombinedMinimap();
 
+	UPROPERTY(EditDefaultsOnly, Category= "Audio")
+	USoundBase* RoundOverAudio;
 	UPROPERTY(BlueprintGetter = GetGlobalMinimapWidget)
 	TObjectPtr<class UCombinedMinimap> GlobalMinimapWidget;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")

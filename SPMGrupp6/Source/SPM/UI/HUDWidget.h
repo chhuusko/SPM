@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TimelineComponent.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "HUDWidget.generated.h"
 
@@ -17,6 +18,8 @@ class SPM_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UHUDWidget(const FObjectInitializer& ObjectInitializer);
+	
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AmmoText;
 
@@ -177,6 +180,15 @@ private:
 
 	UFUNCTION()
 	void ShowCrosshair(bool bShow);
+
+	UFUNCTION()
+	void StartReloadCooldown(float Cooldown);
+
+	UFUNCTION()
+	void UpdateReloadCooldown(float Output);
+
+	UFUNCTION()
+	void ReloadCooldownCompleted();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -211,4 +223,13 @@ private:
 	FTimerHandle JetpackTimerHandle;
 
 	EWeaponType CurrentWeapon;
+
+	UPROPERTY()
+	class UTimelineComponent* Timeline;
+
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* ReloadCurve;
+
+	UPROPERTY(EditAnywhere)
+	FOnTimelineFloat OnTimelineFloat;
 };

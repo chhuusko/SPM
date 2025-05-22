@@ -149,6 +149,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	Health -= DamageToApply;
 	
 	OnTakeDamage.Broadcast();
+	ReduceSpeed();
 	UpdatePlayerHealth();
 
 	if(IsDead())
@@ -170,7 +171,7 @@ void AShooterCharacter::Sprint()
 {
 	if (MovementComponent)
 	{
-		MovementComponent->MaxWalkSpeed = SprintSpeed;
+		MovementComponent->MaxWalkSpeed = SprintSpeed*SpeedMulti;
 		bSprinting = true;
 	}
 }
@@ -180,7 +181,7 @@ void AShooterCharacter::StopSprint()
 {
 	if (MovementComponent)
 	{
-		MovementComponent->MaxWalkSpeed = WalkSpeed;
+		MovementComponent->MaxWalkSpeed = WalkSpeed*SpeedMulti;
 		bSprinting = false;
 	}
 }
@@ -327,6 +328,17 @@ void AShooterCharacter::StopSlideTimer()
 void AShooterCharacter::SetCanRechargeJetpack()
 {
 	bCanRechargeJetpack = true;
+}
+
+void AShooterCharacter::ReduceSpeed()
+{
+	SpeedMulti = 0.9f;
+	GetWorldTimerManager().SetTimer(SpeedReductionHandle, this, &AShooterCharacter::RevokeSpeedReduction, 1.f, false);
+}
+
+void AShooterCharacter::RevokeSpeedReduction()
+{
+	SpeedMulti = 1.f;
 }
 
 void AShooterCharacter::MoveForward(float AxisValue)

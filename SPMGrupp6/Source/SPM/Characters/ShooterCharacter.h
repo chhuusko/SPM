@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "NiagaraComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "ShooterCharacter.generated.h"
+
 
 class AShooterPlayerController;
 class AGun;
@@ -101,7 +101,7 @@ public:
 	float SprintStopDelay = 0.5f;
 	
 	UFUNCTION(BlueprintCallable)
-	bool UseJetpack();
+	void UseJetpack();
 	UFUNCTION(BlueprintCallable)
 	float GetJetpackCharge();
 	UFUNCTION(BlueprintCallable)
@@ -143,10 +143,7 @@ public:
 	void OnWeaponUpgraded();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsFirstCharacter();
-
-	UPROPERTY(EditAnywhere, Category="Effects")
-	UNiagaraComponent* NSJetpack;
+	bool IsFirstCharacter(); 
 	
 private:
 	void SetPlayerController();
@@ -194,15 +191,16 @@ private:
 	
 	void SetCanRechargeJetpack();
 	bool bCanRechargeJetpack = false;
-	void ShowJetpackVFX();
-	
-	void StopShowingJetpackVFX();
-	bool bShowingJetpackVFX = false;
+
+	//FTimeHandler
+	FTimerHandle SpeedReductionHandle;
+	void ReduceSpeed();
+	void RevokeSpeedReduction();
+	float SpeedMulti = 1.f;
 	
 	FTimerHandle JetpackRechargeAfterSecondsTimerHandle;
 	FTimerHandle JetpackRechargeNextIterationHandle;
 	FTimerHandle JetpackTimerUntilConsideredNotUsingJetpack;
-	FTimerHandle JetpackStopShowingVFXHandle;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchSpeed = 300;
