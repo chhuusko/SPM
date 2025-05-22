@@ -103,6 +103,10 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+    if (GetCharacterMovement()->IsMovingOnGround()) {
+        SetCanRechargeJetpack();
+    }
+
 	//Todo, doesn't start the recharge if you hold space while at zero charge, but 
 	if (bCanRechargeJetpack)
 	{
@@ -111,7 +115,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 		{
 			JetpackCharge = JetpackChargeMax;
 		}
-		UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
+		//UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
 	}
 
 	if (bSliding)
@@ -202,7 +206,8 @@ void AShooterCharacter::UseJetpack()
 	if (JetpackCharge < 0)
 		JetpackCharge = 0;
 	
-	GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
+	//Now set in Tick of moving on ground
+	//GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 }
