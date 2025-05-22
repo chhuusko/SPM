@@ -24,7 +24,7 @@ void AUpgradedPistol::WeaponAbility()
 {
    Super::WeaponAbility();
 	if (!AbilityUnlocked) return;
-    if (IsAbilityOnCooldown()) return;
+   if (IsAbilityOnCooldown()) return;
 
     // bCanUseAbility = false;
     // GetWorldTimerManager().SetTimer(
@@ -35,6 +35,15 @@ void AUpgradedPistol::WeaponAbility()
     //    false
     // );
    SetAbilityCooldown(true);
+
+   // Update the eye parameter of the gun mesh material.
+   if (Mesh)
+   {
+      if (UMaterialInstanceDynamic* DynMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0))
+      {
+         DynMaterial->SetScalarParameterValue(FName("EmissiveEyeToggle"), 1.0f);
+      }
+   }
    
     bool failed = false;
     if (UShooterGameInstance* GI = Cast<UShooterGameInstance>(UGameplayStatics::GetGameInstance(this)))
@@ -82,6 +91,15 @@ void AUpgradedPistol::WeaponAbility()
 void AUpgradedPistol::ResetAbilityCooldown()
 {
     bCanUseAbility = true;
+   
+   // Update the eye parameter of the gun mesh material.
+   if (Mesh)
+   {
+      if (UMaterialInstanceDynamic* DynMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0))
+      {
+         DynMaterial->SetScalarParameterValue(FName("EmissiveEyeToggle"), 0.f);
+      }
+   }
 }
 
 void AUpgradedPistol::SetRenderCustomDepth(bool bRenderCustomDepth)
