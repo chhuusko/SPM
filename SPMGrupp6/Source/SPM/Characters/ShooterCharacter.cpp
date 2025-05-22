@@ -186,7 +186,7 @@ void AShooterCharacter::StopSprint()
 	}
 }
 
-bool AShooterCharacter::UseJetpack()
+void AShooterCharacter::UseJetpack()
 {
 	if (JetpackCharge > 0)
 	{
@@ -207,10 +207,7 @@ bool AShooterCharacter::UseJetpack()
 	if (JetpackCharge <= 0)
 	{
 		JetpackCharge = 0;
-		return false;
 	}
-
-	return true;
 	
 	//Now set in Tick of moving on ground
 	//GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
@@ -220,20 +217,6 @@ bool AShooterCharacter::UseJetpack()
 
 	//UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 	
-}
-
-void AShooterCharacter::ShowJetpackVFX() {
-    if (!bShowingJetpackVFX) {
-        NSJetpack->SetActive(true);
-        bShowingJetpackVFX = true;
-    }
-}
-
-void AShooterCharacter::StopShowingJetpackVFX() {
-    if (bShowingJetpackVFX) {
-        NSJetpack->SetActive(false);
-        bShowingJetpackVFX = false;
-    }
 }
 
 float AShooterCharacter::GetJetpackCharge() {
@@ -248,7 +231,6 @@ void AShooterCharacter::ConsumeJetpackChargeTap()
 {
 	JetpackCharge -= JetPackChargeConsumptionPerTap;
 }
-
 
 void AShooterCharacter::SetCrouch(bool value)
 {
