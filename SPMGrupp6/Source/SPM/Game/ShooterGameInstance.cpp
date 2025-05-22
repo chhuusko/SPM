@@ -60,6 +60,16 @@ int32 UShooterGameInstance::GetRedScore() const
 	return RedScore;
 }
 
+int32 UShooterGameInstance::GetPlayerCount()
+{
+	return PlayerCount;
+}
+
+void UShooterGameInstance::SetPlayerCount(int32 NewPlayerCount)
+{
+	PlayerCount = NewPlayerCount;
+}
+
 void UShooterGameInstance::Init()
 {
 	Super::Init();

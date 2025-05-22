@@ -35,6 +35,12 @@ public:
 	int32 GetMaxScore() const { return ScoreMax; }
 	int32 GetBlueScore() const;
 	int32 GetRedScore() const;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetPlayerCount();
+	UFUNCTION(BlueprintCallable)
+	void SetPlayerCount(int32 NewPlayerCount);
+	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	float SceneCaptureOrtho = 10000;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -56,6 +62,7 @@ private:
 	int32 BlueScore = 0;
 	int32 RedScore = 0;
 	int32 ScoreMax = 3;
+	int32 PlayerCount = 1;
 	FPlatformUserId Player1PlatformID;
 	FPlatformUserId Player2PlatformID;
 
