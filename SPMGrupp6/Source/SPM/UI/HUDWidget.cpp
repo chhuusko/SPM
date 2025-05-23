@@ -12,11 +12,6 @@
 #include "SPM/Weapons/Gun.h"
 #include "SPM/Weapons/Sniper.h"
 
-UHUDWidget::UHUDWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-	
-}
-
 void UHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -36,19 +31,14 @@ void UHUDWidget::NativeConstruct()
 
 	CurrentWeapon = EWeaponType::Pistol;
 
-	if (!Timeline)
+	// Create timelines if they don't exist.
+	if (!ReloadTimeline)
 	{
-		Timeline = NewObject<UTimelineComponent>(this, FName("ReloadCooldownTimeline"));
-
-		if (Timeline)
-		{
-			Timeline->CreationMethod = EComponentCreationMethod::Native;
-			Timeline->RegisterComponentWithWorld(GetWorld());
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
-		}
+		CreateReloadTimeline();
+	}
+	if (!DashTimeline)
+	{
+		CreateDashTimeline();
 	}
 }
 
@@ -56,15 +46,46 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
-	if (bHasDashCooldown)
-	{
-		UpdateDashCooldownTimer(InDeltaTime);
-	}
+	// if (bHasDashCooldown)
+	// {
+	// 	UpdateDashCooldownTimer(InDeltaTime);
+	// }
 
 	// Only update when the fuel is currently being used or is recharging.
 	if (!bJetpackFuelFull)
 	{
 		UpdateJetpackCooldown();
+	}
+}
+
+void UHUDWidget::CreateReloadTimeline()
+{
+	// Have to use NewObject since we're in a UI context. CreateDefaultSubObject won't work.
+	ReloadTimeline = NewObject<UTimelineComponent>(this, FName("ReloadCooldownTimeline"));
+
+	if (ReloadTimeline)
+	{
+		ReloadTimeline->CreationMethod = EComponentCreationMethod::Native;
+		ReloadTimeline->RegisterComponentWithWorld(GetWorld());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Reload Timeline"));
+	}
+}
+
+void UHUDWidget::CreateDashTimeline()
+{
+	DashTimeline = NewObject<UTimelineComponent>(this, FName("DashCooldownTimeline"));
+
+	if (DashTimeline)
+	{
+		DashTimeline->CreationMethod = EComponentCreationMethod::Native;
+		DashTimeline->RegisterComponentWithWorld(GetWorld());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Dash Timeline"));
 	}
 }
 
@@ -75,9 +96,9 @@ void UHUDWidget::GetGun()
 	if (Gun)
 	{
 		Gun->OnHit.Clear();
-		// Vet inte om jag ska rensa här...
 		Gun->OnCooldownUpdated.Clear();
 		Gun->OnReload.Clear();
+		
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
 		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
@@ -137,12 +158,32 @@ void UHUDWidget::UpdateCurrencyText(int32 NewValue)
 void UHUDWidget::StartDashTimer(float CooldownTime)
 {
 	// Reset dash cooldown element.
-	DashCooldown->SetValue(0.f);
+	// DashCooldown->SetValue(0.f);
+	//
+	// TotalDashCooldownTime = CooldownTime;
+	// ElapsedDashTime = 0;
+	//
+	// bHasDashCooldown = true;
 
-	TotalDashCooldownTime = CooldownTime;
-	ElapsedDashTime = 0;
-	
-	bHasDashCooldown = true;
+	if (!DashTimeline || !DashCurve)
+	{
+		return;
+	}
+
+	DashOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateDashCooldownTimer);
+	DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
+
+	DashTimeline->SetTimelineLength(CooldownTime);
+	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
+
+	FOnTimelineEvent TimelineEvent;
+	TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
+	DashTimeline->SetTimelineFinishedFunc(TimelineEvent);
+
+	if (IsValid(DashTimeline) && DashTimeline->IsRegistered())
+	{
+		DashTimeline->PlayFromStart();
+	}
 }
 
 void UHUDWidget::StartJetpackUpdate()
@@ -176,19 +217,21 @@ void UHUDWidget::HideJetpackSlider()
 	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
 }
 
-void UHUDWidget::UpdateDashCooldownTimer(float DeltaTime)
+void UHUDWidget::UpdateDashCooldownTimer(float Output)
 {
-	ElapsedDashTime += DeltaTime;
+	// ElapsedDashTime += DeltaTime;
+	//
+	// // Set the value representing the slider's progress.
+	// float Progress = ElapsedDashTime / TotalDashCooldownTime;
+	// DashCooldown->SetValue(Progress);
+	//
+	// // Cooldown is done.
+	// if (Progress >= 1.f)
+	// {
+	// 	DashCooldownFinished();
+	// }
 
-	// Set the value representing the slider's progress.
-	float Progress = ElapsedDashTime / TotalDashCooldownTime;
-	DashCooldown->SetValue(Progress);
-
-	// Cooldown is done.
-	if (Progress >= 1.f)
-	{
-		DashCooldownFinished();
-	}
+	DashCooldown->SetValue(Output);
 }
 
 void UHUDWidget::DashCooldownFinished()
@@ -442,7 +485,7 @@ void UHUDWidget::ShowCrosshair(bool bShow)
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)
 {
-	if (!Timeline)
+	if (!ReloadTimeline)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Timeline is null!"));
 		return;
@@ -453,21 +496,21 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 	}
 	
 	// Bind function for updating reload slider.
-	OnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
-	Timeline->AddInterpFloat(ReloadCurve, OnTimelineFloat);
+	ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
+	ReloadTimeline->AddInterpFloat(ReloadCurve, ReloadOnTimelineFloat);
 
 	// Set timeline length.
-	Timeline->SetTimelineLength(Cooldown);
-	Timeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
+	ReloadTimeline->SetTimelineLength(Cooldown);
+	ReloadTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
 
 	// Bind function for when timeline is finished.
 	FOnTimelineEvent TimelineEvent;
 	TimelineEvent.BindUFunction(this, FName("ReloadCooldownCompleted"));
-	Timeline->SetTimelineFinishedFunc(TimelineEvent);
+	ReloadTimeline->SetTimelineFinishedFunc(TimelineEvent);
 
-	if (IsValid(Timeline) && Timeline->IsRegistered())
+	if (IsValid(ReloadTimeline) && ReloadTimeline->IsRegistered())
 	{
-		Timeline->PlayFromStart();
+		ReloadTimeline->PlayFromStart();
 	}
 	else
 	{

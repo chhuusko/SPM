@@ -18,8 +18,6 @@ class SPM_API UHUDWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UHUDWidget(const FObjectInitializer& ObjectInitializer);
-	
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AmmoText;
 
@@ -134,7 +132,7 @@ private:
 	void HideJetpackSlider();
 
 	UFUNCTION()
-	void UpdateDashCooldownTimer(float ElapsedTime);
+	void UpdateDashCooldownTimer(float Output);
 
 	UFUNCTION()
 	void DashCooldownFinished();
@@ -189,6 +187,9 @@ private:
 
 	UFUNCTION()
 	void ReloadCooldownCompleted();
+
+	void CreateReloadTimeline();
+	void CreateDashTimeline();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -225,11 +226,20 @@ private:
 	EWeaponType CurrentWeapon;
 
 	UPROPERTY()
-	class UTimelineComponent* Timeline;
+	class UTimelineComponent* ReloadTimeline;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY()
+	FOnTimelineFloat ReloadOnTimelineFloat;
+
+	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* ReloadCurve;
 
-	UPROPERTY(EditAnywhere)
-	FOnTimelineFloat OnTimelineFloat;
+	UPROPERTY()
+	class UTimelineComponent* DashTimeline;
+
+	UPROPERTY()
+	FOnTimelineFloat DashOnTimelineFloat;
+
+	UPROPERTY(EditDefaultsOnly)
+	UCurveFloat* DashCurve;
 };
