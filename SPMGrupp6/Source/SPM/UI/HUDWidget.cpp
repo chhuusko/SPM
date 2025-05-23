@@ -157,14 +157,6 @@ void UHUDWidget::UpdateCurrencyText(int32 NewValue)
 
 void UHUDWidget::StartDashTimer(float CooldownTime)
 {
-	// Reset dash cooldown element.
-	// DashCooldown->SetValue(0.f);
-	//
-	// TotalDashCooldownTime = CooldownTime;
-	// ElapsedDashTime = 0;
-	//
-	// bHasDashCooldown = true;
-
 	if (!DashTimeline || !DashCurve)
 	{
 		return;
@@ -174,7 +166,7 @@ void UHUDWidget::StartDashTimer(float CooldownTime)
 	DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
 
 	DashTimeline->SetTimelineLength(CooldownTime);
-	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
+	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
 
 	FOnTimelineEvent TimelineEvent;
 	TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
@@ -219,26 +211,17 @@ void UHUDWidget::HideJetpackSlider()
 
 void UHUDWidget::UpdateDashCooldownTimer(float Output)
 {
-	// ElapsedDashTime += DeltaTime;
-	//
-	// // Set the value representing the slider's progress.
-	// float Progress = ElapsedDashTime / TotalDashCooldownTime;
-	// DashCooldown->SetValue(Progress);
-	//
-	// // Cooldown is done.
-	// if (Progress >= 1.f)
-	// {
-	// 	DashCooldownFinished();
-	// }
-
-	DashCooldown->SetValue(Output);
+	if (DashCooldown && DashTimeline)
+	{
+		float NormalizedValue = DashTimeline->GetPlaybackPosition() / DashTimeline->GetTimelineLength();
+		DashCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
+	}
 }
 
 void UHUDWidget::DashCooldownFinished()
 {
 	// Reset indicator.
 	DashCooldown->SetValue(0.f);
-	bHasDashCooldown = false;
 }
 
 // Calls helper methods to update UI.
@@ -501,7 +484,7 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 
 	// Set timeline length.
 	ReloadTimeline->SetTimelineLength(Cooldown);
-	ReloadTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_LastKeyFrame);
+	ReloadTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
 
 	// Bind function for when timeline is finished.
 	FOnTimelineEvent TimelineEvent;
@@ -521,9 +504,11 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 // Updates cooldown indicator.
 void UHUDWidget::UpdateReloadCooldown(float Output)
 {
-	if (ReloadCooldown)
+	if (ReloadCooldown && ReloadTimeline)
 	{
-		ReloadCooldown->SetValue(Output);
+		// Set the slider value as a percentage of the total time.
+		float NormalizedValue = Output / ReloadTimeline->GetTimelineLength();
+		ReloadCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
 	}
 }
 
