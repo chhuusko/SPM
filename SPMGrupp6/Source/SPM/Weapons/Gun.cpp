@@ -320,15 +320,14 @@ void AGun::UpdateWeaponAbilityCooldown()
 	if (RemainingAbilityCooldown > 0.0f)
 	{
 		RemainingAbilityCooldown -= GetAbilityCooldown() / CooldownUpdateAmount;
-		OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 	}
 	else
 	{
 		bIsAbilityOnCooldown = false;
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
 		SetAbilityCooldown(AbilityCooldown);
-		OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 	}
+	OnCooldownUpdated.Broadcast(GetCooldownPercentage());
 }
 
 void AGun::ApplyUpgrade(int NewLevel)

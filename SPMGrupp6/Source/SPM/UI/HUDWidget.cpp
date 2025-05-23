@@ -45,12 +45,7 @@ void UHUDWidget::NativeConstruct()
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	// if (bHasDashCooldown)
-	// {
-	// 	UpdateDashCooldownTimer(InDeltaTime);
-	// }
-
+	
 	// Only update when the fuel is currently being used or is recharging.
 	if (!bJetpackFuelFull)
 	{
@@ -148,34 +143,18 @@ void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
 	AmmoText->SetText(FText::FromString(AmmoString));
 }
 
+// Calls helper methods to update UI.
+void UHUDWidget::OnPickup(int32 NewCurrencyAmount)
+{
+	UpdateCurrencyText(NewCurrencyAmount);
+	UpdateWeaponUpgradeUI();
+}
+
 // Updates the UI text element showing current amount of currency.
 void UHUDWidget::UpdateCurrencyText(int32 NewValue)
 {
 	FString CurrencyString = FString::Printf(TEXT("%d"), NewValue);
 	CurrencyText->SetText(FText::FromString(CurrencyString));
-}
-
-void UHUDWidget::StartDashTimer(float CooldownTime)
-{
-	if (!DashTimeline || !DashCurve)
-	{
-		return;
-	}
-
-	DashOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateDashCooldownTimer);
-	DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
-
-	DashTimeline->SetTimelineLength(CooldownTime);
-	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-
-	FOnTimelineEvent TimelineEvent;
-	TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
-	DashTimeline->SetTimelineFinishedFunc(TimelineEvent);
-
-	if (IsValid(DashTimeline) && DashTimeline->IsRegistered())
-	{
-		DashTimeline->PlayFromStart();
-	}
 }
 
 void UHUDWidget::StartJetpackUpdate()
@@ -207,28 +186,6 @@ void UHUDWidget::HideJetpackSlider()
 {
 	JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
 	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
-}
-
-void UHUDWidget::UpdateDashCooldownTimer(float Output)
-{
-	if (DashCooldown && DashTimeline)
-	{
-		float NormalizedValue = DashTimeline->GetPlaybackPosition() / DashTimeline->GetTimelineLength();
-		DashCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
-	}
-}
-
-void UHUDWidget::DashCooldownFinished()
-{
-	// Reset indicator.
-	DashCooldown->SetValue(0.f);
-}
-
-// Calls helper methods to update UI.
-void UHUDWidget::OnPickup(int32 NewCurrencyAmount)
-{
-	UpdateCurrencyText(NewCurrencyAmount);
-	UpdateWeaponUpgradeUI();
 }
 
 // Set progress bar color.
@@ -520,4 +477,42 @@ void UHUDWidget::ReloadCooldownCompleted()
 	{
 		ReloadCooldown->SetValue(0.f);
 	}
+}
+
+void UHUDWidget::StartDashTimer(float CooldownTime)
+{
+	if (!DashTimeline || !DashCurve)
+	{
+		return;
+	}
+
+	DashOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateDashCooldownTimer);
+	DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
+
+	DashTimeline->SetTimelineLength(CooldownTime);
+	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+
+	FOnTimelineEvent TimelineEvent;
+	TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
+	DashTimeline->SetTimelineFinishedFunc(TimelineEvent);
+
+	if (IsValid(DashTimeline) && DashTimeline->IsRegistered())
+	{
+		DashTimeline->PlayFromStart();
+	}
+}
+
+void UHUDWidget::UpdateDashCooldownTimer(float Output)
+{
+	if (DashCooldown && DashTimeline)
+	{
+		float NormalizedValue = DashTimeline->GetPlaybackPosition() / DashTimeline->GetTimelineLength();
+		DashCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
+	}
+}
+
+void UHUDWidget::DashCooldownFinished()
+{
+	// Reset indicator.
+	DashCooldown->SetValue(0.f);
 }
