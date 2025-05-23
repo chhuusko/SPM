@@ -113,12 +113,11 @@ void AGun::Fire()
 	bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 	if(bSuccess)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
-		FName HitBone = Hit.BoneName;
-		UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());
-		
 		if (bDebugWeapon)
 		{
+			UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
+			FName HitBone = Hit.BoneName;
+			UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());		
 			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 		}
 		UGameplayStatics::SpawnEmitterAtLocation(
@@ -148,8 +147,8 @@ void AGun::Fire()
 			}
 			else
 			{
-				
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
+				ActualDamage = CalculateDamageHitLocation(Hit, ActualDamage);
 				FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
@@ -435,3 +434,28 @@ FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 	}
 	return HitResult.Component->GetName();
 }
+
+	float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
+		
+		// If head hitbox or head bone was hit, deal more damage.
+		if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
+        {
+        		if (bDebugHitBoxHits){
+        			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
+        		}
+        		return OriginalDamage * HeadShotMultiplier;
+        }
+        
+        // If leg hitbox or foot bones was hit reduce damage.
+        if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
+        {
+        		if (bDebugHitBoxHits){
+                    UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
+                }
+        		return OriginalDamage * LegsHitMultiplier;
+        }
+        if (bDebugHitBoxHits){
+            UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
+        }
+		return OriginalDamage; 
+	}

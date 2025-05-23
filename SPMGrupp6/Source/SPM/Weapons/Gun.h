@@ -129,6 +129,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	bool bDebugDamageFalloff = false;
+	
+	UPROPERTY(EditAnywhere)
+	bool bDebugHitBoxHits = false;
 
 	UPROPERTY(EditAnywhere)
 	float ReloadTime = 2.5;
@@ -190,6 +193,14 @@ private:
 	FTimerHandle AbilityCooldownTimerHandle;
 
 	FString WhichBodyPartWasHit(FHitResult& HitResult);
+	
+	float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
+	
+	UPROPERTY(EditAnywhere)
+	float HeadShotMultiplier = 1.25; 
+	
+	UPROPERTY(EditAnywhere)
+	float LegsHitMultiplier = 0.75;
 
 
 public:	
