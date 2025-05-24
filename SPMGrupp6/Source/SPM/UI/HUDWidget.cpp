@@ -356,7 +356,7 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 			}
 			else
 			{
-				UpgradeCostText->SetColorAndOpacity(FSlateColor(FColor::Red));
+				UpgradeCostText->SetColorAndOpacity(CantAffordColor);
 			}
 		}
 	}
