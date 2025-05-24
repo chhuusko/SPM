@@ -9,8 +9,6 @@
 void URadarEnemyIcon::NativeConstruct()
 {
 	Super::NativeConstruct();
-	
-	StartFade();
 }
 
 void URadarEnemyIcon::InitializeIcon(class URadarComponent* InRadarComponent, AActor* InTarget)

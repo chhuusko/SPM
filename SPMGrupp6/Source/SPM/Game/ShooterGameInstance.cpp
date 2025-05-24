@@ -118,13 +118,16 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
 		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
-		GlobalMinimapWidget->SetSceneCapturePosition(SceneCapturePosition);
-		GlobalMinimapWidget->SetSceneCaptureOrtho(SceneCaptureOrtho);
-		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
+		if (GlobalMinimapWidget)
 		{
-			GlobalMinimapWidget->AddToViewport();
-			UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Map added to viewport"));
-		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
+			GlobalMinimapWidget->SetSceneCapturePosition(SceneCapturePosition);
+			GlobalMinimapWidget->SetSceneCaptureOrtho(SceneCaptureOrtho);
+			if (GlobalMinimapWidget->IsInViewport() == false)
+			{
+				GlobalMinimapWidget->AddToViewport();
+				UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Map added to viewport"));
+			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Minimap already in viewport"));
+		}else UE_LOG(LogTemp, Error, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
 	}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
 }

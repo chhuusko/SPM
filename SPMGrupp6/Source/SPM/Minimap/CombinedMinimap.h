@@ -79,8 +79,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	TSubclassOf<UUserWidget> RedPlayerRadarIconClass;
+	UPROPERTY()
+	UUserWidget* RedPlayerRadarIcon = nullptr;
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	TSubclassOf<UUserWidget> BluePlayerRadarIconClass;
+	UPROPERTY()
+	UUserWidget* BluePlayerRadarIcon = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
 	FVector2D RedPlayerSpawnPoint = FVector2D(4600, -4600);
@@ -91,6 +95,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
     bool AlwaysShowPlayers = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
+    bool ShowPlayersFromStart = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Minimap")
 	float PlayerPingInterval = 1.f;
 	float PlayerPingProgress = 0.f;
