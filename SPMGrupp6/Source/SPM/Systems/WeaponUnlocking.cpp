@@ -38,25 +38,36 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 		return;
 	}
 	
-	if (WeaponClasses.Contains(WeaponType))
+	const FWeaponState* State = WeaponStates.Find(WeaponType);
+	int32 Level = State ? State->Level : 1;
+	
+	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
+	if (!UpgradePath || !UpgradePath->LevelToClass.Contains(Level))
 	{
-		AGun* CurrentGun = CharacterOwner->GetGun();
-		if (CurrentGun && CurrentGun->GetClass() == WeaponClasses[WeaponType]) return; // Hoppa över, samma vapen redan utrustat
-		
-		LastWeapon = CurrentWeapon;
-		CurrentWeapon = WeaponType;
-		
-		TSubclassOf<AGun> WeaponClass = WeaponClasses[WeaponType];
-		SpawnAndAttachWeapon(WeaponClass);
-
-		// Update ammo text for this weapons player.
-		CurrentGun = CharacterOwner->GetGun();
-		if (CurrentGun)
-		{
-			CurrentGun->UpdateAmmoText();
-		}
-		OnWeaponSwap.Broadcast(WeaponType);
+		UE_LOG(LogTemp, Warning, TEXT("No weapon class found for WeaponType %d at Level %d"), (int32)WeaponType, Level);
+		return;
 	}
+	
+	TSubclassOf<AGun> WeaponClass = UpgradePath->LevelToClass[Level];
+	AGun* CurrentGun = CharacterOwner->GetGun();
+	if (CurrentGun && CurrentGun->GetClass() == WeaponClass)
+	{
+		// Hoppa över, samma vapen redan utrustat
+		return;
+	}
+	
+	LastWeapon = CurrentWeapon;
+	CurrentWeapon = WeaponType;
+	
+	SpawnAndAttachWeapon(WeaponClass);
+	
+	// Update ammo text for this weapons player.
+	CurrentGun = CharacterOwner->GetGun();
+	if (CurrentGun)
+	{
+		CurrentGun->UpdateAmmoText();
+	}
+	OnWeaponSwap.Broadcast(WeaponType);
 }
 
 void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
@@ -93,13 +104,19 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 
 void UWeaponUnlocking::UnlockingWeapon(EWeaponType WeaponType, FWeaponState& State)
 {
-	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
-	if (!Gun)
+	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
+	if (!UpgradePath || !UpgradePath->LevelToClass.Contains(1))
 	{
-		// If gun is not in pool, spawn it temporarily to query cost
-		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
+		UE_LOG(LogTemp, Error, TEXT("No basic weapon class defined for WeaponType %d (Level 1)"), (int32)WeaponType);
+		return;
 	}
+	
+	TSubclassOf<AGun> BasicClass = UpgradePath->LevelToClass[1];
+	if (!BasicClass) return;
+	
+	AGun* Gun = BasicClass->GetDefaultObject<AGun>();
 	int32 UnlockCost = Gun ? Gun->GetUpgradeCost(1) : INT_MAX;
+	
 	if (ResourceComponent->HasEnoughResources(UnlockCost))
 	{
 		UnlockingWeaponSuccess(WeaponType, State, UnlockCost);
@@ -152,10 +169,10 @@ void UWeaponUnlocking::UpgradingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 {
 	if (AGun* Gun = WeaponPool[WeaponType])
 	{
-		int32 UpgradeCost = Gun ? Gun->GetUpgradeCost(State.Level + 1) : INT_MAX;
+		int32 UpgradeCost = GetUpgradeCost(WeaponType);
 		if (ResourceComponent->HasEnoughResources(UpgradeCost))
 		{
-			UpgradingWeaponSuccess(Gun, State, UpgradeCost);
+			UpgradingWeaponSuccess(WeaponType, Gun, State, UpgradeCost);
 		}
 		else
 		{
@@ -165,12 +182,63 @@ void UWeaponUnlocking::UpgradingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 								(int32)WeaponType);
 }
 
-void UWeaponUnlocking::UpgradingWeaponSuccess(AGun* Gun, FWeaponState& State, int32 UpgradeCost) const
+void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun, FWeaponState& State, int32 UpgradeCost)
 {
 	ResourceComponent->SpendResources(UpgradeCost);
-	//CanAffordUpgrade(WeaponType);
 	State.Level += 1;
-	Gun->ApplyUpgrade(State.Level);
+	
+	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
+	TSubclassOf<AGun> NextClass = nullptr;
+	if (UpgradePath)
+	{
+		if (UpgradePath->LevelToClass.Contains(State.Level))
+		{
+			NextClass = UpgradePath->LevelToClass[State.Level];
+		}
+		else
+		{
+			// Fallback to highest defined class
+			int32 MaxDefinedLevel = 0;
+			for (const auto& Pair : UpgradePath->LevelToClass)
+			{
+				if (Pair.Key > MaxDefinedLevel)
+				{
+					MaxDefinedLevel = Pair.Key;
+					NextClass = Pair.Value;
+				}
+			}
+		}
+	}
+	
+	if (NextClass && NextClass != Gun->GetClass())
+	{
+		Gun->Destroy();
+
+		UWorld* World = GetWorld();
+		if (!World) return;
+
+		if (AGun* NewGun = World->SpawnActor<AGun>(NextClass))
+		{
+			NewGun->SetOwner(CharacterOwner);
+			NewGun->SetActorEnableCollision(false);
+			WeaponPool[WeaponType] = NewGun;
+			NewGun->SetWeaponEquipped(true);
+			NewGun->ApplyUpgrade(State.Level);
+			if (CurrentWeapon == WeaponType)
+			{
+				SpawnAndAttachWeapon(NextClass);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to spawn upgraded weapon of class %s"), *NextClass->GetName());
+		}
+	}
+	else
+	{
+		// No evolution, stat upgrade only
+		Gun->ApplyUpgrade(State.Level);
+	}
 	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 
 	if (CharacterOwner)
@@ -215,23 +283,46 @@ bool UWeaponUnlocking::CanAffordUpgrade(EWeaponType WeaponType)
 
 int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 {
-	// If the weapon is already unlocked, return the unlock cost.
-	if (WeaponPool.Contains(WeaponType))
+	const FWeaponState* State = WeaponStates.Find(WeaponType);
+	int32 Level = State ? State->Level : 0;
+	int32 NextLevel = Level + 1;
+
+	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
+	if (!UpgradePath)
 	{
-		if (AGun* Gun = WeaponPool[WeaponType])
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No upgrade path found for WeaponType %d"), (int32)WeaponType);
+		return -1;
+	}
+	
+	// Use next class if defined, else fall back to highest available class
+	TSubclassOf<AGun> WeaponClass = nullptr;
+	if (UpgradePath->LevelToClass.Contains(NextLevel))
+	{
+		WeaponClass = UpgradePath->LevelToClass[NextLevel];
+	}
+	else
+	{
+		// Use the highest level class available for ongoing stat upgrades
+		int32 MaxDefinedLevel = 0;
+		for (const auto& Pair : UpgradePath->LevelToClass)
 		{
-			FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
-			return Gun ? Gun->GetUpgradeCost(State.Level + 1) : -1;
+			if (Pair.Key > MaxDefinedLevel)
+			{
+				MaxDefinedLevel = Pair.Key;
+				WeaponClass = Pair.Value;
+			}
 		}
 	}
 
-	// If the weapon hasn't been unlocked, spawn it temporarily to get cost.
-	AGun* Gun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
-	if (!Gun)
+	if (!WeaponClass)
 	{
-		Gun = WeaponClasses[WeaponType]->GetDefaultObject<AGun>();
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Failed to get WeaponClass for WeaponType %d at NextLevel %d (fallback used)"),
+			(int32)WeaponType, NextLevel);
+		return -1;
 	}
-	return Gun ? Gun->GetUpgradeCost(1) : -1;
+
+	AGun* Gun = WeaponClass->GetDefaultObject<AGun>();
+	return Gun ? Gun->GetUpgradeCost(NextLevel) : -1;
 }
 
 void UWeaponUnlocking::OnCurrencyPickup()
@@ -283,7 +374,9 @@ void UWeaponUnlocking::BeginPlay()
 
 	// Add the resource instance to check for changes in.
 	GetResourceComponent();
+	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 }
+
 void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 {
 	GetResourceComponent();
@@ -440,33 +533,42 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	const EWeaponType* FoundType = WeaponClasses.FindKey(WeaponClass);
-	if (!FoundType)
+	// Determine the weapon type from the class by reverse lookup.
+	EWeaponType WeaponType = EWeaponType::Pistol;
+	bool bFound = false;
+
+	for (const auto& Pair : WeaponClasses)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking: WeaponClass not found in WeaponClasses map."));
+		for (const auto& LevelPair : Pair.Value.LevelToClass)
+		{
+			if (LevelPair.Value == WeaponClass)
+			{
+				WeaponType = Pair.Key;
+				bFound = true;
+				break;
+			}
+		}
+		if (bFound) break;
+	}
+	if (!bFound)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] SpawnAndAttachWeapon: Class not found in upgrade map."));
 		return;
 	}
-	EWeaponType WeaponType = *FoundType;
 	
-	AGun* PooledGun = nullptr;
-	if (WeaponPool.Contains(WeaponType))
-	{
-		PooledGun = WeaponPool[WeaponType];
-	}
-	if (!PooledGun || !IsValid(PooledGun))
+	AGun* PooledGun = WeaponPool.Contains(WeaponType) ? WeaponPool[WeaponType] : nullptr;
+	if (!PooledGun || !IsValid(PooledGun) || PooledGun->GetClass() != WeaponClass)
 	{
 		PooledGun = World->SpawnActor<AGun>(WeaponClass);
-		if (PooledGun)
+		if (!PooledGun)
 		{
-			WeaponPool.Add(WeaponType, PooledGun);
-			PooledGun->SetOwner(CharacterOwner);
-			PooledGun->SetActorEnableCollision(false);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking: Failed to spawn weapon for pooling."));
+			UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Failed to spawn weapon of class %s"), *WeaponClass->GetName());
 			return;
 		}
+		
+		WeaponPool.Add(WeaponType, PooledGun);
+		PooledGun->SetOwner(CharacterOwner);
+		PooledGun->SetActorEnableCollision(false);
 	}
 
 	if (AGun* CurrentGun = CharacterOwner->GetGun())

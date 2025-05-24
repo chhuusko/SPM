@@ -23,6 +23,15 @@ enum class EWeaponType : uint8
 	SniperRifle UMETA(DisplayName = "Sniper Rifle")
 };
 
+USTRUCT(BlueprintType)
+struct FWeaponUpgradePath
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<int32, TSubclassOf<AGun>> LevelToClass;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponSwap, EWeaponType, WeaponType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpgrade, int32, NewCurrencyValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, int32, NewCurrencyValue);
@@ -95,7 +104,7 @@ private:
 	AShooterPlayerController* PlayerController;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
-	TMap<EWeaponType, TSubclassOf<AGun>> WeaponClasses;
+	TMap<EWeaponType, FWeaponUpgradePath> WeaponClasses;
 	UPROPERTY()
 	TSet<EWeaponType> UnlockedWeapons;
 	UPROPERTY(EditDefaultsOnly)
@@ -107,7 +116,7 @@ private:
 	void UnlockingWeaponFailed(const AGun* Gun) const;
 	
 	void UpgradingWeapon(EWeaponType WeaponType, FWeaponState& State);
-	void UpgradingWeaponSuccess(AGun* Gun, FWeaponState& State, int32 UpgradeCost) const;
+	void UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun, FWeaponState& State, int32 UpgradeCost);
 	void UpgradingWeaponFailed(const AGun* Gun, const FWeaponState& State) const;
 	
 	
