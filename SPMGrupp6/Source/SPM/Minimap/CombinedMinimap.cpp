@@ -42,7 +42,7 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 		if(PlayerPingProgress >= PlayerPingInterval)
 		{
 			PlayerPingProgress = 0.f;
-			UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/Tick] Updating Player Pings"));
+			//UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/Tick] Updating Player Pings"));
 			OnRedPlayerFire();
 			OnBluePlayerFire();
 		}

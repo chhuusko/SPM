@@ -388,6 +388,7 @@ void UHUDWidget::UpdateWeaponCooldown(float CooldownPercentage)
 // Calls helper methods to update the UI when an upgrade gets applied.
 void UHUDWidget::UpgradeApplied(int32 NewCurrencyValue)
 {
+	GetGun();
 	UpdateCurrencyText(NewCurrencyValue);
 	UpdateWeaponUpgradeUI();
 }
