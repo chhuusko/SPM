@@ -200,6 +200,9 @@ private:
 	UPROPERTY()
 	FLinearColor HealthBarStartColor;
 
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor CantAffordColor;
+
 	UPROPERTY()
 	AShooterCharacter* PlayerCharacter;
 
