@@ -2,13 +2,19 @@
 
 
 #include "SVOGrid.h"
+
+#include "MeshAttributes.h"
 #include "OctNode.h"
+#include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 // Sets default values
 ASVOGrid::ASVOGrid()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	
 	PrimaryActorTick.bCanEverTick = true;
+	
 }
 
 // Called when the game starts or when spawned
@@ -26,6 +32,7 @@ void ASVOGrid::Tick(float DeltaTime)
 
 void ASVOGrid::CreateStandardGrid()
 {
+	float Quarter = AreaSize.X / GridLength;
 	BoolArray.SetNum(GridLength+1);
 	for (int x = -1*GridLength; x <= GridLength; x += 2) {
 		BoolArray[(x+(1*GridLength))/2].SetNum(GridLength+1);
@@ -53,29 +60,40 @@ void ASVOGrid::CreateGrid()
 		RootNode->AddChildren();
 	} 
 }
-FVector ASVOGrid::GetNearbyGridPosition(FVector position)
+FVector ASVOGrid::GetNearbyGridPosition(FVector Position)
 {
-	return FVector((position.X+(1*GridLength))/2, (position.Y+(1*GridLength))/2, position.Z+(1*GridLength));
+	float Quarter = AreaSize.X / GridLength;
+	FVector LocationGrid = FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
+	DrawDebugSolidBox(GetWorld(),
+	LocationGrid,
+	FVector::OneVector*(AreaSize / GridLength),
+	FColor::Green,
+	true,
+	5.f,
+	1);
+	
+	return FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
+}
+
+TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
+{
+	return TArray<FVector>();
 }
 
 bool ASVOGrid::HasObjectWithin(FOctNode* Node)
 {
-	FRotator Rotation = FRotator::ZeroRotator;
-	FCollisionShape Box = FCollisionShape::MakeBox(Node->Size);
-
 	bool bHit = GetWorld()->OverlapBlockingTestByChannel(
 	Node->Position,
-	Rotation.Quaternion(),
+	FRotator::ZeroRotator.Quaternion(),
 	ECC_WorldStatic,
-	Box
+	FCollisionShape::MakeBox(Node->Size)
 	);
 	
 	if (bHit)
 	{
 		//TODO BoolArray[Node->Position.X+1*GridLength][Node->Position.Y+1*GridLength][Node->Position.Z+1*GridLength] = true;
 		//DrawDebugSolidBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0);
-		//DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
+		DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
 	}
 	return bHit;
 }
-

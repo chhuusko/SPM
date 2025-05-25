@@ -24,13 +24,14 @@ protected:
 
 public:	
 	// Called every frame
-	FVector static GetNearbyGridPosition(FVector position);
+	FVector GetNearbyGridPosition(FVector Position);
+	TArray<FVector> GetPath(FVector From, FVector To);
 	virtual void Tick(float DeltaTime) override;
 private:
 	void CreateStandardGrid();
 	// Temp Grid
-	static const int GridLength = 64;
-	float Quarter = AreaSize.X / GridLength;
+	static const int GridLength = 32;
+	
 	
 	// Declare and initialize all to false
 	TArray<TArray<TArray<bool>>> BoolArray;

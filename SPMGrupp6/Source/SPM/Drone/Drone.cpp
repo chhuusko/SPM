@@ -34,8 +34,6 @@ ADrone::ADrone()
 	ProjectileSpawn->SetupAttachment(TurretMesh);
 	ProjectileSpawnAlt = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnAltPoint"));
 	ProjectileSpawnAlt->SetupAttachment(TurretMeshAlt);
-
-	
 }
 
 // Called when the game starts or when spawned

@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "SVOGrid.h"
 #include "DroneManager.generated.h"
+
 
 UCLASS()
 class SPM_API ADroneManager : public AActor
@@ -22,5 +24,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+private:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ASVOGrid> Grid;
 };
