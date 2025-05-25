@@ -42,6 +42,7 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 		if(PlayerPingProgress >= PlayerPingInterval)
 		{
 			PlayerPingProgress = 0.f;
+			//UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/Tick] Updating Player Pings"));
 			OnRedPlayerFire();
 			OnBluePlayerFire();
 		}
@@ -50,7 +51,7 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 void UCombinedMinimap::InitializeMap()
 {
-	SetAlwaysShowPlayers(false);
+	SetAlwaysShowPlayers(ShowPlayersFromStart);
 	FlipMapDependingOnPlayerSpawn();
 	SetSceneCapture();
 	
@@ -232,12 +233,26 @@ void UCombinedMinimap::BindOnRedPlayerFire()
 }
 void UCombinedMinimap::OnRedPlayerFire()
 {
-    if (!RedPlayer) return;
+    if (!RedPlayer)
+    {
+		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player!"));
+    	return;
+    }
 	
-	FVector WorldLocation = RedPlayer->GetActorLocation();
-	FVector2D MinimapPos = GetMinimapPosition(WorldLocation);
+	FVector2D MinimapPos = GetMinimapPosition(RedPlayer->GetActorLocation());
 	
-    SpawnIconOn(MinimapPos, RedPlayerRadarIconClass); 
+	if (!RedPlayerRadarIcon)
+	{
+		RedPlayerRadarIcon = SpawnIconOn(MinimapPos, RedPlayerRadarIconClass);
+	}
+	else if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(RedPlayerRadarIcon->Slot))
+	{
+		CanvasSlot->SetPosition(MinimapPos);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player Icon!"));
+	}
 }
 
 void UCombinedMinimap::BindOnBluePlayerSetGun()
@@ -263,10 +278,15 @@ void UCombinedMinimap::OnBluePlayerFire()
 {
 	if (!BluePlayer) return;
 	
-	FVector WorldLocation = BluePlayer->GetActorLocation();
-	FVector2D MinimapPos = GetMinimapPosition(WorldLocation);
-	
-	SpawnIconOn(MinimapPos, BluePlayerRadarIconClass); 
+	FVector2D MinimapPos = GetMinimapPosition(BluePlayer->GetActorLocation());
+	if (!BluePlayerRadarIcon)
+	{
+		BluePlayerRadarIcon = SpawnIconOn(MinimapPos, BluePlayerRadarIconClass);
+	}
+	else if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(BluePlayerRadarIcon->Slot))
+	{
+		CanvasSlot->SetPosition(MinimapPos);
+	}
 }
 
 void UCombinedMinimap::HidePlayersFromSceneCapture()

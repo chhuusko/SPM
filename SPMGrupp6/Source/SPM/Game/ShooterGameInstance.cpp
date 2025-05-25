@@ -4,6 +4,7 @@
 #include "ShooterGameInstance.h"
 
 #include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Minimap/CombinedMinimap.h"
 
@@ -73,24 +74,9 @@ void UShooterGameInstance::SetPlayerCount(int32 NewPlayerCount)
 void UShooterGameInstance::SetCombinedRadarEnabled(bool bCombinedRadarEnabled)
 {
 	CombinedRadarEnabled = bCombinedRadarEnabled;
-	if (CombinedRadarEnabled)
+	if (UWorld* CurrentWorld = GetWorld())
 	{
-		FString CleanMapName = UGameplayStatics::GetCurrentLevelName(this, true);
-		if (!CleanMapName.Contains(TEXT("MainMenu")))
-		{
-			if (!GlobalMinimapWidget)
-			{
-				GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::LoadCombinedMinimap);
-			}
-		}
-		else if (GlobalMinimapWidget)
-		{
-			GlobalMinimapWidget->RemoveFromParent();
-		}
-	}
-	else if (GlobalMinimapWidget)
-	{
-		GlobalMinimapWidget->RemoveFromParent();
+		OnPostLoadMap(CurrentWorld);
 	}
 }
 
@@ -113,9 +99,16 @@ void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
 	FString CleanMapName = UGameplayStatics::GetCurrentLevelName(this, true);
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance] Starting OnPostLoadMap on [%s]"),
 										*CleanMapName);
-	if (CombinedRadarEnabled && !CleanMapName.Contains(TEXT("MainMenuMap")))
+	if (CombinedRadarEnabled && !CleanMapName.Contains(TEXT("MainMenu")))
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::LoadCombinedMinimap);
+	}
+	else if (GlobalMinimapWidget)
+	{
+		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance] Trying to remove GlobalMinimapWidget on [%s]"),
+											*CleanMapName);
+		GlobalMinimapWidget->RemoveFromParent();
+		GlobalMinimapWidget = nullptr;
 	}
 }
 
@@ -125,17 +118,16 @@ void UShooterGameInstance::LoadCombinedMinimap()
 	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
 	{
 		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
-		GlobalMinimapWidget->SetSceneCapturePosition(SceneCapturePosition);
-		GlobalMinimapWidget->SetSceneCaptureOrtho(SceneCaptureOrtho);
-		if (GlobalMinimapWidget && GlobalMinimapWidget->IsInViewport() == false)
+		if (GlobalMinimapWidget)
 		{
-			if (UGameViewportClient* Viewport = GetWorld()->GetGameViewport())
+			GlobalMinimapWidget->SetSceneCapturePosition(SceneCapturePosition);
+			GlobalMinimapWidget->SetSceneCaptureOrtho(SceneCaptureOrtho);
+			if (GlobalMinimapWidget->IsInViewport() == false)
 			{
-				TSharedRef<SWidget> SlateWidget = GlobalMinimapWidget->TakeWidget();
-				Viewport->AddViewportWidgetContent(SlateWidget, 1000);
+				GlobalMinimapWidget->AddToViewport();
 				UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Map added to viewport"));
-			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to get GameViewport"));
-		}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
+			}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Minimap already in viewport"));
+		}else UE_LOG(LogTemp, Error, TEXT("[ShooterGameInstance/Radar] failed to create GlobalMinimapWidget"));
 	}else UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Cancelling OnPostLoadMap"));
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing Finished"));
 }
