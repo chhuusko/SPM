@@ -76,7 +76,7 @@ public:
 	TArray<AActor*> GetPlayers() {return Players;}
 
 private:
-	virtual void LootDrop();
+	virtual void LootDrop(int ExtraLootDrops);
 	
 	//Body
 	UPROPERTY(EditAnywhere)
@@ -110,6 +110,8 @@ private:
 	float AggroDistance;
 	UPROPERTY(EditAnywhere)
 	int32 Health;
-	
-	
+	UPROPERTY(EditAnywhere)
+	int32 NumberOfHealthDrops = 1;
+	UPROPERTY(EditAnywhere)
+	int32 NumberOfLootDrops = 1;
 };

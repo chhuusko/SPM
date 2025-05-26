@@ -17,7 +17,8 @@ class SPM_API AUpgradedPistol : public APistol
 	GENERATED_BODY()
 public:
 	virtual void Tick(float DeltaTime) override;
-
+	int GetExtraLootDrops() const;
+	
 protected:
 	
 	virtual void WeaponAbility() override;
@@ -26,6 +27,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float AbilityEffectTime = 2.5f;
+	UPROPERTY(EditAnywhere)
+	int ExtraLootDrops = 1; 
 
 	void ResetAbilityCooldown();
 	void SetRenderCustomDepth(bool bRenderCustomDepth);

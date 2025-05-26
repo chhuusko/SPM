@@ -151,3 +151,8 @@ void AUpgradedPistol::ResetRenderCustomDepth()
       }
    }
 }
+
+int AUpgradedPistol::GetExtraLootDrops() const
+{
+   return ExtraLootDrops;
+}

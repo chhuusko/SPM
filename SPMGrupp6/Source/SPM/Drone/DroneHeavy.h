@@ -28,7 +28,4 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* AggroSound; 
 	FTimerHandle TelegrahTimeHandle;
-	
-private:
-	virtual void LootDrop() override;
 };
