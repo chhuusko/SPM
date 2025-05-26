@@ -89,7 +89,9 @@ void AGun::Fire()
 {
 	// Checks if weapon can fire.
 	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
-
+	
+	bCanFire = false;
+	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
@@ -194,7 +196,6 @@ void AGun::Fire()
 	}
 
 	// Stops possibility to fire between shots.
-	bCanFire = false;
 	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 	
 	OnFired.Broadcast();
@@ -216,12 +217,12 @@ void AGun::PullTrigger()
 	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
-		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+			StartAutomaticFireSequence();
 	}
 	else
 	{
 		Fire();
+		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::ResetCanFire, FireRate, false);
 	}
 }
 
@@ -258,8 +259,7 @@ void AGun::ResetAmmo()
 	// Continue shooting after reload if the player is still holding trigger.
 	if (bIsTriggerHeld && bIsAutomatic)
 	{
-		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+		StartAutomaticFireSequence();
 	}
 }
 void AGun::StopReload()
@@ -426,27 +426,34 @@ FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 	return HitResult.Component->GetName();
 }
 
-	float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
+float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
 		
-		// If head hitbox or head bone was hit, deal more damage.
-		if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
-        {
-        		if (bDebugHitBoxHits){
-        			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
-        		}
-        		return OriginalDamage * HeadShotMultiplier;
-        }
-        
-        // If leg hitbox or foot bones was hit reduce damage.
-        if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
-        {
-        		if (bDebugHitBoxHits){
-                    UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
-                }
-        		return OriginalDamage * LegsHitMultiplier;
-        }
-        if (bDebugHitBoxHits){
-            UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
-        }
-		return OriginalDamage; 
+	// If head hitbox or head bone was hit, deal more damage.
+	if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
+	{
+		if (bDebugHitBoxHits){
+			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
+		}
+		return OriginalDamage * HeadShotMultiplier;
 	}
+        
+	// If leg hitbox or foot bones was hit reduce damage.
+	if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
+	{
+		if (bDebugHitBoxHits){
+			UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
+		}
+        	return OriginalDamage * LegsHitMultiplier;
+        }
+	if (bDebugHitBoxHits)
+	{
+		UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
+	}
+	return OriginalDamage; 
+}
+
+void AGun::StartAutomaticFireSequence()
+{
+	Fire();
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+}
