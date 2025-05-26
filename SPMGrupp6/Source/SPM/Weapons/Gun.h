@@ -146,6 +146,7 @@ protected:
 	class UHUDWidget* HUDWidget;
 	
 	bool bIsRecoiling = false;
+	bool bIsTriggerHeld = false;
 	int TimesFired = 0;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
