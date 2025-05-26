@@ -22,8 +22,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	float NPCDamageMultiplier = 1.2;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> NPCDamageMultiplierPerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float NPCDamageMultiplierDefaultIncreasePerLevel = 1;
 };

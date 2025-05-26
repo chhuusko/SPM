@@ -88,9 +88,9 @@ float AGun::GetCooldownPercentage() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped) return;
+	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
 
-	// Reloads automatically if bullets reach 0.
+	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
@@ -202,11 +202,16 @@ void AGun::Fire()
 
 void AGun::ResetCanFire()
 {
-	bCanFire = true;
+	if (!bIsReloading)
+	{
+		bCanFire = true;
+	}
 }
 
 void AGun::PullTrigger()
 {
+	bIsTriggerHeld = true;
+
 	if (!bCanFire || !bIsWeaponEquipped) return;
 	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
@@ -222,6 +227,7 @@ void AGun::PullTrigger()
 
 void AGun::ReleaseTrigger()
 {
+	bIsTriggerHeld = false;
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 	TimesFired = 0;
 }
@@ -232,6 +238,7 @@ void AGun::Reload()
 	if (BulletsLeft < MagazineSize && !bIsReloading)
 	{
 		bIsReloading = true;
+		GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 		// Can not shoot while reloading.
 		bCanFire = false;
 		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
@@ -246,8 +253,14 @@ void AGun::ResetAmmo()
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
-
 	UpdateAmmoText();
+
+	// Continue shooting after reload if the player is still holding trigger.
+	if (bIsTriggerHeld && bIsAutomatic)
+	{
+		Fire();
+		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+	}
 }
 void AGun::StopReload()
 {
@@ -347,6 +360,7 @@ void AGun::UpdateWeaponAbilityCooldown()
 void AGun::ApplyUpgrade(int NewLevel)
 {
 	Damage = GetScaledStatValue<float>(DamagePerLevel, NewLevel, Damage, DamageDefaultIncreasePerLevel);
+	MinimumDamage = GetScaledStatValue<float>(MinimumDamagePerLevel, NewLevel, MinimumDamage, MinimumDamageDefaultIncreasePerLevel);
 	MagazineSize = GetScaledStatValue<int32>(MagazineSizePerLevel, NewLevel, MagazineSize, MagazineSizeDefaultIncreasePerLevel);
 	ReloadTime = GetScaledStatValue<float>(ReloadTimePerLevel, NewLevel, ReloadTime, ReloadTimeDefaultIncreasePerLevel);
 	FireRate = GetScaledStatValue<float>(FireRatePerLevel, NewLevel, FireRate, FireRateDefaultIncreasePerLevel);

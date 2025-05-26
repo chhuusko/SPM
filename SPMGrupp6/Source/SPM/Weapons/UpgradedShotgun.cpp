@@ -5,6 +5,11 @@
 
 #include "Kismet/GameplayStatics.h"
 
+AUpgradedShotgun::AUpgradedShotgun()
+{
+	bShowUpgradeOptions = true;
+}
+
 void AUpgradedShotgun::WeaponAbility()
 {
 	Super::WeaponAbility();

@@ -6,8 +6,6 @@
 #include "Gun.h"
 #include "Sniper.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScope, bool, bIsScopedIn);
-
 /**
  * 
  */
@@ -15,9 +13,6 @@ UCLASS()
 class SPM_API ASniper : public AGun
 {
 	GENERATED_BODY()
-
-public:
-	FOnScope OnScope;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

@@ -230,11 +230,26 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	// Bind the function for updating the sniper scope.
 	if (Weapon == EWeaponType::SniperRifle)
 	{
-		Sniper = Cast<ASniper>(Gun);
-		if (Sniper)
+		// Hide crosshair since hipfire is inaccurate.
+		if (Crosshair->IsVisible())
 		{
-			Sniper->OnScope.AddDynamic(this, &UHUDWidget::ShowCrosshair);
+			Crosshair->SetVisibility(ESlateVisibility::Hidden);
 		}
+	}
+	else
+	{
+		// Show crosshair.
+		if (!Crosshair->IsVisible())
+		{
+			Crosshair->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+
+	// Stop reload if it is interrupted by swapping weapons.
+	if (ReloadTimeline->IsPlaying())
+	{
+		ReloadTimeline->Stop();
+		ReloadCooldown->SetValue(0.f);
 	}
 	
 	UBorder* NextWeaponBorder;
@@ -311,6 +326,27 @@ UTextBlock* UHUDWidget::GetUpgradeCostTextFromWeapon(EWeaponType Weapon)
 	}
 }
 
+UProgressBar* UHUDWidget::GetAbilityBar(EWeaponType Weapon) const
+{
+	UProgressBar* CooldownBar;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		CooldownBar = AutoPistolAbilityCooldown;
+		break;
+	case EWeaponType::Shotgun:
+		CooldownBar = ShotgunAbilityCooldown;
+		break;
+	case EWeaponType::AssaultRifle:
+		CooldownBar = AssaultRifleAbilityCooldown;
+		break;
+	default:
+		CooldownBar = SniperRifleAbilityCooldown;
+		break;
+	}
+	return CooldownBar;
+}
+
 // Display the upgrade icon over the weapon.
 void UHUDWidget::UpdateWeaponUpgradeUI()
 {
@@ -362,6 +398,16 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 	}
 }
 
+// Set the color of the ability cooldown bar to show that the ability is unlocked.
+void UHUDWidget::UpdateCooldownBarColor(EWeaponType Weapon)
+{
+	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
+	if (CooldownBar && CooldownBar->GetFillColorAndOpacity() != AbilityCooldownActiveColor)
+	{
+		CooldownBar->SetFillColorAndOpacity(AbilityCooldownActiveColor);
+	}
+}
+
 // Update weapon cooldown in the corresponding slider.
 void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage)
 {
@@ -376,32 +422,24 @@ void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercent
 		}
 	}
 	
-	UProgressBar* CooldownBar;
-	switch (Weapon)
+	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
+	if (CooldownBar)
 	{
-	case EWeaponType::Pistol:
-		CooldownBar = AutoPistolAbilityCooldown;
-		break;
-	case EWeaponType::Shotgun:
-		CooldownBar = ShotgunAbilityCooldown;
-		break;
-	case EWeaponType::AssaultRifle:
-		CooldownBar = AssaultRifleAbilityCooldown;
-		break;
-	default:
-		CooldownBar = SniperRifleAbilityCooldown;
-		break;
+		CooldownBar->SetPercent(1.f - CooldownPercentage);
 	}
-
-	CooldownBar->SetPercent(1.f - CooldownPercentage);
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.
-void UHUDWidget::UpgradeApplied(int32 NewCurrencyValue)
+void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked)
 {
 	GetGun();
 	UpdateCurrencyText(NewCurrencyValue);
 	UpdateWeaponUpgradeUI();
+
+	if (bAbilityUnlocked)
+	{
+		UpdateCooldownBarColor(Weapon);
+	}
 }
 
 // Show the hit marker for a limited time.

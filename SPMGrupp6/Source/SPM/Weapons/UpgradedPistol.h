@@ -16,6 +16,7 @@ class SPM_API AUpgradedPistol : public APistol
 {
 	GENERATED_BODY()
 public:
+	AUpgradedPistol();
 	virtual void Tick(float DeltaTime) override;
 	int GetExtraLootDrops() const;
 	
@@ -31,14 +32,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	int ExtraLootDrops = 1; 
 
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityEffectTimePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<int32> BonusResourceDropPerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	int32 BonusResourceDropDefaultIncreasePerLevel = 1;
 	
 	void ResetAbilityCooldown();

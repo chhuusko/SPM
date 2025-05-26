@@ -35,6 +35,7 @@ public:
 	FOnCooldownUpdated OnCooldownUpdated;
 	FOnReload OnReload;
 	
+	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -145,6 +146,7 @@ protected:
 	class UHUDWidget* HUDWidget;
 	
 	bool bIsRecoiling = false;
+	bool bIsTriggerHeld = false;
 	int TimesFired = 0;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
@@ -156,39 +158,47 @@ protected:
 	void ResetAmmo();
 	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta = (DisplayPriority = -1))
+	bool bShowUpgradeOptions = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<int32> UpgradeCostPerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	int32 UpgradeCostDefaultIncreasePerLevel = 1;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> DamagePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float DamageDefaultIncreasePerLevel = 1;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> MinimumDamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float MinimumDamageDefaultIncreasePerLevel = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<int32> MagazineSizePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	int32 MagazineSizeDefaultIncreasePerLevel = 1;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> ReloadTimePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float ReloadTimeDefaultIncreasePerLevel = -1;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> FireRatePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float FireRateDefaultIncreasePerLevel = 1;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	int AbilityUnlockedOnLevel = 2;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	bool AbilityUnlocked = false;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityCooldownPerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityCooldownDefaultIncreasePerLevel = -1;
 	
 	template<typename T>
