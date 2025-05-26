@@ -14,8 +14,10 @@ UCLASS()
 class SPM_API AUpgradedShotgun : public AShotgun
 {
 	GENERATED_BODY()
-
-	protected:
+public:
+	AUpgradedShotgun();
+	
+protected:
 	virtual void WeaponAbility() override;
 	virtual void ApplyUpgrade(int NewLevel) override;
 
@@ -29,9 +31,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityEffectTimePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
 	
 	// UPROPERTY(EditAnywhere)
