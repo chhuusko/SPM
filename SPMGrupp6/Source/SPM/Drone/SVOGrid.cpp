@@ -60,7 +60,7 @@ void ASVOGrid::CreateGrid()
 		RootNode->AddChildren();
 	} 
 }
-FVector ASVOGrid::GetNearbyGridPosition(FVector Position)
+FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 {
 	float Quarter = AreaSize.X / GridLength;
 	FVector LocationGrid = FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
@@ -73,6 +73,26 @@ FVector ASVOGrid::GetNearbyGridPosition(FVector Position)
 	1);
 	
 	return FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
+}
+TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
+{
+	// get all 6 directions
+	TArray<FVector> Directions;
+	return Directions;
+	// if all no avalable and all visited go back
+}
+
+FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desination)
+{
+	FVector Lowest = FVector::ZeroVector;
+	for (FVector Position : Positions)
+	{
+		if (FVector::Dist(Position, Desination) > FVector::Dist(Lowest, Desination))
+		{
+			Lowest = Position;
+		}
+	}
+	return Lowest;
 }
 
 TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)

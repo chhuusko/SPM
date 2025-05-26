@@ -24,7 +24,9 @@ protected:
 
 public:	
 	// Called every frame
-	FVector GetNearbyGridPosition(FVector Position);
+	FVector GetNearestGridPosition(FVector Position);
+	TArray<FVector>GetPossibleDirections(FVector Position);
+	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);
 	virtual void Tick(float DeltaTime) override;
 private:
