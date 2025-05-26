@@ -429,6 +429,17 @@ void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercent
 	}
 }
 
+void UHUDWidget::ShowAbilityUnlockedPrompt()
+{
+	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Visible);
+	GetWorld()->GetTimerManager().SetTimer(AbilityUnlockedHandle, this, &UHUDWidget::RemoveAbilityUnlockedPrompt, AbilityUnlockedDisplayTime);
+}
+
+void UHUDWidget::RemoveAbilityUnlockedPrompt()
+{
+	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Hidden);
+}
+
 // Calls helper methods to update the UI when an upgrade gets applied.
 void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked)
 {
@@ -439,6 +450,7 @@ void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool
 	if (bAbilityUnlocked)
 	{
 		UpdateCooldownBarColor(Weapon);
+		ShowAbilityUnlockedPrompt();
 	}
 }
 
