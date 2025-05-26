@@ -236,6 +236,13 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 			Sniper->OnScope.AddDynamic(this, &UHUDWidget::ShowCrosshair);
 		}
 	}
+
+	// Stop reload if it is interrupted by swapping weapons.
+	if (ReloadTimeline->IsPlaying())
+	{
+		ReloadTimeline->Stop();
+		ReloadCooldown->SetValue(0.f);
+	}
 	
 	UBorder* NextWeaponBorder;
 	UImage* Image;
