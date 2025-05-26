@@ -141,7 +141,7 @@ private:
 	void OnPickup(int32 NewCurrencyAmount);
 	
 	UFUNCTION()
-	void UpgradeApplied(int32 NewCurrencyValue);
+	void UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked);
 
 	UFUNCTION()
 	void UpdateEquippedWeapon(EWeaponType Weapon);
@@ -151,6 +151,9 @@ private:
 	
 	UFUNCTION()
 	void UpdateWeaponUpgradeUI();
+
+	UFUNCTION()
+	void UpdateCooldownBarColor(EWeaponType Weapon);
 
 	UFUNCTION()
 	void UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage);
@@ -169,6 +172,9 @@ private:
 
 	UFUNCTION()
 	void GetPlayerCharacter();
+
+	UFUNCTION()
+	UProgressBar* GetAbilityBar(EWeaponType Weapon) const;
 
 	UFUNCTION()
 	UImage* GetUpgradeIconFromWeapon(EWeaponType Weapon);
@@ -199,6 +205,9 @@ private:
 
 	UPROPERTY()
 	FLinearColor HealthBarStartColor;
+
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor AbilityCooldownActiveColor;
 
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor CantAffordColor;
