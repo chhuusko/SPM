@@ -12,8 +12,10 @@ void AShotgun::Fire()
 	// Checks if weapon can fire.
 	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
 	
+	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
 	bCanFire = false;
-
+	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.02f, false);
+	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
@@ -111,9 +113,6 @@ void AShotgun::Fire()
 	{
 		Reload();
 	}
-	
-	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.01f, false);
 	
 	OnFired.Broadcast();
 }
