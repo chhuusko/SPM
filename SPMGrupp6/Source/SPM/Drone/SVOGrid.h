@@ -25,6 +25,7 @@ protected:
 public:	
 	// Called every frame
 	FVector GetNearestGridPosition(FVector Position);
+	FVector ConvertToGrid(FVector Position);
 	TArray<FVector>GetPossibleDirections(FVector Position);
 	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);

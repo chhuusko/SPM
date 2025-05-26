@@ -3,6 +3,7 @@
 
 #include "SVOGrid.h"
 
+#include "AnimationEditorViewportClient.h"
 #include "MeshAttributes.h"
 #include "OctNode.h"
 #include "Kismet/GameplayStatics.h"
@@ -46,6 +47,7 @@ void ASVOGrid::CreateStandardGrid()
 			}
 		}
 	}
+	
 }
 
 void ASVOGrid::CreateGrid()
@@ -74,12 +76,23 @@ FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 	
 	return FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
 }
+
 TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions
 	TArray<FVector> Directions;
+	
 	return Directions;
 	// if all no avalable and all visited go back
+}
+FVector ASVOGrid::ConvertToGrid(FVector Position)
+{
+	float Quarter = AreaSize.X / GridLength;
+	FVector ConvertGrid =  FVector(((GetNearestGridPosition(Position).X/Quarter)+(1*GridLength))/2,
+	((GetNearestGridPosition(Position).Y/Quarter)+(1*GridLength))/2,
+	((GetNearestGridPosition(Position).Z/Quarter)+(1*GridLength))/2);
+	UE_LOG(LogTemp, Warning, TEXT("ConvertToGrid: %s"), *ConvertGrid.ToString());
+	return ConvertGrid;
 }
 
 FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desination)
