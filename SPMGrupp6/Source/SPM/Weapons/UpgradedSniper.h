@@ -19,7 +19,7 @@ class SPM_API AUpgradedSniper : public ASniper
 protected:
 	virtual void Fire() override;
 private:
-	TArray <FHitResult> GunTraceWallBang(FVector& ShotDirection, float& TraceLength);
+	TArray <FHitResult> GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult);
 
 	UPROPERTY(EditAnywhere)
 	int ObjectsToGoThrough = 1;
