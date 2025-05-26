@@ -88,10 +88,10 @@ float AGun::GetCooldownPercentage() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (!bCanFire || !bIsWeaponEquipped || !bIsTriggerHeld || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
 	
 	bCanFire = false;
-	
+
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
@@ -195,8 +195,8 @@ void AGun::Fire()
 		return;
 	}
 
-	// Stops possibility to fire between shots.
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
+	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.01f, false);
 	
 	OnFired.Broadcast();
 }
@@ -217,7 +217,10 @@ void AGun::PullTrigger()
 	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
 	if (bIsAutomatic)
 	{
+		if (!GetWorld()->GetTimerManager().IsTimerActive(FireRateTimer))
+		{
 			StartAutomaticFireSequence();
+		}
 	}
 	else
 	{

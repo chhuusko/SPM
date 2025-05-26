@@ -111,7 +111,9 @@ void AShotgun::Fire()
 	{
 		Reload();
 	}
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+	
+	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
+	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.01f, false);
 	
 	OnFired.Broadcast();
 }
