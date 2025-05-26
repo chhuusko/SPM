@@ -22,6 +22,7 @@ public:
 protected:
 	
 	virtual void WeaponAbility() override;
+	virtual void ApplyUpgrade(int NewLevel) override;
 
 private:
 
@@ -33,9 +34,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	TArray<float> NPCDamageMultiplierPerLevel;
+	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<int32> BonusResourceDropPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	int32 BonusResourceDropDefaultIncreasePerLevel = 1;
 	
 	void ResetAbilityCooldown();
 	void SetRenderCustomDepth(bool bRenderCustomDepth);

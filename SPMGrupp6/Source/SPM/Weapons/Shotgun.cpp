@@ -139,3 +139,10 @@ bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLen
 	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
 	return bHit;
 }
+
+void AShotgun::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+	
+	numberOfPellets = GetScaledStatValue<float>(NumberOfPelletsPerLevel, NewLevel, numberOfPellets, NumberOfPelletsDefaultIncreasePerLevel);
+}

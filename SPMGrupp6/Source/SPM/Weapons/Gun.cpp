@@ -359,60 +359,23 @@ void AGun::UpdateWeaponAbilityCooldown()
 
 void AGun::ApplyUpgrade(int NewLevel)
 {
-	const float BaseDamageValue = DamagePerLevel.Num() > 0 ? DamagePerLevel.Last() : Damage;
-	const float BaseReloadTime = ReloadTimePerLevel.Num() > 0 ? ReloadTimePerLevel.Last() : ReloadTime;
-	const int32 BaseMagazineSize = MagazineSizePerLevel.Num() > 0 ? MagazineSizePerLevel.Last() : MagazineSize;
-	const int32 BaseAbilityCooldownSize = AbilityCooldownPerLevel.Num() > 0 ? AbilityCooldownPerLevel.Last() : AbilityCooldown;
-	int Index;
+	Damage = GetScaledStatValue<float>(DamagePerLevel, NewLevel, Damage, DamageDefaultIncreasePerLevel);
+	MagazineSize = GetScaledStatValue<int32>(MagazineSizePerLevel, NewLevel, MagazineSize, MagazineSizeDefaultIncreasePerLevel);
+	ReloadTime = GetScaledStatValue<float>(ReloadTimePerLevel, NewLevel, ReloadTime, ReloadTimeDefaultIncreasePerLevel);
+	FireRate = GetScaledStatValue<float>(FireRatePerLevel, NewLevel, FireRate, FireRateDefaultIncreasePerLevel);
 
-	if(NewLevel >= AbilityUnlockedOnLevel) AbilityUnlocked = true;
+	if(NewLevel >= AbilityUnlockedOnLevel)
+	{
+		AbilityUnlocked = true;
+		AbilityCooldown = GetScaledStatValue<float>(AbilityCooldownPerLevel, NewLevel, AbilityCooldown, AbilityCooldownDefaultIncreasePerLevel);
+	}
 	
-	if (DamagePerLevel.Num() > 0)
-	{
-		Index = FMath::Clamp(NewLevel - 1, 0, DamagePerLevel.Num() - 1);
-		Damage = DamagePerLevel.IsValidIndex(Index) ? DamagePerLevel[Index] : BaseDamageValue;
-	}
-	else
-	{
-		Damage = BaseDamageValue;
-	}
-
-	if (ReloadTimePerLevel.Num() > 0)
-	{
-		Index = FMath::Clamp(NewLevel - 1, 0, ReloadTimePerLevel.Num() - 1);
-		ReloadTime = ReloadTimePerLevel.IsValidIndex(Index) ? ReloadTimePerLevel[Index] : BaseReloadTime;
-	}
-	else
-	{
-		ReloadTime = BaseReloadTime;
-	}
-
-	if (MagazineSizePerLevel.Num() > 0)
-	{
-		Index = FMath::Clamp(NewLevel - 1, 0, MagazineSizePerLevel.Num() - 1);
-		MagazineSize = MagazineSizePerLevel.IsValidIndex(Index) ? MagazineSizePerLevel[Index] : BaseMagazineSize;
-	}
-	else
-	{
-		MagazineSize = BaseMagazineSize;
-	}
     UpdateAmmoText();
-
-    if (const int DefinedLevels = DamagePerLevel.Num() > 0 ? DamagePerLevel.Num() : 1; NewLevel > DefinedLevels)
-	{
-		Damage *= FMath::Pow(1.1f, NewLevel - DefinedLevels);
-	}
 }
+
 int32 AGun::GetUpgradeCost(int Level) const
 {
-    const int Index = FMath::Clamp(Level - 1, 0, UpgradeCostPerLevel.Num() - 1);
-	int32 BaseCost = UpgradeCostPerLevel.IsValidIndex(Index) ? UpgradeCostPerLevel[Index] : 0;
-	if (Level > UpgradeCostPerLevel.Num())
-	{
-		BaseCost += 2 * (Level - UpgradeCostPerLevel.Num());
-	}
-	
-    return BaseCost;
+	return GetScaledStatValue<int32>(UpgradeCostPerLevel, Level, 0, UpgradeCostDefaultIncreasePerLevel);
 }
 
 

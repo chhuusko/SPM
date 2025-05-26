@@ -87,6 +87,14 @@ void AUpgradedPistol::WeaponAbility()
     }
 }
 
+void AUpgradedPistol::ApplyUpgrade(int NewLevel)
+{
+   Super::ApplyUpgrade(NewLevel);
+   
+   AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectTimeDefaultIncreasePerLevel);
+   ExtraLootDrops = GetScaledStatValue<int32>(BonusResourceDropPerLevel, NewLevel, ExtraLootDrops, BonusResourceDropDefaultIncreasePerLevel);
+}
+
 
 void AUpgradedPistol::ResetAbilityCooldown()
 {

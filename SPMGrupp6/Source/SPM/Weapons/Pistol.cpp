@@ -126,3 +126,10 @@ void APistol::Fire()
 		OnFired.Broadcast();
 	}
 
+void APistol::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+	
+	NPCDamageMultiplier = GetScaledStatValue<float>(NPCDamageMultiplierPerLevel, NewLevel, NPCDamageMultiplier, NPCDamageMultiplierDefaultIncreasePerLevel);
+}
+

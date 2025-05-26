@@ -17,6 +17,7 @@ class SPM_API AUpgradedShotgun : public AShotgun
 
 	protected:
 	virtual void WeaponAbility() override;
+	virtual void ApplyUpgrade(int NewLevel) override;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -31,7 +32,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	TArray<float> NumberOfPelletsPerLevel;
+	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
 	
 	// UPROPERTY(EditAnywhere)
 	// float AbilityCooldown = 5.0f;
