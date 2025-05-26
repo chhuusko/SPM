@@ -4,7 +4,7 @@
 #include "Shotgun.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "SPM/Characters/ShooterCharacter.h"
 
 
 void AShotgun::Fire()
@@ -53,6 +53,21 @@ void AShotgun::Fire()
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
 
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
+				if (HitActor->IsA(AShooterCharacter::StaticClass()))
+				{
+					// If hit actor is a player, calculate new damage based on body part hit.
+					ActualDamage = CalculateDamageHitLocation(Hit, ActualDamage);
+					if (bDebugHitBoxHits)
+					{
+						UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
+						FName HitBone = Hit.BoneName;
+						UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());		
+					}
+					if (bDebugWeapon)
+					{
+						UE_LOG(LogTemp, Display, TEXT("Damage dealt to player: %f"), ActualDamage);
+					}
+				}
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(Damage, DamageEvent, OwnerController, this);
 				
