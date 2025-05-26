@@ -29,6 +29,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> AbilityDamagePerLevel;
+	
 	//UPROPERTY(EditAnywhere)
 	//float AbilityCooldown = 5.0f;
 

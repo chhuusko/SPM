@@ -341,7 +341,7 @@ void AGun::UpdateWeaponAbilityCooldown()
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
 		SetAbilityCooldown(AbilityCooldown);
 	}
-	OnCooldownUpdated.Broadcast(GetCooldownPercentage());
+	OnCooldownUpdated.Broadcast(this, GetCooldownPercentage());
 }
 
 void AGun::ApplyUpgrade(int NewLevel)
@@ -349,6 +349,7 @@ void AGun::ApplyUpgrade(int NewLevel)
 	const float BaseDamageValue = DamagePerLevel.Num() > 0 ? DamagePerLevel.Last() : Damage;
 	const float BaseReloadTime = ReloadTimePerLevel.Num() > 0 ? ReloadTimePerLevel.Last() : ReloadTime;
 	const int32 BaseMagazineSize = MagazineSizePerLevel.Num() > 0 ? MagazineSizePerLevel.Last() : MagazineSize;
+	const int32 BaseAbilityCooldownSize = AbilityCooldownPerLevel.Num() > 0 ? AbilityCooldownPerLevel.Last() : AbilityCooldown;
 	int Index;
 
 	if(NewLevel >= AbilityUnlockedOnLevel) AbilityUnlocked = true;

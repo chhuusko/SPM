@@ -30,6 +30,13 @@ private:
 	UPROPERTY(EditAnywhere)
 	int ExtraLootDrops = 1; 
 
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> AbilityEffectTimePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> NPCDamageMultiplierPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<int32> BonusResourceDropPerLevel;
+	
 	void ResetAbilityCooldown();
 	void SetRenderCustomDepth(bool bRenderCustomDepth);
 	void ResetRenderCustomDepth();

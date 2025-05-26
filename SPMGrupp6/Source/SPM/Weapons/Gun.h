@@ -11,7 +11,7 @@ class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, AActor*, HitActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCooldownUpdated, float, CooldownPercentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCooldownUpdated, AGun*, Gun, float, CooldownPercentage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReload, float, ReloadTime);
 
 UCLASS()
@@ -166,7 +166,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> FireRatePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	int AbilityUnlockedOnLevel = 2;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> AbilityCooldownPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	bool AbilityUnlocked = false;
 

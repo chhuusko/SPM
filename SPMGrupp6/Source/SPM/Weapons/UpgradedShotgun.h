@@ -28,6 +28,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> AbilityEffectTimePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> NumberOfPelletsPerLevel;
+	
 	// UPROPERTY(EditAnywhere)
 	// float AbilityCooldown = 5.0f;
 

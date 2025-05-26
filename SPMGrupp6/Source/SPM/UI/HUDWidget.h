@@ -153,7 +153,7 @@ private:
 	void UpdateWeaponUpgradeUI();
 
 	UFUNCTION()
-	void UpdateWeaponCooldown(float CooldownPercentage);
+	void UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage);
 
 	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
