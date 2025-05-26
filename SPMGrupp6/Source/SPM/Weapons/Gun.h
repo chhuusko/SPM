@@ -35,6 +35,7 @@ public:
 	FOnCooldownUpdated OnCooldownUpdated;
 	FOnReload OnReload;
 	
+	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

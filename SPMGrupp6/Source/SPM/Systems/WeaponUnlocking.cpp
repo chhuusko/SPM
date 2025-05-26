@@ -149,7 +149,7 @@ void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponSta
 	State.bUnlocked = true;
 	State.Level = 1;
 	EquipWeapon(WeaponType);
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+	OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
 
 	if (CharacterOwner)
 	{
@@ -245,6 +245,7 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 			{
 				SpawnAndAttachWeapon(NextClass);
 			}
+			OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), NewGun->IsAbilityUnlocked());
 		}
 		else
 		{
@@ -256,8 +257,8 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 		// No evolution, stat upgrade only
 		UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Normal upgrade of weapon of class %s to level %d"), *NextClass->GetName(), State.Level);
 		Gun->ApplyUpgrade(State.Level);
+		OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
 	}
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 
 	if (CharacterOwner)
 	{
@@ -392,7 +393,7 @@ void UWeaponUnlocking::BeginPlay()
 
 	// Add the resource instance to check for changes in.
 	GetResourceComponent();
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+	OnUpgrade.Broadcast(EWeaponType::Pistol, ResourceComponent->GetResourceAmount(), false);
 }
 
 void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
