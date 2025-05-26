@@ -147,6 +147,8 @@ protected:
 	
 	bool bIsRecoiling = false;
 	bool bIsTriggerHeld = false;
+	bool bIsFiringWithTimer = false;
+
 	int TimesFired = 0;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
@@ -235,6 +237,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float LegsHitMultiplier = 0.75;
+
+	void StartAutomaticFireSequence();
+
 
 public:	
 	// Called every frame
