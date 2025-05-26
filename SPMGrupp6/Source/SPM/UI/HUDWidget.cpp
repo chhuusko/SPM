@@ -363,10 +363,21 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 }
 
 // Update weapon cooldown in the corresponding slider.
-void UHUDWidget::UpdateWeaponCooldown(float CooldownPercentage)
+void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage)
 {
+	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
+	EWeaponType Weapon = EWeaponType::Pistol;
+	
+	for (const TPair<EWeaponType, AGun*> Pair : Guns)
+	{
+		if (Pair.Value == GunOnCooldown)
+		{
+			Weapon = Pair.Key;
+		}
+	}
+	
 	UProgressBar* CooldownBar;
-	switch (CurrentWeapon)
+	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
 		CooldownBar = AutoPistolAbilityCooldown;

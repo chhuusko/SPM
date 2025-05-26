@@ -341,7 +341,7 @@ void AGun::UpdateWeaponAbilityCooldown()
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
 		SetAbilityCooldown(AbilityCooldown);
 	}
-	OnCooldownUpdated.Broadcast(GetCooldownPercentage());
+	OnCooldownUpdated.Broadcast(this, GetCooldownPercentage());
 }
 
 void AGun::ApplyUpgrade(int NewLevel)
