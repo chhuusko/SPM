@@ -15,9 +15,9 @@ AUpgradedSniper::AUpgradedSniper()
 void AUpgradedSniper::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped) return;
+	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
 
-	// Reloads automatically if bullets reach 0.
+	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
