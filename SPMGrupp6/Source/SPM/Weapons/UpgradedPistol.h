@@ -27,6 +27,13 @@ private:
 	UPROPERTY(EditAnywhere)
 	float AbilityEffectTime = 2.5f;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> AbilityEffectTimePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> NPCDamageMultiplierPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<int32> BonusResourceDropPerLevel;
+	
 	void ResetAbilityCooldown();
 	void SetRenderCustomDepth(bool bRenderCustomDepth);
 	void ResetRenderCustomDepth();

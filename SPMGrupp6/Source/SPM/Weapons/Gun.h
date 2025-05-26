@@ -166,7 +166,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> FireRatePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	int AbilityUnlockedOnLevel = 2;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	TArray<float> AbilityCooldownPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	bool AbilityUnlocked = false;
 
