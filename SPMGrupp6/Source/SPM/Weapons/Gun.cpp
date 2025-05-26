@@ -88,12 +88,8 @@ float AGun::GetCooldownPercentage() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped || !bIsTriggerHeld || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
 	
-	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
-	bCanFire = false;
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.02f, false);
-
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
@@ -203,18 +199,15 @@ void AGun::Fire()
 
 void AGun::ResetCanFire()
 {
-	if (!bIsReloading)
-	{
-		bCanFire = true;
-	}
+	bCanFire = true;
 }
 
 void AGun::PullTrigger()
 {
 	bIsTriggerHeld = true;
 
-	if (!bCanFire || !bIsWeaponEquipped) return;
-	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
+	if (!bIsWeaponEquipped) return;
+
 	if (bIsAutomatic)
 	{
 		if (!GetWorld()->GetTimerManager().IsTimerActive(FireRateTimer))
@@ -224,15 +217,19 @@ void AGun::PullTrigger()
 	}
 	else
 	{
-		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::ResetCanFire, FireRate, false);
+		if (bCanFire)
+		{
+			Fire();
+			bCanFire = false;
+			GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+		}
 	}
 }
 
 void AGun::ReleaseTrigger()
 {
 	bIsTriggerHeld = false;
-	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+	StopAutoFire();
 	TimesFired = 0;
 }
 
@@ -457,6 +454,20 @@ float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDama
 
 void AGun::StartAutomaticFireSequence()
 {
+	HandleNextAutoFire();
+}
+void AGun::HandleNextAutoFire()
+{
+	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading || BulletsLeft <= 0)
+	{
+		StopAutoFire();
+		return;
+	}
+
 	Fire();
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::HandleNextAutoFire, FireRate, false);
+}
+void AGun::StopAutoFire()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 }

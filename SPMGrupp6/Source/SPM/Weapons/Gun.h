@@ -269,4 +269,6 @@ public:
 	void StopPendingActions();
 	void SetWeaponEquipped(const bool bIsEquipped);
 	void EnableCanPlayEmptyMagSound();
+	void HandleNextAutoFire();
+	void StopAutoFire();
 };
