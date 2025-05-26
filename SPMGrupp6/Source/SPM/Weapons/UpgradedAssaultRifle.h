@@ -17,6 +17,7 @@ class SPM_API AUpgradedAssaultRifle : public AAssaultRifle
 protected:
 	
 	virtual void WeaponAbility() override;
+	virtual void ApplyUpgrade(int NewLevel) override;
 
 private:
 	
@@ -32,7 +33,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityDamagePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float AbilityDamageDefaultIncreasePerLevel;
+	float AbilityDamageDefaultIncreasePerLevel = 1;
 	
 	//UPROPERTY(EditAnywhere)
 	//float AbilityCooldown = 5.0f;

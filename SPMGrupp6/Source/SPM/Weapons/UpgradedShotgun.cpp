@@ -40,6 +40,14 @@ void AUpgradedShotgun::WeaponAbility()
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
 }
 
+void AUpgradedShotgun::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+
+	// No such thing as AbilityEffectTime in here. 
+	//AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectDefaultIncreasePerLevel);
+}
+
 
 void AUpgradedShotgun::ResetAbilityCooldown()
 {

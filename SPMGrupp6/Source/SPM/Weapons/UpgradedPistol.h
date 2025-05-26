@@ -34,12 +34,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float AbilityEffectDefaultIncreasePerLevel;
+	float AbilityEffectDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<int32> BonusResourceDropPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float BonusResourceDropDefaultIncreasePerLevel;
+	int32 BonusResourceDropDefaultIncreasePerLevel = 1;
 	
 	void ResetAbilityCooldown();
 	void SetRenderCustomDepth(bool bRenderCustomDepth);

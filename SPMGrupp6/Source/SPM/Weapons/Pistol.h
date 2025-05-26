@@ -25,5 +25,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> NPCDamageMultiplierPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float NPCDamageMultiplierDefaultIncreasePerLevel;
+	float NPCDamageMultiplierDefaultIncreasePerLevel = 1;
 };

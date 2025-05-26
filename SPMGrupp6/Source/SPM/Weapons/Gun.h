@@ -159,27 +159,27 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<int32> UpgradeCostPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	int32 UpgradeCostDefaultIncreasePerLevel;
+	int32 UpgradeCostDefaultIncreasePerLevel = 1;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> DamagePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float DamageDefaultIncreasePerLevel;
+	float DamageDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<int32> MagazineSizePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	int32 MagazineSizeDefaultIncreasePerLevel;
+	int32 MagazineSizeDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float ReloadTimeDefaultIncreasePerLevel;
+	float ReloadTimeDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> FireRatePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float FireRateDefaultIncreasePerLevel;
+	float FireRateDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	int AbilityUnlockedOnLevel = 2;
@@ -189,7 +189,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityCooldownPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float AbilityCooldownDefaultIncreasePerLevel;
+	float AbilityCooldownDefaultIncreasePerLevel = 1;
 	
 	template<typename T>
 	FORCEINLINE T GetScaledStatValue(const TArray<T>& ValuesPerLevel, int32 Level, T FallbackValue, T DefaultIncreasePerLevel) const

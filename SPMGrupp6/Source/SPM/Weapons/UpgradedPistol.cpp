@@ -92,6 +92,7 @@ void AUpgradedPistol::ApplyUpgrade(int NewLevel)
    Super::ApplyUpgrade(NewLevel);
    
    AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectDefaultIncreasePerLevel);
+   ExtraLootDrops = GetScaledStatValue<int32>(BonusResourceDropPerLevel, NewLevel, ExtraLootDrops, BonusResourceDropDefaultIncreasePerLevel);
 }
 
 

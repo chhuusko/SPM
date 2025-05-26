@@ -48,6 +48,14 @@ void AUpgradedAssaultRifle::WeaponAbility()
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
 }
 
+void AUpgradedAssaultRifle::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+
+	// AbilityDamage is not exposed here
+	// AbilityDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, AbilityDamage, AbilityDamageDefaultIncreasePerLevel);
+}
+
 void AUpgradedAssaultRifle::ResetAbilityCooldown()
 {
 	bCanUseAbility = true;
