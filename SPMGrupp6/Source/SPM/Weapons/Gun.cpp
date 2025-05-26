@@ -232,9 +232,9 @@ void AGun::Reload()
 	if (BulletsLeft < MagazineSize && !bIsReloading)
 	{
 		bIsReloading = true;
-		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		// Can not shoot while reloading.
 		bCanFire = false;
+		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
 		OnReload.Broadcast(ReloadTime);
