@@ -446,6 +446,8 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Reload Time: %f"), Cooldown);
 	
 	// Bind function for updating reload slider.
 	ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
@@ -475,9 +477,9 @@ void UHUDWidget::UpdateReloadCooldown(float Output)
 {
 	if (ReloadCooldown && ReloadTimeline)
 	{
-		// Set the slider value as a percentage of the total time.
-		float NormalizedValue = Output / ReloadTimeline->GetTimelineLength();
-		ReloadCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
+		float PlaybackPosition = ReloadTimeline->GetPlaybackPosition();
+		float NormalizedValue = FMath::Clamp(PlaybackPosition / ReloadTimeline->GetTimelineLength(), 0.f, 1.f);
+		ReloadCooldown->SetValue(NormalizedValue);
 	}
 }
 
