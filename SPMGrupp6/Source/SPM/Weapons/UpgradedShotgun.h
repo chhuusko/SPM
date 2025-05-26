@@ -31,7 +31,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float AbilityEffectDefaultIncreasePerLevel;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> NumberOfPelletsPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float NumberOfPelletsDefaultIncreasePerLevel;
 	
 	// UPROPERTY(EditAnywhere)
 	// float AbilityCooldown = 5.0f;

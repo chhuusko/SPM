@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
-
 class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
@@ -160,20 +159,52 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<int32> UpgradeCostPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	int32 UpgradeCostDefaultIncreasePerLevel;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> DamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float DamageDefaultIncreasePerLevel;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<int32> MagazineSizePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	int32 MagazineSizeDefaultIncreasePerLevel;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float ReloadTimeDefaultIncreasePerLevel;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> FireRatePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float FireRateDefaultIncreasePerLevel;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	int AbilityUnlockedOnLevel = 2;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	bool AbilityUnlocked = false;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityCooldownPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	bool AbilityUnlocked = false;
+	float AbilityCooldownDefaultIncreasePerLevel;
+	
+	template<typename T>
+	FORCEINLINE T GetScaledStatValue(const TArray<T>& ValuesPerLevel, int32 Level, T FallbackValue, T DefaultIncreasePerLevel) const
+	{
+		const int32 NumLevels = ValuesPerLevel.Num();
+		const int32 DefinedLevels = FMath::Max(NumLevels, 1);
+		const int32 Index = FMath::Clamp(Level - 1, 0, NumLevels - 1);
+		const T BaseValue = NumLevels > 0 ? ValuesPerLevel.Last() : FallbackValue;
 
+		T Value = (NumLevels > 0 && ValuesPerLevel.IsValidIndex(Index)) ? ValuesPerLevel[Index] : BaseValue;
+		const int32 Overflow = Level - DefinedLevels;
+
+		return Overflow > 0 ? Value + DefaultIncreasePerLevel * Overflow : Value;
+	}
+	
 	UFUNCTION()
 	void GetPlayerController();
 
@@ -192,7 +223,6 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	int32 CooldownUpdateAmount = 10;
 
-
 	float RemainingAbilityCooldown;
 	
 	bool bIsAbilityOnCooldown = false;
@@ -203,7 +233,6 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float LegsHitMultiplier = 0.75;
-
 
 public:	
 	// Called every frame

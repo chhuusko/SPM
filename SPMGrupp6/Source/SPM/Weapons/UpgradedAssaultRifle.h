@@ -31,6 +31,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityDamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	float AbilityDamageDefaultIncreasePerLevel;
 	
 	//UPROPERTY(EditAnywhere)
 	//float AbilityCooldown = 5.0f;
