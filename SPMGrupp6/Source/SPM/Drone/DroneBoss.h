@@ -17,7 +17,5 @@ protected:
 	ADroneBoss();
 	virtual void LostPlayer() override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-private:
-	virtual void LootDrop() override;
 };	
 
