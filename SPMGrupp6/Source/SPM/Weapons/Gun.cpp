@@ -347,6 +347,7 @@ void AGun::UpdateWeaponAbilityCooldown()
 void AGun::ApplyUpgrade(int NewLevel)
 {
 	Damage = GetScaledStatValue<float>(DamagePerLevel, NewLevel, Damage, DamageDefaultIncreasePerLevel);
+	MinimumDamage = GetScaledStatValue<float>(MinimumDamagePerLevel, NewLevel, MinimumDamage, MinimumDamageDefaultIncreasePerLevel);
 	MagazineSize = GetScaledStatValue<int32>(MagazineSizePerLevel, NewLevel, MagazineSize, MagazineSizeDefaultIncreasePerLevel);
 	ReloadTime = GetScaledStatValue<float>(ReloadTimePerLevel, NewLevel, ReloadTime, ReloadTimeDefaultIncreasePerLevel);
 	FireRate = GetScaledStatValue<float>(FireRatePerLevel, NewLevel, FireRate, FireRateDefaultIncreasePerLevel);

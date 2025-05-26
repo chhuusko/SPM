@@ -170,6 +170,11 @@ protected:
 	float DamageDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> MinimumDamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float MinimumDamageDefaultIncreasePerLevel = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<int32> MagazineSizePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	int32 MagazineSizeDefaultIncreasePerLevel = 1;
