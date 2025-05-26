@@ -174,7 +174,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> ReloadTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float ReloadTimeDefaultIncreasePerLevel = 1;
+	float ReloadTimeDefaultIncreasePerLevel = -1;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> FireRatePerLevel;
@@ -189,7 +189,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
 	TArray<float> AbilityCooldownPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	float AbilityCooldownDefaultIncreasePerLevel = 1;
+	float AbilityCooldownDefaultIncreasePerLevel = -1;
 	
 	template<typename T>
 	FORCEINLINE T GetScaledStatValue(const TArray<T>& ValuesPerLevel, int32 Level, T FallbackValue, T DefaultIncreasePerLevel) const

@@ -45,7 +45,7 @@ void AUpgradedShotgun::ApplyUpgrade(int NewLevel)
 	Super::ApplyUpgrade(NewLevel);
 
 	// No such thing as AbilityEffectTime in here. 
-	//AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectDefaultIncreasePerLevel);
+	//AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectTimeDefaultIncreasePerLevel);
 }
 
 
