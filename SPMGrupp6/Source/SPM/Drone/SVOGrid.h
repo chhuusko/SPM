@@ -37,7 +37,7 @@ private:
 	
 	
 	// Declare and initialize all to false
-	TArray<TArray<TArray<bool>>> BoolArray;
+	TArray<TArray<TArray<bool>>> GridArray;
 	
 	FOctNode* RootNode;
 	void CreateGrid();

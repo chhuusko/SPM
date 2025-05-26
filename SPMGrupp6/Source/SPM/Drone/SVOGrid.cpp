@@ -34,16 +34,17 @@ void ASVOGrid::Tick(float DeltaTime)
 void ASVOGrid::CreateStandardGrid()
 {
 	float Quarter = AreaSize.X / GridLength;
-	BoolArray.SetNum(GridLength+1);
+	GridArray.SetNum(GridLength+1);
 	for (int x = -1*GridLength; x <= GridLength; x += 2) {
-		BoolArray[(x+(1*GridLength))/2].SetNum(GridLength+1);
+		GridArray[(x+(1*GridLength))/2].SetNum(GridLength+1);
 		for (int y = -1*GridLength; y <= GridLength; y += 2) {
-			BoolArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2].SetNum(GridLength+1);
+			GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2].SetNum(GridLength+1);
 			for (int z = -1*GridLength; z <= GridLength; z += 2) {
 				FVector Offset(x * Quarter, y * Quarter, z * Quarter);
 				FOctNode* ChildCube = new FOctNode(AreaPosition+Offset, AreaSize / GridLength);
-				HasObjectWithin(ChildCube);
-				BoolArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = true;
+				GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = false;
+				if (HasObjectWithin(ChildCube)) GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = true;
+				
 			}
 		}
 	}
@@ -81,9 +82,19 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions
 	TArray<FVector> Directions;
+	if (GridArray[Position.X+1][Position.Y][Position.Z]) Directions.Add(FVector(Position.X+1, Position.Y, Position.Z));
+	if (GridArray[Position.X-1][Position.Y][Position.Z]) Directions.Add(FVector(Position.X-1, Position.Y, Position.Z));
+
+	if (GridArray[Position.X][Position.Y+1][Position.Z]) Directions.Add(FVector(Position.X, Position.Y+1, Position.Z));
+	if (GridArray[Position.X][Position.Y-1][Position.Z]) Directions.Add(FVector(Position.X, Position.Y-1, Position.Z));
 	
+	if (GridArray[Position.X][Position.Y][Position.Z+1]) Directions.Add(FVector(Position.X, Position.Y, Position.Z+1));
+	if (GridArray[Position.X][Position.Y][Position.Z-1]) Directions.Add(FVector(Position.X, Position.Y, Position.Z-1));
+
+	UE_LOG(LogTemp, Warning, TEXT("ConvertToGrid: %d"), Directions.Num());
 	return Directions;
 	// if all no avalable and all visited go back
+	
 }
 FVector ASVOGrid::ConvertToGrid(FVector Position)
 {
@@ -115,6 +126,7 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 
 bool ASVOGrid::HasObjectWithin(FOctNode* Node)
 {
+	float Quarter = AreaSize.X / GridLength;
 	bool bHit = GetWorld()->OverlapBlockingTestByChannel(
 	Node->Position,
 	FRotator::ZeroRotator.Quaternion(),
