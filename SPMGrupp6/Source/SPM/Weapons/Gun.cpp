@@ -7,6 +7,7 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/LogMacros.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 // Sets default values
 AGun::AGun()
@@ -115,11 +116,9 @@ void AGun::Fire()
 	{
 		if (bDebugWeapon)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
-			FName HitBone = Hit.BoneName;
-			UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());		
 			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 		}
+		
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(), 
 			ImpactParticles,
@@ -148,7 +147,22 @@ void AGun::Fire()
 			else
 			{
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
-				ActualDamage = CalculateDamageHitLocation(Hit, ActualDamage);
+				if (HitActor->IsA(AShooterCharacter::StaticClass()))
+				{
+					// If hit actor is a player, calculate new damage based on body part hit.
+					ActualDamage = CalculateDamageHitLocation(Hit, ActualDamage);
+					
+					if (bDebugHitBoxHits)
+					{
+						UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
+						FName HitBone = Hit.BoneName;
+						UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());		
+					}
+					if (bDebugWeapon)
+					{
+						UE_LOG(LogTemp, Display, TEXT("Damage dealt to player: %f"), ActualDamage);
+					}
+				}
 				FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
 				HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
@@ -327,7 +341,7 @@ void AGun::UpdateWeaponAbilityCooldown()
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
 		SetAbilityCooldown(AbilityCooldown);
 	}
-	OnCooldownUpdated.Broadcast(GetCooldownPercentage());
+	OnCooldownUpdated.Broadcast(this, GetCooldownPercentage());
 }
 
 void AGun::ApplyUpgrade(int NewLevel)
@@ -450,7 +464,7 @@ FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
         if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
         {
         		if (bDebugHitBoxHits){
-                    UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
+                    UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
                 }
         		return OriginalDamage * LegsHitMultiplier;
         }

@@ -5,6 +5,7 @@
 #include "NiagaraComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 void AUpgradedSniper::Fire()
 {
@@ -31,8 +32,9 @@ void AUpgradedSniper::Fire()
 	
 	FVector ShotDirection;
 	float TraceLength;
+	FHitResult LineHitResult;
 
-	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength);
+	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength, LineHitResult);
 	TSet<AActor*> AlreadyHitActors;
 
 	for (FHitResult Hit: Hits)
@@ -42,11 +44,14 @@ void AUpgradedSniper::Fire()
 
 		if (AlreadyHitActors.Contains(HitActor)) continue;
 		AlreadyHitActors.Add(HitActor);
-		
+
+			// Debugs for seeing hits and testing hit results.
 			if (bDebugWeapon)
 			{
 				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 			}
+
+			// Spawn particles
 			UGameplayStatics::SpawnEmitterAtLocation(
 				GetWorld(), 
 				ImpactParticles,
@@ -73,6 +78,18 @@ void AUpgradedSniper::Fire()
 				else
 				{
 					float ActualDamage = CalculateDamageFalloff(TraceLength);
+					
+					if (LineHitResult.GetActor() == HitActor)
+					{
+						ActualDamage = CalculateDamageHitLocation(LineHitResult, ActualDamage);
+
+						if (bDebugHitBoxHits)
+						{
+							UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(LineHitResult));
+							FName HitBone = LineHitResult.BoneName;
+							UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());
+						}
+					}
 					FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 					AController* OwnerController = GetOwnerController();
 					HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
@@ -118,7 +135,7 @@ void AUpgradedSniper::Fire()
 }
 
 
-TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength)
+TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult)
 {
 	//Overshadowed GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
@@ -179,6 +196,11 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 			if (bDebugWeapon)
 			{
 				UE_LOG(LogTemp, Display, TEXT("Hit the actor: %s"), *HitActor->GetName());
+			}
+
+			if (!LineHitResult.bBlockingHit && HitActor->IsA(AShooterCharacter::StaticClass()))
+			{
+				LineHitResult = Hit;
 			}
 
 			if (ObjectsPassedThrough == ObjectsToGoThrough)

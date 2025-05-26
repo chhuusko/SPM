@@ -4,6 +4,7 @@
 #include "Pistol.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 // Metoder kan ändras för att hantera ex. burstfire
 void APistol::Fire()
@@ -68,7 +69,27 @@ void APistol::Fire()
 				else
 				{
 					float ActualDamage = CalculateDamageFalloff(TraceLength);
-					ActualDamage *= NPCDamageMultiplier;
+					if (HitActor->IsA(AShooterCharacter::StaticClass()))
+					{
+						// If hit actor is a player, calculate new damage based on body part hit.
+						ActualDamage = CalculateDamageHitLocation(Hit, ActualDamage);
+
+						if (bDebugHitBoxHits)
+						{
+							UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(Hit));
+							FName HitBone = Hit.BoneName;
+							UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());		
+						}
+						if (bDebugWeapon)
+						{
+							UE_LOG(LogTemp, Display, TEXT("Damage dealt to player: %f"), ActualDamage);
+						}
+					}
+					else
+					{
+						// Else deal more damage to NPC's with farming weapon.
+						ActualDamage *= NPCDamageMultiplier;
+					}
 					FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 					AController* OwnerController = GetOwnerController();
 					HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);

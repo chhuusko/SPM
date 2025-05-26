@@ -35,6 +35,7 @@ private:
 	USoundBase* StopScopingSound;
 	
 	FTimerHandle AimTimerHandle;
+	UPROPERTY(EditAnywhere)
 	float ScopeToEyeDuration = 0.3;
 
 	UPROPERTY(VisibleAnywhere)

@@ -11,7 +11,7 @@ class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, AActor*, HitActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCooldownUpdated, float, CooldownPercentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCooldownUpdated, AGun*, Gun, float, CooldownPercentage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReload, float, ReloadTime);
 
 UCLASS()
@@ -182,6 +182,8 @@ protected:
 
 	bool IsAbilityOnCooldown() const { return bIsAbilityOnCooldown; }
 	void SetAbilityCooldown(bool Cooldown) { bIsAbilityOnCooldown = Cooldown; }
+	FString WhichBodyPartWasHit(FHitResult& HitResult);
+	float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -195,10 +197,6 @@ private:
 	
 	bool bIsAbilityOnCooldown = false;
 	FTimerHandle AbilityCooldownTimerHandle;
-
-	FString WhichBodyPartWasHit(FHitResult& HitResult);
-	
-	float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
 	
 	UPROPERTY(EditAnywhere)
 	float HeadShotMultiplier = 1.25; 
