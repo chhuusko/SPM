@@ -7,6 +7,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
 
+AUpgradedSniper::AUpgradedSniper()
+{
+	bShowUpgradeOptions = true;
+}
+
 void AUpgradedSniper::Fire()
 {
 	// Checks if weapon can fire.

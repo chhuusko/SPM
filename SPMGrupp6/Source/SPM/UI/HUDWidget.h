@@ -37,6 +37,9 @@ public:
 	class UTextBlock* SniperRifleUpgradeCost;
 
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AbilityUnlockedPrompt;
+
+	UPROPERTY(meta = (BindWidget))
 	class UBorder* AutoPistolBorder;
 
 	UPROPERTY(meta = (BindWidget))
@@ -159,6 +162,12 @@ private:
 	void UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage);
 
 	UFUNCTION()
+	void ShowAbilityUnlockedPrompt();
+
+	UFUNCTION()
+	void RemoveAbilityUnlockedPrompt();
+
+	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
 	
 	UFUNCTION()
@@ -227,6 +236,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float HitmarkerTime = 0.5f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float AbilityUnlockedDisplayTime = 5.f;
+
 	bool bHasDashCooldown;
 	bool bJetpackFuelFull = true;
 
@@ -234,6 +246,7 @@ private:
 
 	FTimerHandle HitmarkTimerHandle;
 	FTimerHandle JetpackTimerHandle;
+	FTimerHandle AbilityUnlockedHandle;
 
 	EWeaponType CurrentWeapon;
 

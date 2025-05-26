@@ -27,9 +27,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	int numberOfPellets = 10;
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> NumberOfPelletsPerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float NumberOfPelletsDefaultIncreasePerLevel = 1;
 	
 	UPROPERTY(EditAnywhere)

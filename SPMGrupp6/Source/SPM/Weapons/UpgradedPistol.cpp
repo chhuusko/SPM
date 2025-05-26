@@ -8,6 +8,10 @@
 #include "SPM/Minimap/CombinedMinimap.h"
 #include "SPM/Minimap/RadarComponent.h"
 
+AUpgradedPistol::AUpgradedPistol()
+{
+   bShowUpgradeOptions = true;
+}
 
 void AUpgradedPistol::Tick(float DeltaTime)
 {

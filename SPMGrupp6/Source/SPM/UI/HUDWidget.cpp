@@ -230,11 +230,26 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	// Bind the function for updating the sniper scope.
 	if (Weapon == EWeaponType::SniperRifle)
 	{
-		Sniper = Cast<ASniper>(Gun);
-		if (Sniper)
+		// Hide crosshair since hipfire is inaccurate.
+		if (Crosshair->IsVisible())
 		{
-			Sniper->OnScope.AddDynamic(this, &UHUDWidget::ShowCrosshair);
+			Crosshair->SetVisibility(ESlateVisibility::Hidden);
 		}
+	}
+	else
+	{
+		// Show crosshair.
+		if (!Crosshair->IsVisible())
+		{
+			Crosshair->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+
+	// Stop reload if it is interrupted by swapping weapons.
+	if (ReloadTimeline->IsPlaying())
+	{
+		ReloadTimeline->Stop();
+		ReloadCooldown->SetValue(0.f);
 	}
 	
 	UBorder* NextWeaponBorder;
@@ -414,6 +429,17 @@ void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercent
 	}
 }
 
+void UHUDWidget::ShowAbilityUnlockedPrompt()
+{
+	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Visible);
+	GetWorld()->GetTimerManager().SetTimer(AbilityUnlockedHandle, this, &UHUDWidget::RemoveAbilityUnlockedPrompt, AbilityUnlockedDisplayTime);
+}
+
+void UHUDWidget::RemoveAbilityUnlockedPrompt()
+{
+	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Hidden);
+}
+
 // Calls helper methods to update the UI when an upgrade gets applied.
 void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked)
 {
@@ -424,6 +450,7 @@ void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool
 	if (bAbilityUnlocked)
 	{
 		UpdateCooldownBarColor(Weapon);
+		ShowAbilityUnlockedPrompt();
 	}
 }
 

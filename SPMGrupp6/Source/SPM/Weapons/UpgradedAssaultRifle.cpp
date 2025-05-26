@@ -5,7 +5,10 @@
 
 #include "Kismet/GameplayStatics.h"
 
-
+AUpgradedAssaultRifle::AUpgradedAssaultRifle()
+{
+	bShowUpgradeOptions = true;
+}
 
 void AUpgradedAssaultRifle::WeaponAbility()
 {
