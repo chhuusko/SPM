@@ -20,7 +20,8 @@ public:
 	FVector Size;
 	FOctNode* Parent;
 	FOctNode* Children[8];
-	bool isLeaf = false;
+	bool IsLeaf = false;
+	bool IsVisited = false;
 	void AddChildren();
 };
 
