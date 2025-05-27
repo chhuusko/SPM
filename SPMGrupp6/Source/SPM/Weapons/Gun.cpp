@@ -223,7 +223,7 @@ void AGun::PullTrigger()
 		else
 		{
 			float FireInTime = LastFireTime + FireRate - CurrentTime;
-			if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading || BulletsLeft <= 0)
+			if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading)
 			{
 				StopAutoFire();
 				return;
@@ -462,7 +462,7 @@ void AGun::StartAutomaticFireSequence()
 }
 void AGun::HandleNextAutoFire()
 {
-	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading || BulletsLeft <= 0)
+	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading)
 	{
 		StopAutoFire();
 		return;
