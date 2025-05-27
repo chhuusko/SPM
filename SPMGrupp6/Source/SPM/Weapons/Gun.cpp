@@ -23,6 +23,7 @@ AGun::AGun()
 
 	MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePosition"));
 	MuzzlePosition->SetupAttachment(Mesh);
+	LastFireTime = -FireRate;
 }
 
 // Called when the game starts or when spawned
@@ -88,7 +89,11 @@ float AGun::GetCooldownPercentage() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
+	float CurrentTime = GetWorld()->GetTimeSeconds();
 	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (CurrentTime - LastFireTime < FireRate) return;
+
+	LastFireTime = CurrentTime;
 	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
@@ -205,12 +210,13 @@ void AGun::ResetCanFire()
 void AGun::PullTrigger()
 {
 	bIsTriggerHeld = true;
-
 	if (!bIsWeaponEquipped) return;
+
+	float CurrentTime = GetWorld()->GetTimeSeconds();
 
 	if (bIsAutomatic)
 	{
-		if (!GetWorld()->GetTimerManager().IsTimerActive(FireRateTimer))
+		if (CurrentTime - LastFireTime >= FireRate && !GetWorld()->GetTimerManager().IsTimerActive(FireRateTimer))
 		{
 			StartAutomaticFireSequence();
 		}
