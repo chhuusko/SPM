@@ -10,7 +10,6 @@
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "SPM/Weapons/Gun.h"
-#include "SPM/Weapons/Sniper.h"
 
 void UHUDWidget::NativeConstruct()
 {

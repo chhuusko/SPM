@@ -33,7 +33,7 @@ void AGun::BeginPlay()
 	BulletsLeft = MagazineSize;
 	
 	GetPlayerController();
-	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
 	
 	MuzzleLocation = MuzzlePosition->GetComponentLocation();
 	MuzzleRotation = MuzzlePosition->GetComponentRotation();
@@ -375,6 +375,11 @@ void AGun::ApplyUpgrade(int NewLevel)
 		AbilityUnlocked = true;
 		AbilityCooldown = GetScaledStatValue<float>(AbilityCooldownPerLevel, NewLevel, AbilityCooldown, AbilityCooldownDefaultIncreasePerLevel);
 	}
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
+}
+
+void AGun::UpdateAmmoText()
+{
 	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 }
 

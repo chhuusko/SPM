@@ -77,13 +77,6 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	CurrentWeapon = WeaponType;
 	
 	SpawnAndAttachWeapon(WeaponClass);
-	
-	// Update ammo text for this weapons player.
-	CurrentGun = CharacterOwner->GetGun();
-	if (CurrentGun)
-	{
-		CurrentGun->OnAmmoUpdated.Broadcast(CurrentGun->GetBulletsLeft(), CurrentGun->GetMagazineSize());
-	}
 	OnWeaponSwap.Broadcast(WeaponType);
 }
 
@@ -601,6 +594,11 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		WeaponPool.Add(WeaponType, PooledGun);
 		PooledGun->SetOwner(CharacterOwner);
 		PooledGun->SetActorEnableCollision(false);
+	}
+
+	if (PooledGun)
+	{
+		PooledGun->UpdateAmmoText();
 	}
 
 	if (AGun* CurrentGun = CharacterOwner->GetGun())
