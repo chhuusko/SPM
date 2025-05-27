@@ -70,9 +70,10 @@ public:
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
 	UStaticMeshComponent* GetTurretAlt() {return TurretMeshAlt;}
 	USceneComponent* GetProjectileSpawn() {return ProjectileSpawn;}
-	USceneComponent* GetProjectileSpawnAlt(){return ProjectileSpawnAlt;}
+	USceneComponent* GetProjectileSpawnAlt() {return ProjectileSpawnAlt;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
-	UAudioComponent* GetAudioComp(){return AudioComp;};
+	UAudioComponent* GetAudioComp() {return AudioComp;};
+	TArray<FVector>* GetPathList() {return Path;};
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
 
@@ -102,8 +103,9 @@ private:
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
 
-	//Grid
+	//Grid and Path
 	ASVOGrid* Grid;
+	TArray<FVector>* Path;
 	
 	//Properties
 	UPROPERTY(EditAnywhere)

@@ -35,6 +35,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AResourcePickUp> ResourcePickUpClass;
 	UPROPERTY(EditDefaultsOnly)
+	USoundBase* BreakSound;
+	UPROPERTY(EditDefaultsOnly)
 	int lootAmount;
 	void DropLoot();
 	
