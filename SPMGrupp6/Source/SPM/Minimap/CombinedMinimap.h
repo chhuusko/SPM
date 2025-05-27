@@ -61,6 +61,7 @@ protected:
 	UFUNCTION()
 	void SpawnLootBoxIcon();
 	
+	void CheckForStillImage();
 	void SetRenderTransformAngle(UCanvasPanel* Canvas, float Angle);
 	FVector2D GetMinimapPosition(const FVector& WorldLocation) const;
 	UUserWidget* SpawnIconOn(const FVector2D& InPosition, TSubclassOf<UUserWidget> IconClass);
@@ -73,7 +74,7 @@ protected:
 	UCanvasPanel* MinimapIconsCanvas;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
-	FSlateBrush MinimapImage;
+	TMap<FString, FSlateBrush> MinimapImages;
 	bool ImageIsSet = false;
 	
 	UPROPERTY(EditAnywhere)

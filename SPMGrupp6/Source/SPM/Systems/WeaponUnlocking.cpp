@@ -187,6 +187,12 @@ void UWeaponUnlocking::UpgradingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 	if (AGun* Gun = WeaponPool[WeaponType])
 	{
 		int32 UpgradeCost = GetUpgradeCost(WeaponType);
+		if (UpgradeCost == INT_MAX)
+		{
+			if(Debug) UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d already at max level!"),
+								(int32)WeaponType);
+			return;
+		}
 		if (ResourceComponent->HasEnoughResources(UpgradeCost))
 		{
 			UpgradingWeaponSuccess(WeaponType, Gun, State, UpgradeCost);

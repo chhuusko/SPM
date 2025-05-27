@@ -364,6 +364,7 @@ void AGun::UpdateWeaponAbilityCooldown()
 
 void AGun::ApplyUpgrade(int NewLevel)
 {
+	if (NewLevel > MaxLevel) return;
 	Damage = GetScaledStatValue<float>(DamagePerLevel, NewLevel, Damage, DamageDefaultIncreasePerLevel);
 	MinimumDamage = GetScaledStatValue<float>(MinimumDamagePerLevel, NewLevel, MinimumDamage, MinimumDamageDefaultIncreasePerLevel);
 	MagazineSize = GetScaledStatValue<int32>(MagazineSizePerLevel, NewLevel, MagazineSize, MagazineSizeDefaultIncreasePerLevel);
@@ -380,6 +381,7 @@ void AGun::ApplyUpgrade(int NewLevel)
 
 int32 AGun::GetUpgradeCost(int Level) const
 {
+	if (Level > MaxLevel) return INT_MAX;
 	return GetScaledStatValue<int32>(UpgradeCostPerLevel, Level, 0, UpgradeCostDefaultIncreasePerLevel);
 }
 

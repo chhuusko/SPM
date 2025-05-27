@@ -167,6 +167,8 @@ protected:
 	bool bShowUpgradeOptions = false;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	int32 MaxLevel = 5;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<int32> UpgradeCostPerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	int32 UpgradeCostDefaultIncreasePerLevel = 1;

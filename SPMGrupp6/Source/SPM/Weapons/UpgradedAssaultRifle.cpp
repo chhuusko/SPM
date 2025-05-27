@@ -60,8 +60,8 @@ void AUpgradedAssaultRifle::ApplyUpgrade(int NewLevel)
 {
 	Super::ApplyUpgrade(NewLevel);
 
-	// AbilityDamage is not exposed here
-	// AbilityDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, AbilityDamage, AbilityDamageDefaultIncreasePerLevel);
+	ExtraAbilityMinDamage = GetScaledStatValue<float>(AbilityMinDamagePerLevel, NewLevel, ExtraAbilityMinDamage, AbilityMinDamageDefaultIncreasePerLevel);
+	ExtraAbilityMaxDamage = GetScaledStatValue<float>(AbilityMaxDamagePerLevel, NewLevel, ExtraAbilityMaxDamage, AbilityMaxDamageDefaultIncreasePerLevel);
 }
 
 void AUpgradedAssaultRifle::ResetAbilityCooldown()

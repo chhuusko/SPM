@@ -20,30 +20,6 @@ void UCombinedMinimap::NativeConstruct()
 	Super::NativeConstruct();
 	
     InitializeMap();
-	if (Map)
-	{
-		UObject* ImageObject = MinimapImage.GetResourceObject();
-
-		if (ImageObject != nullptr && Cast<UTexture2D>(ImageObject) != nullptr)
-		{
-			// Use the static image as background
-			Map->SetBrush(MinimapImage);
-			ImageIsSet = true;
-
-			if (SceneCaptureRef)
-			{
-				SceneCaptureRef->Deactivate();
-			}
-		}
-		else if (RenderTarget)
-		{
-		    ImageIsSet = false;
-			// Fallback: use SceneCapture's render target
-			FSlateBrush RenderBrush;
-			RenderBrush.SetResourceObject(RenderTarget);
-			Map->SetBrush(RenderBrush);
-		}
-	}
 }
 
 void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -79,6 +55,7 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 
 void UCombinedMinimap::InitializeMap()
 {
+	CheckForStillImage();
 	SetAlwaysShowPlayers(ShowPlayersFromStart);
 	FlipMapDependingOnPlayerSpawn();
 	if (!ImageIsSet) SetSceneCapture();
@@ -378,6 +355,37 @@ void UCombinedMinimap::SpawnLootBoxIcon()
 			{
 				ObjProp->SetObjectPropertyValue(PropertyAddress, LootBoxRef);
 			}
+		}
+	}
+}
+
+void UCombinedMinimap::CheckForStillImage()
+{
+	if (Map)
+	{
+		FString CurrentLevelName = GetWorld()->GetMapName();
+		CurrentLevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix); 
+		UE_LOG(LogTemp, Warning, TEXT("Current Level Name: %s"), *CurrentLevelName);
+
+		const FSlateBrush* FoundBrush = MinimapImages.Find(CurrentLevelName);
+		if (FoundBrush && FoundBrush->GetResourceObject() && Cast<UTexture2D>(FoundBrush->GetResourceObject()))
+		{
+			// Use the static image as background
+			Map->SetBrush(*FoundBrush);
+			ImageIsSet = true;
+
+			if (SceneCaptureRef)
+			{
+				SceneCaptureRef->Deactivate();
+			}
+		}
+		else if (RenderTarget)
+		{
+			ImageIsSet = false;
+			// Fallback: use SceneCapture's render target
+			FSlateBrush RenderBrush;
+			RenderBrush.SetResourceObject(RenderTarget);
+			Map->SetBrush(RenderBrush);
 		}
 	}
 }

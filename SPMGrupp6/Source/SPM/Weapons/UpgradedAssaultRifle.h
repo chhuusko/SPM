@@ -40,9 +40,13 @@ private:
 	float ExtraAbilityMaxDamage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
-	TArray<float> AbilityDamagePerLevel;
+	TArray<float> AbilityMinDamagePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
-	float AbilityDamageDefaultIncreasePerLevel = 1;
+	float AbilityMinDamageDefaultIncreasePerLevel = 1;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> AbilityMaxDamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float AbilityMaxDamageDefaultIncreasePerLevel = 1;
 	
 	//UPROPERTY(EditAnywhere)
 	//float AbilityCooldown = 5.0f;
