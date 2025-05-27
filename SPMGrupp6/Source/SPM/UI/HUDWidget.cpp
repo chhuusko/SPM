@@ -233,24 +233,9 @@ void UHUDWidget::UpdateHealth(float HealthPercent)
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
 	GetGun();
-
-	// Bind the function for updating the sniper scope.
-	if (Weapon == EWeaponType::SniperRifle)
-	{
-		// Hide crosshair since hipfire is inaccurate.
-		if (Crosshair->IsVisible())
-		{
-			Crosshair->SetVisibility(ESlateVisibility::Hidden);
-		}
-	}
-	else
-	{
-		// Show crosshair.
-		if (!Crosshair->IsVisible())
-		{
-			Crosshair->SetVisibility(ESlateVisibility::Visible);
-		}
-	}
+	
+	// Hide crosshair for sniper, since hipfire is inaccurate.
+	UpdateCrosshairVisibility(Weapon);
 
 	// Stop reload if it is interrupted by swapping weapons.
 	if (ReloadTimeline->IsPlaying())
@@ -480,15 +465,15 @@ void UHUDWidget::RemoveHitMarker()
 }
 
 // Updates crosshair visibility.
-void UHUDWidget::ShowCrosshair(bool bShow)
+void UHUDWidget::UpdateCrosshairVisibility(EWeaponType Weapon)
 {
-	if (bShow)
+	if (Weapon == EWeaponType::SniperRifle && Crosshair->IsVisible())
 	{
-		Crosshair->SetVisibility(ESlateVisibility::Visible);
+		Crosshair->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		Crosshair->SetVisibility(ESlateVisibility::Hidden);
+		Crosshair->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

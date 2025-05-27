@@ -192,7 +192,7 @@ private:
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
 
 	UFUNCTION()
-	void ShowCrosshair(bool bShow);
+	void UpdateCrosshairVisibility(EWeaponType Weapon);
 
 	UFUNCTION()
 	void StartReloadCooldown(float Cooldown);
