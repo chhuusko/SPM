@@ -199,7 +199,7 @@ void AShooterCharacter::UseJetpack()
 		if (PlayerController && PlayerController->HUDWidget)
 		{
 			// Start updating jetpack fuel indicator.
-			PlayerController->HUDWidget->StartJetpackUpdate();
+			OnUsedJetpack.Broadcast();
 		}
 	}
 

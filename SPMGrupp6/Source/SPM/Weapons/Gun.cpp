@@ -32,7 +32,7 @@ void AGun::BeginPlay()
 	BulletsLeft = MagazineSize;
 	
 	GetPlayerController();
-	GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	
 	MuzzleLocation = MuzzlePosition->GetComponentLocation();
 	MuzzleRotation = MuzzlePosition->GetComponentRotation();
@@ -88,8 +88,8 @@ float AGun::GetCooldownPercentage() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
-
+	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
@@ -177,7 +177,7 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 	TimesFired++;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
@@ -193,42 +193,43 @@ void AGun::Fire()
 		return;
 	}
 
-	// Stops possibility to fire between shots.
-	bCanFire = false;
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 	
 	OnFired.Broadcast();
 }
 
 void AGun::ResetCanFire()
 {
-	if (!bIsReloading)
-	{
-		bCanFire = true;
-	}
+	bCanFire = true;
 }
 
 void AGun::PullTrigger()
 {
 	bIsTriggerHeld = true;
 
-	if (!bCanFire || !bIsWeaponEquipped) return;
-	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
+	if (!bIsWeaponEquipped) return;
+
 	if (bIsAutomatic)
 	{
-		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+		if (!GetWorld()->GetTimerManager().IsTimerActive(FireRateTimer))
+		{
+			StartAutomaticFireSequence();
+		}
 	}
 	else
 	{
-		Fire();
+		if (bCanFire)
+		{
+			Fire();
+			bCanFire = false;
+			GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+		}
 	}
 }
 
 void AGun::ReleaseTrigger()
 {
 	bIsTriggerHeld = false;
-	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+	StopAutoFire();
 	TimesFired = 0;
 }
 
@@ -253,13 +254,12 @@ void AGun::ResetAmmo()
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Continue shooting after reload if the player is still holding trigger.
 	if (bIsTriggerHeld && bIsAutomatic)
 	{
-		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+		StartAutomaticFireSequence();
 	}
 }
 void AGun::StopReload()
@@ -312,19 +312,6 @@ AController* AGun::GetOwnerController() const
 	return OwnerPawn->GetController();
 }
 
-void AGun::UpdateAmmoText()
-{
-	// Update players ammo text.
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
-	else
-	{
-		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
-	}
-}
-
 void AGun::WeaponAbility()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
@@ -370,8 +357,7 @@ void AGun::ApplyUpgrade(int NewLevel)
 		AbilityUnlocked = true;
 		AbilityCooldown = GetScaledStatValue<float>(AbilityCooldownPerLevel, NewLevel, AbilityCooldown, AbilityCooldownDefaultIncreasePerLevel);
 	}
-	
-    UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 }
 
 int32 AGun::GetUpgradeCost(int Level) const
@@ -426,27 +412,53 @@ FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 	return HitResult.Component->GetName();
 }
 
-	float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
+float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
 		
-		// If head hitbox or head bone was hit, deal more damage.
-		if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
-        {
-        		if (bDebugHitBoxHits){
-        			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
-        		}
-        		return OriginalDamage * HeadShotMultiplier;
-        }
-        
-        // If leg hitbox or foot bones was hit reduce damage.
-        if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
-        {
-        		if (bDebugHitBoxHits){
-                    UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
-                }
-        		return OriginalDamage * LegsHitMultiplier;
-        }
-        if (bDebugHitBoxHits){
-            UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
-        }
-		return OriginalDamage; 
+	// If head hitbox or head bone was hit, deal more damage.
+	if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
+	{
+		if (bDebugHitBoxHits){
+			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
+		}
+		return OriginalDamage * HeadShotMultiplier;
 	}
+        
+	// If leg hitbox or foot bones was hit reduce damage.
+	if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
+	{
+		if (bDebugHitBoxHits){
+			UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
+		}
+        	return OriginalDamage * LegsHitMultiplier;
+        }
+	if (bDebugHitBoxHits)
+	{
+		UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
+	}
+	return OriginalDamage; 
+}
+
+void AGun::StartAutomaticFireSequence()
+{
+	HandleNextAutoFire();
+}
+void AGun::HandleNextAutoFire()
+{
+	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading || BulletsLeft <= 0)
+	{
+		StopAutoFire();
+		return;
+	}
+
+	Fire();
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::HandleNextAutoFire, FireRate, false);
+}
+void AGun::StopAutoFire()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+}
+
+int32 AGun::GetBulletsLeft() const
+{
+	return BulletsLeft;
+}

@@ -11,7 +11,11 @@ void AShotgun::Fire()
 {
 	// Checks if weapon can fire.
 	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
-
+	
+	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
+	bCanFire = false;
+	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.1f, false);
+	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
@@ -25,7 +29,6 @@ void AShotgun::Fire()
 		Reload();
 		return;
 	}
-	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
@@ -105,13 +108,11 @@ void AShotgun::Fire()
 	AddRecoil();
 	TimesFired++;
 	BulletsLeft--;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	if (BulletsLeft <= 0)
 	{
 		Reload();
 	}
-	bCanFire = false;
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 	
 	OnFired.Broadcast();
 }

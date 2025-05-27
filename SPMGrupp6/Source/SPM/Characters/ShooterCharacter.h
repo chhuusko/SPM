@@ -14,6 +14,7 @@ class UTutorialComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTakeDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUsedJetpack);
 
 UCLASS()
 class SPM_API AShooterCharacter : public ACharacter
@@ -27,6 +28,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Gun")
 	FOnSetGun OnSetGun;
+	FOnUsedJetpack OnUsedJetpack;
 	
 protected:
 	// Called when the game starts or when spawned
