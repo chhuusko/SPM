@@ -22,6 +22,9 @@ class SPM_API APulseGrenade : public AExplosiveProjectile
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	USceneComponent* BlinkPoint;
+
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* BeepParticles;
 
