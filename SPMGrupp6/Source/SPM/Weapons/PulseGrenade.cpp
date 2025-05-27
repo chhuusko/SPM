@@ -21,6 +21,9 @@ APulseGrenade::APulseGrenade()
 	ProjectileMovement->ProjectileGravityScale = 1.0f;
 	Collision->SetCollisionProfileName(TEXT("Projectile"));
 
+	BlinkPoint = CreateDefaultSubobject<USceneComponent>(TEXT("BlinkPoint"));
+	BlinkPoint->SetupAttachment(RootComponent); 
+
 }
 void APulseGrenade::BeginPlay()
 {
@@ -107,21 +110,21 @@ void APulseGrenade::Explode()
 void APulseGrenade::PlayBeepSound()
 {
 	
-	if (BeepSound)
+	if (BeepSound && BlinkPoint)
 	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), BeepSound, GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), BeepSound, BlinkPoint->GetComponentLocation());
 	}
-	if (BeepParticles)
+	if (BeepParticles && BlinkPoint)
 	{
 		UGameplayStatics::SpawnEmitterAttached(
 		BeepParticles,
-		Mesh,
+		BlinkPoint,
 		NAME_None,
 		FVector::ZeroVector,
-		FRotator::ZeroRotator,             
+		FRotator::ZeroRotator,
 		EAttachLocation::KeepRelativeOffset,
 		true
-		);             
+);
 	}
 
 	CurrentBeepInterval *= BeepDecayFactor;

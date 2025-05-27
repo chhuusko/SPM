@@ -41,6 +41,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> ExplosionCameraShake;
 
+	UPROPERTY(EditAnywhere)
+	float CollisionRadius = 15;
+
 	UPROPERTY()
 	AController* InstigatorController;
 	

@@ -12,7 +12,7 @@ AExplosiveProjectile::AExplosiveProjectile()
 	// Collision
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	SetRootComponent(Collision); 
-	Collision->InitSphereRadius(15.f);
+	Collision->InitSphereRadius(CollisionRadius);
 	Collision->SetCollisionProfileName(TEXT("Projectile"));
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Collision->SetNotifyRigidBodyCollision(true);
