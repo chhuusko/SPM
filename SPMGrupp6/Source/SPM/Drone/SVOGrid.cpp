@@ -2,13 +2,8 @@
 
 
 #include "SVOGrid.h"
-
-#include "AnimationEditorViewportClient.h"
-#include "MeshAttributes.h"
 #include "OctNode.h"
 #include "Node.h"
-#include "Kismet/GameplayStatics.h"
-#include "SPM/Characters/ShooterCharacter.h"
 
 
 ASVOGrid* ASVOGrid::GridInstance = nullptr;
