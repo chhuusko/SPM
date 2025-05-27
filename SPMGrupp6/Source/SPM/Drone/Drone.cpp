@@ -82,7 +82,7 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 {
 	Target = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
-	ASVOGrid::GetInstance(GetWorld())->GetNearestGridPosition(GetActorLocation());
+	//ASVOGrid::GetInstance(GetWorld())->GetNearestGridPosition(GetActorLocation());
 	if (Health <= 0)
 	{
 		if (Spawner != nullptr)
