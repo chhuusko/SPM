@@ -8,14 +8,17 @@ ADroneManager::ADroneManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	//Create SVOGrid
 }
 
 // Called when the game starts or when spawned
 void ADroneManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	ASVOGrid* SpawnedGrid = GetWorld()->SpawnActor<ASVOGrid>(Grid, GetActorLocation(), GetActorRotation());
+	SpawnedGrid->GetNearestGridPosition(GetActorLocation());
+	SpawnedGrid->ConvertToGrid(GetActorLocation());
+	SpawnedGrid->GetPossibleDirections(SpawnedGrid->ConvertToGrid(GetActorLocation()));
 }
 
 // Called every frame

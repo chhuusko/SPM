@@ -56,14 +56,15 @@ void FDroneStateAttack::Rotate()
 	Drone->GetBody()->SetWorldRotation(FMath::RInterpTo(Drone->GetBody()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
 	
 	if (FVector::Dist(Target->GetActorLocation(), Drone->GetActorLocation()) < 300.f) return;
-		
+	//right
 	ToTarget = Target->GetActorLocation() - Drone->GetProjectileSpawn()->GetComponentLocation();
 	LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
 	Drone->GetTurret()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurret()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
-
+	//left
 	ToTarget = Target->GetActorLocation() - Drone->GetProjectileSpawnAlt()->GetComponentLocation();
 	LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
 	Drone->GetTurretAlt()->SetWorldRotation(FMath::RInterpTo(Drone->GetTurretAlt()->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 5.f));
+	//TODO skapa funktion för lookatrotation
 }
 
 void FDroneStateAttack::Shoot()
