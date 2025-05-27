@@ -293,4 +293,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* DashCurve;
+
+	UPROPERTY()
+	class UTimelineComponent* UnlockTimeline;
+
+	UPROPERTY()
+	FOnTimelineFloat UnlockOnTimelineFloat;
+
+	UPROPERTY(EditDefaultsOnly)
+	UCurveFloat* UnlockCurve;
 };
