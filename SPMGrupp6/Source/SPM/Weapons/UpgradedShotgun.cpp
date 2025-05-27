@@ -17,14 +17,6 @@ void AUpgradedShotgun::WeaponAbility()
 	if (!AbilityUnlocked) return;
 	if (IsAbilityOnCooldown() || !PulseGrenadeClass) return;
 	
-	// bCanUseAbility = false;
-	// GetWorldTimerManager().SetTimer(
-	// 	AbilityCooldownTimerHandle, 
-	// 	this, 
-	// 	&AUpgradedShotgun::ResetAbilityCooldown, 
-	// 	GetAbilityCooldown(), 
-	// 	false
-	// );
 	SetAbilityCooldown(true);
 		AController* OwnerController = GetOwnerController();
 		if (!OwnerController) return;
@@ -48,9 +40,8 @@ void AUpgradedShotgun::WeaponAbility()
 void AUpgradedShotgun::ApplyUpgrade(int NewLevel)
 {
 	Super::ApplyUpgrade(NewLevel);
-
-	// No such thing as AbilityEffectTime in here. 
-	//AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectTimeDefaultIncreasePerLevel);
+	
+	AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectTimeDefaultIncreasePerLevel);
 }
 
 
