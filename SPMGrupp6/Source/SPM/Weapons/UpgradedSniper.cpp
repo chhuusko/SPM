@@ -15,11 +15,11 @@ AUpgradedSniper::AUpgradedSniper()
 void AUpgradedSniper::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (CurrentTime - LastFireTime < FireRate) return;
 
-	// Stops possibility to fire between shots, has slight shorter Reset to make sure timers don´t miss match.
-	bCanFire = false;
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate-0.1f, false);
+	LastFireTime = CurrentTime;
 
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
