@@ -109,7 +109,7 @@ public:
 	void StartJetpackUpdate();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateHealth(AShooterCharacter* Player);
+	void UpdateHealth(float HealthPercent);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -192,7 +192,7 @@ private:
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
 
 	UFUNCTION()
-	void ShowCrosshair(bool bShow);
+	void UpdateCrosshairVisibility(EWeaponType Weapon);
 
 	UFUNCTION()
 	void StartReloadCooldown(float Cooldown);

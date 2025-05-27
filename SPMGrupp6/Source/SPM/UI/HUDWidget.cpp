@@ -10,7 +10,6 @@
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "SPM/Weapons/Gun.h"
-#include "SPM/Weapons/Sniper.h"
 
 void UHUDWidget::NativeConstruct()
 {
@@ -135,6 +134,7 @@ void UHUDWidget::GetPlayerCharacter()
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
+		PlayerCharacter->OnHealthUpdated.AddDynamic(this, &UHUDWidget::UpdateHealth);
 	}
 	else
 	{
@@ -218,9 +218,9 @@ void UHUDWidget::SetSliderColor(URadialSlider* Slider, float Percent, FLinearCol
 }
 
 // Update health bar value.
-void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
+void UHUDWidget::UpdateHealth(float HealthPercent)
 {
-	float HealthPercent = Player->GetHealthPercent();
+	//float HealthPercent = Player->GetHealthPercent();
 
 	SetBarColor(HealthBar, HealthPercent, HealthBarStartColor);
 
@@ -232,24 +232,9 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
 	GetGun();
-
-	// Bind the function for updating the sniper scope.
-	if (Weapon == EWeaponType::SniperRifle)
-	{
-		// Hide crosshair since hipfire is inaccurate.
-		if (Crosshair->IsVisible())
-		{
-			Crosshair->SetVisibility(ESlateVisibility::Hidden);
-		}
-	}
-	else
-	{
-		// Show crosshair.
-		if (!Crosshair->IsVisible())
-		{
-			Crosshair->SetVisibility(ESlateVisibility::Visible);
-		}
-	}
+	
+	// Hide crosshair for sniper, since hipfire is inaccurate.
+	UpdateCrosshairVisibility(Weapon);
 
 	// Stop reload if it is interrupted by swapping weapons.
 	if (ReloadTimeline->IsPlaying())
@@ -479,15 +464,15 @@ void UHUDWidget::RemoveHitMarker()
 }
 
 // Updates crosshair visibility.
-void UHUDWidget::ShowCrosshair(bool bShow)
+void UHUDWidget::UpdateCrosshairVisibility(EWeaponType Weapon)
 {
-	if (bShow)
+	if (Weapon == EWeaponType::SniperRifle && Crosshair->IsVisible())
 	{
-		Crosshair->SetVisibility(ESlateVisibility::Visible);
+		Crosshair->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		Crosshair->SetVisibility(ESlateVisibility::Hidden);
+		Crosshair->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
