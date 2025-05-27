@@ -34,6 +34,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
 
+	UPROPERTY(EditAnywhere)
+	float ExtraAbilityMinDamage;
+	UPROPERTY(EditAnywhere)
+	float ExtraAbilityMaxDamage;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityDamagePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
