@@ -95,7 +95,6 @@ void UHUDWidget::GetGun()
 		Gun->OnReload.Clear();
 		Gun->OnAmmoUpdated.Clear();
 
-		if (Gun->OnHit.Contains())
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
 		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
@@ -133,7 +132,11 @@ void UHUDWidget::GetPlayerCharacter()
 	}
 	
 	PlayerCharacter = Cast<AShooterCharacter>(PC->GetCharacter());
-	if (!PlayerCharacter)
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
+	}
+	else
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
 	}
