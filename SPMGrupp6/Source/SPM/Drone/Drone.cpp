@@ -9,6 +9,7 @@
 #include "DroneSpawn.h"
 #include "Components/AudioComponent.h"
 #include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Weapons/UpgradedPistol.h"
 
 
 // Sets default values
@@ -84,7 +85,14 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 		{
 			Spawner->DroneDestroyed();
 		}
-		LootDrop();
+		
+		int ExtraLootDrops = 0;
+		if (AUpgradedPistol* UpgradedPistol = Cast<AUpgradedPistol>(DamageCauser))
+		{
+			ExtraLootDrops = UpgradedPistol->GetExtraLootDrops();
+		}
+		
+		LootDrop(ExtraLootDrops);
 		Destroy();
 	}
 	if (Target != nullptr)
@@ -105,10 +113,16 @@ void ADrone::ChangeState(FDroneState* newState)
 	State = newState;
 }
 
-void ADrone::LootDrop()
+void ADrone::LootDrop(int ExtraLootDrops)
 {
-	GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
-	GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	for (int i = 0; i < NumberOfHealthDrops; i++)
+	{
+		GetWorld()->SpawnActor<AHealthPickUp>(HealthPickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	}
+	for (int i = 0; i < NumberOfLootDrops + ExtraLootDrops; i++)
+	{
+		GetWorld()->SpawnActor<AResourcePickUp>(ResourcePickUpClass, GetActorLocation() + FVector(FMath::FRand(),FMath::FRand(),FMath::FRand()) , GetActorRotation());
+	}
 }
 
 void ADrone::StartAggroTimeHandler()

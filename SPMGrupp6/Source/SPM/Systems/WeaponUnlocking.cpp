@@ -35,6 +35,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 				SoundVolume, 
 				RandomPitch);
 		}
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponType %d not unlocked!"), (int32)WeaponType);
 		return;
 	}
 	
@@ -42,17 +43,33 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	int32 Level = State ? State->Level : 1;
 	
 	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
-	if (!UpgradePath || !UpgradePath->LevelToClass.Contains(Level))
+	if (!UpgradePath)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No weapon class found for WeaponType %d at Level %d"), (int32)WeaponType, Level);
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No upgrade path found for WeaponType %d"), (int32)WeaponType);
 		return;
 	}
 	
-	TSubclassOf<AGun> WeaponClass = UpgradePath->LevelToClass[Level];
+	int32 ClosestAvailableLevel = -1;
+	for (const TPair<int32, TSubclassOf<AGun>>& Pair : UpgradePath->LevelToClass)
+	{
+		if (Pair.Key <= Level && (ClosestAvailableLevel == -1 || Pair.Key > ClosestAvailableLevel))
+		{
+			ClosestAvailableLevel = Pair.Key;
+		}
+	}
+	
+	if (ClosestAvailableLevel == -1)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No weapon class found for WeaponType %d at or below Level %d"), (int32)WeaponType, Level);
+		return;
+	}
+	
+	TSubclassOf<AGun> WeaponClass = UpgradePath->LevelToClass[ClosestAvailableLevel];
 	AGun* CurrentGun = CharacterOwner->GetGun();
 	if (CurrentGun && CurrentGun->GetClass() == WeaponClass)
 	{
 		// Hoppa över, samma vapen redan utrustat
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponType %d already equipped"), (int32)WeaponType);
 		return;
 	}
 	
@@ -65,7 +82,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	CurrentGun = CharacterOwner->GetGun();
 	if (CurrentGun)
 	{
-		CurrentGun->UpdateAmmoText();
+		CurrentGun->OnAmmoUpdated.Broadcast(CurrentGun->GetBulletsLeft(), CurrentGun->GetMagazineSize());
 	}
 	OnWeaponSwap.Broadcast(WeaponType);
 }
@@ -132,7 +149,7 @@ void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponSta
 	State.bUnlocked = true;
 	State.Level = 1;
 	EquipWeapon(WeaponType);
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+	OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
 
 	if (CharacterOwner)
 	{
@@ -228,6 +245,7 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 			{
 				SpawnAndAttachWeapon(NextClass);
 			}
+			OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), NewGun->IsAbilityUnlocked());
 		}
 		else
 		{
@@ -237,9 +255,10 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 	else
 	{
 		// No evolution, stat upgrade only
+		UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Normal upgrade of weapon of class %s to level %d"), *NextClass->GetName(), State.Level);
 		Gun->ApplyUpgrade(State.Level);
+		OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
 	}
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
 
 	if (CharacterOwner)
 	{
@@ -374,7 +393,7 @@ void UWeaponUnlocking::BeginPlay()
 
 	// Add the resource instance to check for changes in.
 	GetResourceComponent();
-	OnUpgrade.Broadcast(ResourceComponent->GetResourceAmount());
+	OnUpgrade.Broadcast(EWeaponType::Pistol, ResourceComponent->GetResourceAmount(), false);
 }
 
 void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
@@ -528,10 +547,23 @@ void UWeaponUnlocking::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass)
 {
-	if (!WeaponClass || !CharacterOwner) return;
+	if (!WeaponClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponClass not valid"));
+		return;
+	}
+	if (!CharacterOwner)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] CharacterOwner not valid"));
+		return;
+	}
 
 	UWorld* World = GetWorld();
-	if (!World) return;
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] World not valid"));
+		return;
+	}
 
 	// Determine the weapon type from the class by reverse lookup.
 	EWeaponType WeaponType = EWeaponType::Pistol;
@@ -552,7 +584,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 	}
 	if (!bFound)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] SpawnAndAttachWeapon: Class not found in upgrade map."));
+		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] SpawnAndAttachWeapon: Class not found in WeaponClasses map."));
 		return;
 	}
 	
@@ -592,4 +624,5 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 	PooledGun->SetActorHiddenInGame(false);
 	CharacterOwner->SetGun(PooledGun);
 	PooledGun->SetWeaponEquipped(true);
+	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Succeeded in equipping %s"), *WeaponClass->GetName());
 }

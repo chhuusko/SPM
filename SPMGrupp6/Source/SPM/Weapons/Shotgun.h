@@ -18,6 +18,7 @@ class SPM_API AShotgun : public AGun
 public:
 	virtual void Fire() override;
 	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength) override;
+	virtual void ApplyUpgrade(int NewLevel) override;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -25,7 +26,12 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int numberOfPellets = 10;
-
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> NumberOfPelletsPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float NumberOfPelletsDefaultIncreasePerLevel = 1;
+	
 	UPROPERTY(EditAnywhere)
 	bool bDebugShotgun;
 };

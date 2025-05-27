@@ -9,9 +9,14 @@
 
 void AShotgun::Fire()
 {
-	if (!bCanFire || !bIsWeaponEquipped) return;
+	// Checks if weapon can fire.
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (CurrentTime - LastFireTime < FireRate) return;
 
-	// Reloads automatically if bullets reach 0.
+	LastFireTime = CurrentTime;
+	
+	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
@@ -24,7 +29,6 @@ void AShotgun::Fire()
 		Reload();
 		return;
 	}
-	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
@@ -104,13 +108,11 @@ void AShotgun::Fire()
 	AddRecoil();
 	TimesFired++;
 	BulletsLeft--;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	if (BulletsLeft <= 0)
 	{
 		Reload();
 	}
-	bCanFire = false;
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 	
 	OnFired.Broadcast();
 }
@@ -137,4 +139,11 @@ bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLen
 	bool bHit = GetWorld()->LineTraceSingleByChannel(Hit, Location, End, ECC_GameTraceChannel1, Params);
 	TraceLength = bHit ? (Hit.Location - Location).Size() : MaxRange;
 	return bHit;
+}
+
+void AShotgun::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+	
+	numberOfPellets = GetScaledStatValue<float>(NumberOfPelletsPerLevel, NewLevel, numberOfPellets, NumberOfPelletsDefaultIncreasePerLevel);
 }

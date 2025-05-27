@@ -37,6 +37,9 @@ public:
 	class UTextBlock* SniperRifleUpgradeCost;
 
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* AbilityUnlockedPrompt;
+
+	UPROPERTY(meta = (BindWidget))
 	class UBorder* AutoPistolBorder;
 
 	UPROPERTY(meta = (BindWidget))
@@ -141,7 +144,7 @@ private:
 	void OnPickup(int32 NewCurrencyAmount);
 	
 	UFUNCTION()
-	void UpgradeApplied(int32 NewCurrencyValue);
+	void UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked);
 
 	UFUNCTION()
 	void UpdateEquippedWeapon(EWeaponType Weapon);
@@ -153,7 +156,16 @@ private:
 	void UpdateWeaponUpgradeUI();
 
 	UFUNCTION()
-	void UpdateWeaponCooldown(float CooldownPercentage);
+	void UpdateCooldownBarColor(EWeaponType Weapon);
+
+	UFUNCTION()
+	void UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage);
+
+	UFUNCTION()
+	void ShowAbilityUnlockedPrompt();
+
+	UFUNCTION()
+	void RemoveAbilityUnlockedPrompt();
 
 	UFUNCTION()
 	void AddHitmarker(AActor* HitActor);
@@ -169,6 +181,9 @@ private:
 
 	UFUNCTION()
 	void GetPlayerCharacter();
+
+	UFUNCTION()
+	UProgressBar* GetAbilityBar(EWeaponType Weapon) const;
 
 	UFUNCTION()
 	UImage* GetUpgradeIconFromWeapon(EWeaponType Weapon);
@@ -201,6 +216,9 @@ private:
 	FLinearColor HealthBarStartColor;
 
 	UPROPERTY(EditDefaultsOnly)
+	FLinearColor AbilityCooldownActiveColor;
+
+	UPROPERTY(EditDefaultsOnly)
 	FLinearColor CantAffordColor;
 
 	UPROPERTY()
@@ -218,6 +236,9 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float HitmarkerTime = 0.5f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float AbilityUnlockedDisplayTime = 5.f;
+
 	bool bHasDashCooldown;
 	bool bJetpackFuelFull = true;
 
@@ -225,6 +246,7 @@ private:
 
 	FTimerHandle HitmarkTimerHandle;
 	FTimerHandle JetpackTimerHandle;
+	FTimerHandle AbilityUnlockedHandle;
 
 	EWeaponType CurrentWeapon;
 

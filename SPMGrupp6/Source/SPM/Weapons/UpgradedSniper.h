@@ -15,9 +15,13 @@ UCLASS()
 class SPM_API AUpgradedSniper : public ASniper
 {
 	GENERATED_BODY()
-
+	
+public:
+	AUpgradedSniper();
+	
 protected:
 	virtual void Fire() override;
+	
 private:
 	TArray <FHitResult> GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult);
 

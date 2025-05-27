@@ -93,10 +93,12 @@ void UHUDWidget::GetGun()
 		Gun->OnHit.Clear();
 		Gun->OnCooldownUpdated.Clear();
 		Gun->OnReload.Clear();
-		
+		Gun->OnAmmoUpdated.Clear();
+
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
 		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
+		Gun->OnAmmoUpdated.AddDynamic(this, &UHUDWidget::UpdateAmmoText);
 	}
 	else
 	{
@@ -130,7 +132,11 @@ void UHUDWidget::GetPlayerCharacter()
 	}
 	
 	PlayerCharacter = Cast<AShooterCharacter>(PC->GetCharacter());
-	if (!PlayerCharacter)
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
+	}
+	else
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
 	}
@@ -230,11 +236,26 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	// Bind the function for updating the sniper scope.
 	if (Weapon == EWeaponType::SniperRifle)
 	{
-		Sniper = Cast<ASniper>(Gun);
-		if (Sniper)
+		// Hide crosshair since hipfire is inaccurate.
+		if (Crosshair->IsVisible())
 		{
-			Sniper->OnScope.AddDynamic(this, &UHUDWidget::ShowCrosshair);
+			Crosshair->SetVisibility(ESlateVisibility::Hidden);
 		}
+	}
+	else
+	{
+		// Show crosshair.
+		if (!Crosshair->IsVisible())
+		{
+			Crosshair->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
+
+	// Stop reload if it is interrupted by swapping weapons.
+	if (ReloadTimeline->IsPlaying())
+	{
+		ReloadTimeline->Stop();
+		ReloadCooldown->SetValue(0.f);
 	}
 	
 	UBorder* NextWeaponBorder;
@@ -311,6 +332,27 @@ UTextBlock* UHUDWidget::GetUpgradeCostTextFromWeapon(EWeaponType Weapon)
 	}
 }
 
+UProgressBar* UHUDWidget::GetAbilityBar(EWeaponType Weapon) const
+{
+	UProgressBar* CooldownBar;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		CooldownBar = AutoPistolAbilityCooldown;
+		break;
+	case EWeaponType::Shotgun:
+		CooldownBar = ShotgunAbilityCooldown;
+		break;
+	case EWeaponType::AssaultRifle:
+		CooldownBar = AssaultRifleAbilityCooldown;
+		break;
+	default:
+		CooldownBar = SniperRifleAbilityCooldown;
+		break;
+	}
+	return CooldownBar;
+}
+
 // Display the upgrade icon over the weapon.
 void UHUDWidget::UpdateWeaponUpgradeUI()
 {
@@ -362,35 +404,60 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 	}
 }
 
-// Update weapon cooldown in the corresponding slider.
-void UHUDWidget::UpdateWeaponCooldown(float CooldownPercentage)
+// Set the color of the ability cooldown bar to show that the ability is unlocked.
+void UHUDWidget::UpdateCooldownBarColor(EWeaponType Weapon)
 {
-	UProgressBar* CooldownBar;
-	switch (CurrentWeapon)
+	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
+	if (CooldownBar && CooldownBar->GetFillColorAndOpacity() != AbilityCooldownActiveColor)
 	{
-	case EWeaponType::Pistol:
-		CooldownBar = AutoPistolAbilityCooldown;
-		break;
-	case EWeaponType::Shotgun:
-		CooldownBar = ShotgunAbilityCooldown;
-		break;
-	case EWeaponType::AssaultRifle:
-		CooldownBar = AssaultRifleAbilityCooldown;
-		break;
-	default:
-		CooldownBar = SniperRifleAbilityCooldown;
-		break;
+		CooldownBar->SetFillColorAndOpacity(AbilityCooldownActiveColor);
 	}
+}
 
-	CooldownBar->SetPercent(1.f - CooldownPercentage);
+// Update weapon cooldown in the corresponding slider.
+void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage)
+{
+	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
+	EWeaponType Weapon = EWeaponType::Pistol;
+	
+	for (const TPair<EWeaponType, AGun*> Pair : Guns)
+	{
+		if (Pair.Value == GunOnCooldown)
+		{
+			Weapon = Pair.Key;
+		}
+	}
+	
+	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
+	if (CooldownBar)
+	{
+		CooldownBar->SetPercent(1.f - CooldownPercentage);
+	}
+}
+
+void UHUDWidget::ShowAbilityUnlockedPrompt()
+{
+	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Visible);
+	GetWorld()->GetTimerManager().SetTimer(AbilityUnlockedHandle, this, &UHUDWidget::RemoveAbilityUnlockedPrompt, AbilityUnlockedDisplayTime);
+}
+
+void UHUDWidget::RemoveAbilityUnlockedPrompt()
+{
+	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Hidden);
 }
 
 // Calls helper methods to update the UI when an upgrade gets applied.
-void UHUDWidget::UpgradeApplied(int32 NewCurrencyValue)
+void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked)
 {
 	GetGun();
 	UpdateCurrencyText(NewCurrencyValue);
 	UpdateWeaponUpgradeUI();
+
+	if (bAbilityUnlocked)
+	{
+		UpdateCooldownBarColor(Weapon);
+		ShowAbilityUnlockedPrompt();
+	}
 }
 
 // Show the hit marker for a limited time.
@@ -435,6 +502,8 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Reload Time: %f"), Cooldown);
 	
 	// Bind function for updating reload slider.
 	ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
@@ -464,9 +533,9 @@ void UHUDWidget::UpdateReloadCooldown(float Output)
 {
 	if (ReloadCooldown && ReloadTimeline)
 	{
-		// Set the slider value as a percentage of the total time.
-		float NormalizedValue = Output / ReloadTimeline->GetTimelineLength();
-		ReloadCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
+		float PlaybackPosition = ReloadTimeline->GetPlaybackPosition();
+		float NormalizedValue = FMath::Clamp(PlaybackPosition / ReloadTimeline->GetTimelineLength(), 0.f, 1.f);
+		ReloadCooldown->SetValue(NormalizedValue);
 	}
 }
 

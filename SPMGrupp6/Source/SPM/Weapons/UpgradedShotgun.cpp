@@ -5,6 +5,11 @@
 
 #include "Kismet/GameplayStatics.h"
 
+AUpgradedShotgun::AUpgradedShotgun()
+{
+	bShowUpgradeOptions = true;
+}
+
 void AUpgradedShotgun::WeaponAbility()
 {
 	Super::WeaponAbility();
@@ -38,6 +43,14 @@ void AUpgradedShotgun::WeaponAbility()
 			SpawnParams
 			);
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
+}
+
+void AUpgradedShotgun::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+
+	// No such thing as AbilityEffectTime in here. 
+	//AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectTimeDefaultIncreasePerLevel);
 }
 
 

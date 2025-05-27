@@ -8,6 +8,10 @@
 #include "SPM/Minimap/CombinedMinimap.h"
 #include "SPM/Minimap/RadarComponent.h"
 
+AUpgradedPistol::AUpgradedPistol()
+{
+   bShowUpgradeOptions = true;
+}
 
 void AUpgradedPistol::Tick(float DeltaTime)
 {
@@ -87,6 +91,14 @@ void AUpgradedPistol::WeaponAbility()
     }
 }
 
+void AUpgradedPistol::ApplyUpgrade(int NewLevel)
+{
+   Super::ApplyUpgrade(NewLevel);
+   
+   AbilityEffectTime = GetScaledStatValue<float>(AbilityEffectTimePerLevel, NewLevel, AbilityEffectTime, AbilityEffectTimeDefaultIncreasePerLevel);
+   ExtraLootDrops = GetScaledStatValue<int32>(BonusResourceDropPerLevel, NewLevel, ExtraLootDrops, BonusResourceDropDefaultIncreasePerLevel);
+}
+
 
 void AUpgradedPistol::ResetAbilityCooldown()
 {
@@ -150,4 +162,9 @@ void AUpgradedPistol::ResetRenderCustomDepth()
          DynMaterial->SetScalarParameterValue(FName("EmissiveEyeToggle"), 0.f);
       }
    }
+}
+
+int AUpgradedPistol::GetExtraLootDrops() const
+{
+   return ExtraLootDrops;
 }

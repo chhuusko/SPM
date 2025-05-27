@@ -14,9 +14,14 @@ UCLASS()
 class SPM_API AUpgradedAssaultRifle : public AAssaultRifle
 {
 	GENERATED_BODY()
+	
+public:
+	AUpgradedAssaultRifle();
+	
 protected:
 	
 	virtual void WeaponAbility() override;
+	virtual void ApplyUpgrade(int NewLevel) override;
 
 private:
 	
@@ -29,6 +34,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> AbilityDamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float AbilityDamageDefaultIncreasePerLevel = 1;
+	
 	//UPROPERTY(EditAnywhere)
 	//float AbilityCooldown = 5.0f;
 

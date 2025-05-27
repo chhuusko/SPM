@@ -5,8 +5,6 @@
 #include "CoreMinimal.h"
 #include "DroneBullet.h"
 #include "DroneMissile.h"
-#include "SVOGrid.h"
-#include "Chaos/PBDRigidsEvolution.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "SPM/Pickup/ResourcePickUp.h"
 #include "GameFramework/Pawn.h"
@@ -27,7 +25,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void LostPlayer();
-	virtual void LootDrop();
 	
 	//State
 	TArray<AActor*> Players;
@@ -77,9 +74,9 @@ public:
 	UAudioComponent* GetAudioComp(){return AudioComp;};
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
-	ASVOGrid* GetGrid() {return Grid;}
+
 private:
-	
+	virtual void LootDrop(int ExtraLootDrops);
 	
 	//Body
 	UPROPERTY(EditAnywhere)
@@ -99,14 +96,11 @@ private:
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneMissile> MissileClass;
-	
-	//Timehandlerw
+
+	//Timehandler
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
-
-	//Other
-	ASVOGrid* Grid;
-
+	
 	//Properties
 	UPROPERTY(EditAnywhere)
 	FVector PreferedHeightOverPlayer;
@@ -116,6 +110,8 @@ private:
 	float AggroDistance;
 	UPROPERTY(EditAnywhere)
 	int32 Health;
-	
-	
+	UPROPERTY(EditAnywhere)
+	int32 NumberOfHealthDrops = 1;
+	UPROPERTY(EditAnywhere)
+	int32 NumberOfLootDrops = 1;
 };

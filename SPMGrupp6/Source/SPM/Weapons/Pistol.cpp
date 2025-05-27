@@ -9,10 +9,14 @@
 // Metoder kan ändras för att hantera ex. burstfire
 void APistol::Fire()
 {
-		// Checks if weapon can fire.
-		if (!bCanFire || !bIsWeaponEquipped) return;
+	// Checks if weapon can fire.
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (CurrentTime - LastFireTime < FireRate) return;
 
-	// Reloads automatically if bullets reach 0.
+	LastFireTime = CurrentTime;
+
+	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
@@ -25,7 +29,6 @@ void APistol::Fire()
 		Reload();
 		return;
 	}
-	
 	
 	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
@@ -104,7 +107,7 @@ void APistol::Fire()
 		AddRecoil();
 		BulletsLeft--;
 		TimesFired++;
-		UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
@@ -119,10 +122,14 @@ void APistol::Fire()
 		Reload();
 		return;
 	}
+	
+	OnFired.Broadcast();
+}
 
-		// Stops possibility to fire between shots.
-		bCanFire = false;
-		GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
-		OnFired.Broadcast();
-	}
+void APistol::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+	
+	NPCDamageMultiplier = GetScaledStatValue<float>(NPCDamageMultiplierPerLevel, NewLevel, NPCDamageMultiplier, NPCDamageMultiplierDefaultIncreasePerLevel);
+}
 

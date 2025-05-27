@@ -6,13 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
-
 class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, AActor*, HitActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCooldownUpdated, float, CooldownPercentage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReload, float, ReloadTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCooldownUpdated, AGun*, Gun, float, CooldownPercentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoUpdated, int32, BulletsLeft, int32, MagazineSize);
 
 UCLASS()
 class SPM_API AGun : public AActor
@@ -35,7 +35,9 @@ public:
 	FOnHit OnHit;
 	FOnCooldownUpdated OnCooldownUpdated;
 	FOnReload OnReload;
+	FOnAmmoUpdated OnAmmoUpdated;
 	
+	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -146,6 +148,10 @@ protected:
 	class UHUDWidget* HUDWidget;
 	
 	bool bIsRecoiling = false;
+	bool bIsTriggerHeld = false;
+	bool bIsFiringWithTimer = false;
+	float LastFireTime = 0;
+
 	int TimesFired = 0;
 	FTimerHandle FireRateTimer;
 	FTimerHandle BetweenShotsTimer;
@@ -157,19 +163,63 @@ protected:
 	void ResetAmmo();
 	virtual bool GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength);
 	
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta = (DisplayPriority = -1))
+	bool bShowUpgradeOptions = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<int32> UpgradeCostPerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	TArray<float> DamagePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	TArray<int32> MagazineSizePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	TArray<float> ReloadTimePerLevel;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	int AbilityUnlockedOnLevel = 2;
-	UPROPERTY(EditDefaultsOnly, Category = "Upgrade")
-	bool AbilityUnlocked = false;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	int32 UpgradeCostDefaultIncreasePerLevel = 1;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> DamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float DamageDefaultIncreasePerLevel = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> MinimumDamagePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float MinimumDamageDefaultIncreasePerLevel = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<int32> MagazineSizePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	int32 MagazineSizeDefaultIncreasePerLevel = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> ReloadTimePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float ReloadTimeDefaultIncreasePerLevel = -1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> FireRatePerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float FireRateDefaultIncreasePerLevel = 1;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	int AbilityUnlockedOnLevel = 2;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	bool AbilityUnlocked = false;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	TArray<float> AbilityCooldownPerLevel;
+	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
+	float AbilityCooldownDefaultIncreasePerLevel = -1;
+	
+	template<typename T>
+	FORCEINLINE T GetScaledStatValue(const TArray<T>& ValuesPerLevel, int32 Level, T FallbackValue, T DefaultIncreasePerLevel) const
+	{
+		const int32 NumLevels = ValuesPerLevel.Num();
+		const int32 DefinedLevels = FMath::Max(NumLevels, 1);
+		const int32 Index = FMath::Clamp(Level - 1, 0, NumLevels - 1);
+		const T BaseValue = NumLevels > 0 ? ValuesPerLevel.Last() : FallbackValue;
+
+		T Value = (NumLevels > 0 && ValuesPerLevel.IsValidIndex(Index)) ? ValuesPerLevel[Index] : BaseValue;
+		const int32 Overflow = Level - DefinedLevels;
+
+		return Overflow > 0 ? Value + DefaultIncreasePerLevel * Overflow : Value;
+	}
+	
 	UFUNCTION()
 	void GetPlayerController();
 
@@ -188,7 +238,6 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	int32 CooldownUpdateAmount = 10;
 
-
 	float RemainingAbilityCooldown;
 	
 	bool bIsAbilityOnCooldown = false;
@@ -200,7 +249,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	float LegsHitMultiplier = 0.75;
 
-
+	void StartAutomaticFireSequence();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -215,10 +264,12 @@ public:
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
-	void UpdateAmmoText();
 	float CalculateDamageFalloff(float TraceLength);
     int32 GetUpgradeCost(int Level) const;
 	void StopPendingActions();
 	void SetWeaponEquipped(const bool bIsEquipped);
 	void EnableCanPlayEmptyMagSound();
+	void HandleNextAutoFire();
+	void StopAutoFire();
+	int32 GetBulletsLeft() const; 
 };

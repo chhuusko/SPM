@@ -5,7 +5,10 @@
 
 #include "Kismet/GameplayStatics.h"
 
-
+AUpgradedAssaultRifle::AUpgradedAssaultRifle()
+{
+	bShowUpgradeOptions = true;
+}
 
 void AUpgradedAssaultRifle::WeaponAbility()
 {
@@ -46,6 +49,14 @@ void AUpgradedAssaultRifle::WeaponAbility()
 		SpawnParams
 		);
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
+}
+
+void AUpgradedAssaultRifle::ApplyUpgrade(int NewLevel)
+{
+	Super::ApplyUpgrade(NewLevel);
+
+	// AbilityDamage is not exposed here
+	// AbilityDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, AbilityDamage, AbilityDamageDefaultIncreasePerLevel);
 }
 
 void AUpgradedAssaultRifle::ResetAbilityCooldown()

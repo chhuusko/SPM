@@ -23,6 +23,7 @@ AGun::AGun()
 
 	MuzzlePosition = CreateDefaultSubobject<USceneComponent>(TEXT("MuzzlePosition"));
 	MuzzlePosition->SetupAttachment(Mesh);
+	LastFireTime = -FireRate;
 }
 
 // Called when the game starts or when spawned
@@ -32,7 +33,7 @@ void AGun::BeginPlay()
 	BulletsLeft = MagazineSize;
 	
 	GetPlayerController();
-	GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	
 	MuzzleLocation = MuzzlePosition->GetComponentLocation();
 	MuzzleRotation = MuzzlePosition->GetComponentRotation();
@@ -88,9 +89,13 @@ float AGun::GetCooldownPercentage() const
 void AGun::Fire()
 {
 	// Checks if weapon can fire.
-	if (!bCanFire || !bIsWeaponEquipped) return;
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	if (CurrentTime - LastFireTime < FireRate) return;
 
-	// Reloads automatically if bullets reach 0.
+	LastFireTime = CurrentTime;
+	
+	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
@@ -177,7 +182,7 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 	TimesFired++;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
@@ -193,9 +198,6 @@ void AGun::Fire()
 		return;
 	}
 
-	// Stops possibility to fire between shots.
-	bCanFire = false;
-	GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
 	
 	OnFired.Broadcast();
 }
@@ -207,22 +209,33 @@ void AGun::ResetCanFire()
 
 void AGun::PullTrigger()
 {
-	if (!bCanFire || !bIsWeaponEquipped) return;
-	// If Automatic, fire once then repeat til "ReleaseTrigger" clears timer.
+	bIsTriggerHeld = true;
+	if (!bIsWeaponEquipped) return;
+
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+
 	if (bIsAutomatic)
 	{
-		Fire();
-		GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::Fire, FireRate, true);
+		if (CurrentTime - LastFireTime >= FireRate && !GetWorld()->GetTimerManager().IsTimerActive(FireRateTimer))
+		{
+			StartAutomaticFireSequence();
+		}
 	}
 	else
 	{
-		Fire();
+		if (bCanFire)
+		{
+			Fire();
+			bCanFire = false;
+			GetWorld()->GetTimerManager().SetTimer(BetweenShotsTimer, this, &AGun::ResetCanFire, FireRate, false);
+		}
 	}
 }
 
 void AGun::ReleaseTrigger()
 {
-	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+	bIsTriggerHeld = false;
+	StopAutoFire();
 	TimesFired = 0;
 }
 
@@ -232,9 +245,10 @@ void AGun::Reload()
 	if (BulletsLeft < MagazineSize && !bIsReloading)
 	{
 		bIsReloading = true;
-		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
+		GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 		// Can not shoot while reloading.
 		bCanFire = false;
+		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
 		OnReload.Broadcast(ReloadTime);
@@ -246,8 +260,13 @@ void AGun::ResetAmmo()
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
-	UpdateAmmoText();
+	// Continue shooting after reload if the player is still holding trigger.
+	if (bIsTriggerHeld && bIsAutomatic)
+	{
+		StartAutomaticFireSequence();
+	}
 }
 void AGun::StopReload()
 {
@@ -299,19 +318,6 @@ AController* AGun::GetOwnerController() const
 	return OwnerPawn->GetController();
 }
 
-void AGun::UpdateAmmoText()
-{
-	// Update players ammo text.
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
-	else
-	{
-		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
-	}
-}
-
 void AGun::WeaponAbility()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
@@ -341,64 +347,28 @@ void AGun::UpdateWeaponAbilityCooldown()
 		GetWorldTimerManager().ClearTimer(AbilityCooldownTimerHandle);
 		SetAbilityCooldown(AbilityCooldown);
 	}
-	OnCooldownUpdated.Broadcast(GetCooldownPercentage());
+	OnCooldownUpdated.Broadcast(this, GetCooldownPercentage());
 }
 
 void AGun::ApplyUpgrade(int NewLevel)
 {
-	const float BaseDamageValue = DamagePerLevel.Num() > 0 ? DamagePerLevel.Last() : Damage;
-	const float BaseReloadTime = ReloadTimePerLevel.Num() > 0 ? ReloadTimePerLevel.Last() : ReloadTime;
-	const int32 BaseMagazineSize = MagazineSizePerLevel.Num() > 0 ? MagazineSizePerLevel.Last() : MagazineSize;
-	int Index;
+	Damage = GetScaledStatValue<float>(DamagePerLevel, NewLevel, Damage, DamageDefaultIncreasePerLevel);
+	MinimumDamage = GetScaledStatValue<float>(MinimumDamagePerLevel, NewLevel, MinimumDamage, MinimumDamageDefaultIncreasePerLevel);
+	MagazineSize = GetScaledStatValue<int32>(MagazineSizePerLevel, NewLevel, MagazineSize, MagazineSizeDefaultIncreasePerLevel);
+	ReloadTime = GetScaledStatValue<float>(ReloadTimePerLevel, NewLevel, ReloadTime, ReloadTimeDefaultIncreasePerLevel);
+	FireRate = GetScaledStatValue<float>(FireRatePerLevel, NewLevel, FireRate, FireRateDefaultIncreasePerLevel);
 
-	if(NewLevel >= AbilityUnlockedOnLevel) AbilityUnlocked = true;
-	
-	if (DamagePerLevel.Num() > 0)
+	if(NewLevel >= AbilityUnlockedOnLevel)
 	{
-		Index = FMath::Clamp(NewLevel - 1, 0, DamagePerLevel.Num() - 1);
-		Damage = DamagePerLevel.IsValidIndex(Index) ? DamagePerLevel[Index] : BaseDamageValue;
+		AbilityUnlocked = true;
+		AbilityCooldown = GetScaledStatValue<float>(AbilityCooldownPerLevel, NewLevel, AbilityCooldown, AbilityCooldownDefaultIncreasePerLevel);
 	}
-	else
-	{
-		Damage = BaseDamageValue;
-	}
-
-	if (ReloadTimePerLevel.Num() > 0)
-	{
-		Index = FMath::Clamp(NewLevel - 1, 0, ReloadTimePerLevel.Num() - 1);
-		ReloadTime = ReloadTimePerLevel.IsValidIndex(Index) ? ReloadTimePerLevel[Index] : BaseReloadTime;
-	}
-	else
-	{
-		ReloadTime = BaseReloadTime;
-	}
-
-	if (MagazineSizePerLevel.Num() > 0)
-	{
-		Index = FMath::Clamp(NewLevel - 1, 0, MagazineSizePerLevel.Num() - 1);
-		MagazineSize = MagazineSizePerLevel.IsValidIndex(Index) ? MagazineSizePerLevel[Index] : BaseMagazineSize;
-	}
-	else
-	{
-		MagazineSize = BaseMagazineSize;
-	}
-    UpdateAmmoText();
-
-    if (const int DefinedLevels = DamagePerLevel.Num() > 0 ? DamagePerLevel.Num() : 1; NewLevel > DefinedLevels)
-	{
-		Damage *= FMath::Pow(1.1f, NewLevel - DefinedLevels);
-	}
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 }
+
 int32 AGun::GetUpgradeCost(int Level) const
 {
-    const int Index = FMath::Clamp(Level - 1, 0, UpgradeCostPerLevel.Num() - 1);
-	int32 BaseCost = UpgradeCostPerLevel.IsValidIndex(Index) ? UpgradeCostPerLevel[Index] : 0;
-	if (Level > UpgradeCostPerLevel.Num())
-	{
-		BaseCost += 2 * (Level - UpgradeCostPerLevel.Num());
-	}
-	
-    return BaseCost;
+	return GetScaledStatValue<int32>(UpgradeCostPerLevel, Level, 0, UpgradeCostDefaultIncreasePerLevel);
 }
 
 
@@ -448,27 +418,53 @@ FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 	return HitResult.Component->GetName();
 }
 
-	float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
+float AGun::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
 		
-		// If head hitbox or head bone was hit, deal more damage.
-		if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
-        {
-        		if (bDebugHitBoxHits){
-        			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
-        		}
-        		return OriginalDamage * HeadShotMultiplier;
-        }
-        
-        // If leg hitbox or foot bones was hit reduce damage.
-        if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
-        {
-        		if (bDebugHitBoxHits){
-                    UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
-                }
-        		return OriginalDamage * LegsHitMultiplier;
-        }
-        if (bDebugHitBoxHits){
-            UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
-        }
-		return OriginalDamage; 
+	// If head hitbox or head bone was hit, deal more damage.
+	if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
+	{
+		if (bDebugHitBoxHits){
+			UE_LOG(LogTemp, Display, TEXT("Headshot multiplier applied."));
+		}
+		return OriginalDamage * HeadShotMultiplier;
 	}
+        
+	// If leg hitbox or foot bones was hit reduce damage.
+	if (HitResult.Component->ComponentHasTag("Legs") || HitResult.BoneName == "foot_l" || HitResult.BoneName == "foot_r")
+	{
+		if (bDebugHitBoxHits){
+			UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied."));
+		}
+        	return OriginalDamage * LegsHitMultiplier;
+        }
+	if (bDebugHitBoxHits)
+	{
+		UE_LOG(LogTemp, Display, TEXT("No bodypart multiplier was applied, keeping original damage."));
+	}
+	return OriginalDamage; 
+}
+
+void AGun::StartAutomaticFireSequence()
+{
+	HandleNextAutoFire();
+}
+void AGun::HandleNextAutoFire()
+{
+	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading || BulletsLeft <= 0)
+	{
+		StopAutoFire();
+		return;
+	}
+
+	Fire();
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::HandleNextAutoFire, FireRate, false);
+}
+void AGun::StopAutoFire()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+}
+
+int32 AGun::GetBulletsLeft() const
+{
+	return BulletsLeft;
+}

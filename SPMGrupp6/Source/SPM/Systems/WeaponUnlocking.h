@@ -33,7 +33,7 @@ struct FWeaponUpgradePath
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponSwap, EWeaponType, WeaponType);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpgrade, int32, NewCurrencyValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnUpgrade, EWeaponType, Weapon, int32, NewCurrencyValue, bool, bAbilityUnlocked);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickup, int32, NewCurrencyValue);
 
 USTRUCT(BlueprintType)
