@@ -52,6 +52,7 @@ void ALootBox::BeginPlay()
 
 float ALootBox::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
+	UGameplayStatics::PlaySoundAtLocation(this, BreakSound, GetActorLocation());
 	DropLoot();
 	ADroneSpawn::LootBoxDestroyed();
 	BeamComponent->DestroyComponent();  // Removes from scene and memory

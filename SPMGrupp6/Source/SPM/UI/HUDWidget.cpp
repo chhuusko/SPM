@@ -10,14 +10,15 @@
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "SPM/Weapons/Gun.h"
-#include "SPM/Weapons/Sniper.h"
 
 void UHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	// First weapon equipped on start is the auto pistol.
-	EquippedWeaponBorder = AutoPistolBorder;
+	EquippedWeaponBar = AutoPistolUnlockBar;
+	EquippedWeaponImage = AutoPistolIcon;
+	CurrentWeapon = EWeaponType::Pistol;
 
 	// Set the start color from the assigned value in the widget blueprint.
 	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
@@ -28,8 +29,6 @@ void UHUDWidget::NativeConstruct()
 	// Get the components and bind to their delegates.
 	GetWeaponUnlocking();
 	GetGun();
-
-	CurrentWeapon = EWeaponType::Pistol;
 
 	// Create timelines if they don't exist.
 	if (!ReloadTimeline)
@@ -84,25 +83,24 @@ void UHUDWidget::CreateDashTimeline()
 	}
 }
 
-// Initialize gun variable.
-void UHUDWidget::GetGun()
+// Initialize player character variable.
+void UHUDWidget::GetPlayerCharacter()
 {
-	Gun = PlayerCharacter->GetGun();
-	if (Gun)
+	APlayerController* PC = GetOwningPlayer();
+	if (!PC)
 	{
-		Gun->OnHit.Clear();
-		Gun->OnCooldownUpdated.Clear();
-		Gun->OnReload.Clear();
-		Gun->OnAmmoUpdated.Clear();
-
-		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
-		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
-		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
-		Gun->OnAmmoUpdated.AddDynamic(this, &UHUDWidget::UpdateAmmoText);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
+	}
+	
+	PlayerCharacter = Cast<AShooterCharacter>(PC->GetCharacter());
+	if (PlayerCharacter)
+	{
+		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
+		PlayerCharacter->OnHealthUpdated.AddDynamic(this, &UHUDWidget::UpdateHealth);
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
 	}
 }
 
@@ -122,23 +120,26 @@ void UHUDWidget::GetWeaponUnlocking()
 	}
 }
 
-// Initialize player character variable.
-void UHUDWidget::GetPlayerCharacter()
+// Initialize gun variable.
+void UHUDWidget::GetGun()
 {
-	APlayerController* PC = GetOwningPlayer();
-	if (!PC)
+	Gun = PlayerCharacter->GetGun();
+	if (Gun)
 	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
-	}
-	
-	PlayerCharacter = Cast<AShooterCharacter>(PC->GetCharacter());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
+		// Bind delegates.
+		Gun->OnHit.Clear();
+		Gun->OnCooldownUpdated.Clear();
+		Gun->OnReload.Clear();
+		Gun->OnAmmoUpdated.Clear();
+
+		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
+		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
+		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
+		Gun->OnAmmoUpdated.AddDynamic(this, &UHUDWidget::UpdateAmmoText);
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetPlayerCharacter);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
 	}
 }
 
@@ -161,6 +162,56 @@ void UHUDWidget::UpdateCurrencyText(int32 NewValue)
 {
 	FString CurrencyString = FString::Printf(TEXT("%d"), NewValue);
 	CurrencyText->SetText(FText::FromString(CurrencyString));
+}
+
+// Display the upgrade icon over the weapon.
+void UHUDWidget::UpdateWeaponUpgradeUI()
+{
+	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
+	TArray<EWeaponType> WeaponKeys;
+	Guns.GenerateKeyArray(WeaponKeys);
+	
+	for (EWeaponType WeaponType : WeaponKeys)
+	{
+		// Change upgrade icon for already equipped weapons.
+		if (UImage* UpgradeIcon = GetUpgradeIconFromWeapon(WeaponType))
+		{
+			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
+			{
+				UpgradeIcon->SetBrushFromAtlasInterface(UpgradeTexture);
+				UpgradeIcon->SetVisibility(ESlateVisibility::Visible);
+			}
+			else
+			{
+				UpgradeIcon->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+	}
+
+	// Loop through all weapons.
+	UEnum* WeaponEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
+	if (!WeaponEnum) return;
+	for (int32 i = 0; i < WeaponEnum->GetMaxEnumValue(); ++i)
+	{
+		if (!WeaponEnum->IsValidEnumValue(i)) continue;
+		EWeaponType WeaponType = static_cast<EWeaponType>(i);
+		
+		// Update weapon upgrade cost.
+		if (UTextBlock* UpgradeCostText = GetUpgradeCostTextFromWeapon(WeaponType))
+		{
+			int32 UpgradeCost = WeaponUnlocking->GetUpgradeCost(WeaponType);
+			FText UpgradeCostString = FText::AsNumber(UpgradeCost);
+			UpgradeCostText->SetText(UpgradeCostString);
+			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
+			{
+				UpgradeCostText->SetColorAndOpacity(FSlateColor(FColor::Green));
+			}
+			else
+			{
+				UpgradeCostText->SetColorAndOpacity(CantAffordColor);
+			}
+		}
+	}
 }
 
 void UHUDWidget::StartJetpackUpdate()
@@ -200,7 +251,6 @@ void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor Star
 	// Get the new color to set, as a clamped value between the start color and completely red.
 	FLinearColor EndColor = FLinearColor(1, 0, 0, .7f);
 	FLinearColor Color = FLinearColor::LerpUsingHSV(StartColor, EndColor, FMath::Clamp(1.1f - Percent, 0.f, 1.f));
-
 	Bar->WidgetStyle.FillImage.TintColor = FSlateColor(Color);
 	
 	// Set background color with transparency. 
@@ -218,10 +268,8 @@ void UHUDWidget::SetSliderColor(URadialSlider* Slider, float Percent, FLinearCol
 }
 
 // Update health bar value.
-void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
+void UHUDWidget::UpdateHealth(float HealthPercent)
 {
-	float HealthPercent = Player->GetHealthPercent();
-
 	SetBarColor(HealthBar, HealthPercent, HealthBarStartColor);
 
 	// Set how filled the health bar is.
@@ -232,24 +280,9 @@ void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
 void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 {
 	GetGun();
-
-	// Bind the function for updating the sniper scope.
-	if (Weapon == EWeaponType::SniperRifle)
-	{
-		// Hide crosshair since hipfire is inaccurate.
-		if (Crosshair->IsVisible())
-		{
-			Crosshair->SetVisibility(ESlateVisibility::Hidden);
-		}
-	}
-	else
-	{
-		// Show crosshair.
-		if (!Crosshair->IsVisible())
-		{
-			Crosshair->SetVisibility(ESlateVisibility::Visible);
-		}
-	}
+	
+	// Hide crosshair for sniper, since hipfire is inaccurate.
+	UpdateCrosshairVisibility(Weapon);
 
 	// Stop reload if it is interrupted by swapping weapons.
 	if (ReloadTimeline->IsPlaying())
@@ -258,43 +291,45 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		ReloadCooldown->SetValue(0.f);
 	}
 	
-	UBorder* NextWeaponBorder;
-	UImage* Image;
+	UProgressBar* NextWeaponBar = GetUnlockBar(Weapon);
+	UImage* WeaponPadlock;
+	UImage* WeaponImage;
 	CurrentWeapon = Weapon;
 	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
-		NextWeaponBorder = AutoPistolBorder;
-		Image = AutoPistolPadlock;
+		WeaponPadlock = AutoPistolPadlock;
+		WeaponImage = AutoPistolIcon;
 		break;
 	case EWeaponType::Shotgun:
-		NextWeaponBorder = ShotgunBorder;
-		Image = ShotgunPadlock;
+		WeaponPadlock = ShotgunPadlock;
+		WeaponImage = ShotgunIcon;
 		break;
-	case EWeaponType::SniperRifle:
-		NextWeaponBorder = SniperRifleBorder;
-		Image = SniperRiflePadlock;
+	case EWeaponType::AssaultRifle:
+		WeaponPadlock = AssaultRiflePadlock;
+		WeaponImage = AssaultRifleIcon;
 		break;
 	default:
-		NextWeaponBorder = AssaultRifleBorder;
-		Image = AssaultRiflePadlock;
+		WeaponPadlock = SniperRiflePadlock;
+		WeaponImage = SniperRifleIcon;
 		break;
 	}
 
 	// Change color of currently equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(.025f, .025f, .025f, .6f));
-	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, .6f));
+	EquippedWeaponBar->WidgetStyle.BackgroundImage.TintColor = FLinearColor(0.02f, 0.02f, 0.02f, 0.1f);
+	EquippedWeaponImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, .6f));
 	
-	EquippedWeaponBorder = NextWeaponBorder;
+	EquippedWeaponBar = NextWeaponBar;
+	EquippedWeaponImage = WeaponImage;
 
-	// Change color of newly equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(.75f, .75f, .75f, 1.f));
-	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
+	// Change color of newly equipped weapon and it's border
+	EquippedWeaponBar->WidgetStyle.BackgroundImage.TintColor = FLinearColor(0.7f, 0.7f, 0.7f, 0.6f);
+	EquippedWeaponImage->SetColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
 
 	// Weapon has been unlocked.
-	if (Image->GetBrush().GetResourceObject() == PadlockTexture && Image->IsVisible())
+	if (WeaponPadlock->GetBrush().GetResourceObject() == PadlockTexture && WeaponPadlock->IsVisible())
 	{
-		Image->SetVisibility(ESlateVisibility::Hidden);
+		WeaponPadlock->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 
@@ -332,6 +367,27 @@ UTextBlock* UHUDWidget::GetUpgradeCostTextFromWeapon(EWeaponType Weapon)
 	}
 }
 
+UProgressBar* UHUDWidget::GetUnlockBar(EWeaponType Weapon) const
+{
+	UProgressBar* UpgradeCooldownBar;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		UpgradeCooldownBar = AutoPistolUnlockBar;
+		break;
+	case EWeaponType::Shotgun:
+		UpgradeCooldownBar = ShotgunUnlockBar;
+		break;
+	case EWeaponType::AssaultRifle:
+		UpgradeCooldownBar = AssaultRifleUnlockBar;
+		break;
+	default:
+		UpgradeCooldownBar = SniperRifleUnlockBar;
+		break;
+	}
+	return UpgradeCooldownBar;
+}
+
 UProgressBar* UHUDWidget::GetAbilityBar(EWeaponType Weapon) const
 {
 	UProgressBar* CooldownBar;
@@ -353,57 +409,6 @@ UProgressBar* UHUDWidget::GetAbilityBar(EWeaponType Weapon) const
 	return CooldownBar;
 }
 
-// Display the upgrade icon over the weapon.
-void UHUDWidget::UpdateWeaponUpgradeUI()
-{
-	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
-	TArray<EWeaponType> WeaponKeys;
-	Guns.GenerateKeyArray(WeaponKeys);
-	
-	for (EWeaponType WeaponType : WeaponKeys)
-	{
-		// Change upgrade icon for already equipped weapons.
-		if (UImage* UpgradeIcon = GetUpgradeIconFromWeapon(WeaponType))
-		{
-			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
-			{
-				UpgradeIcon->SetBrushFromAtlasInterface(UpgradeTexture);
-				UpgradeIcon->SetVisibility(ESlateVisibility::Visible);
-			}
-			else
-			{
-				UpgradeIcon->SetVisibility(ESlateVisibility::Hidden);
-			}
-		}
-	}
-
-	// Loop through all weapons.
-	UEnum* WeaponEnum = FindObject<UEnum>(ANY_PACKAGE, TEXT("EWeaponType"), true);
-	if (!WeaponEnum) return;
-	for (int32 i = 0; i < WeaponEnum->GetMaxEnumValue(); ++i)
-	{
-		if (!WeaponEnum->IsValidEnumValue(i)) continue;
-
-		EWeaponType WeaponType = static_cast<EWeaponType>(i);
-		
-		// Update weapon upgrade cost.
-		if (UTextBlock* UpgradeCostText = GetUpgradeCostTextFromWeapon(WeaponType))
-		{
-			int32 UpgradeCost = WeaponUnlocking->GetUpgradeCost(WeaponType);
-			FText UpgradeCostString = FText::AsNumber(UpgradeCost);
-			UpgradeCostText->SetText(UpgradeCostString);
-			if (WeaponUnlocking->CanAffordUpgrade(WeaponType))
-			{
-				UpgradeCostText->SetColorAndOpacity(FSlateColor(FColor::Green));
-			}
-			else
-			{
-				UpgradeCostText->SetColorAndOpacity(CantAffordColor);
-			}
-		}
-	}
-}
-
 // Set the color of the ability cooldown bar to show that the ability is unlocked.
 void UHUDWidget::UpdateCooldownBarColor(EWeaponType Weapon)
 {
@@ -419,15 +424,17 @@ void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercent
 {
 	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
 	EWeaponType Weapon = EWeaponType::Pistol;
-	
-	for (const TPair<EWeaponType, AGun*> Pair : Guns)
+
+	// Get the WeaponType for weapon on cooldown.
+	for (const TPair Pair : Guns)
 	{
 		if (Pair.Value == GunOnCooldown)
 		{
 			Weapon = Pair.Key;
 		}
 	}
-	
+
+	// Set the value in corresponding cooldown bar.
 	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
 	if (CooldownBar)
 	{
@@ -479,15 +486,15 @@ void UHUDWidget::RemoveHitMarker()
 }
 
 // Updates crosshair visibility.
-void UHUDWidget::ShowCrosshair(bool bShow)
+void UHUDWidget::UpdateCrosshairVisibility(EWeaponType Weapon)
 {
-	if (bShow)
+	if (Weapon == EWeaponType::SniperRifle && Crosshair->IsVisible())
 	{
-		Crosshair->SetVisibility(ESlateVisibility::Visible);
+		Crosshair->SetVisibility(ESlateVisibility::Hidden);
 	}
 	else
 	{
-		Crosshair->SetVisibility(ESlateVisibility::Hidden);
+		Crosshair->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
@@ -502,8 +509,6 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Reload Time: %f"), Cooldown);
 	
 	// Bind function for updating reload slider.
 	ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
@@ -585,4 +590,38 @@ void UHUDWidget::DashCooldownFinished()
 {
 	// Reset indicator.
 	DashCooldown->SetValue(0.f);
+}
+
+void UHUDWidget::StartUnlockTimeline(EWeaponType WeaponToUnlock)
+{
+	if (!UnlockTimeline || !UnlockCurve)
+	{
+		return;
+	}
+
+	UnlockOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateUnlockTimeline);
+	UnlockTimeline->AddInterpFloat(UnlockCurve, UnlockOnTimelineFloat);
+
+	UnlockTimeline->SetTimelineLength(.5f);
+	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+
+	FOnTimelineEvent TimelineEvent;
+	TimelineEvent.BindUFunction(this, FName("UnlockTimelineFinished"));
+	UnlockTimeline->SetTimelineFinishedFunc(TimelineEvent);
+
+	if (IsValid(UnlockTimeline) && UnlockTimeline->IsRegistered())
+	{
+		UnlockTimeline->PlayFromStart();
+	}
+}
+
+void UHUDWidget::UpdateUnlockTimeline(float Output)
+{
+	UnlockBar = GetUnlockBar(CurrentWeapon);
+	UnlockBar->SetPercent(0.f);
+}
+
+void UHUDWidget::UnlockTimelineFinished()
+{
+	EquippedWeaponBar->SetPercent(0.f);
 }

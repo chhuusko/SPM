@@ -39,23 +39,47 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AbilityUnlockedPrompt;
 
-	UPROPERTY(meta = (BindWidget))
-	class UBorder* AutoPistolBorder;
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* AutoPistolBorder;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* ShotgunBorder;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* AssaultRifleBorder;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* SniperRifleBorder;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* ShotgunBorder;
+	class UProgressBar* AutoPistolUnlockBar;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* AssaultRifleBorder;
+	class UProgressBar* ShotgunUnlockBar;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* SniperRifleBorder;
+	class UProgressBar* AssaultRifleUnlockBar;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* SniperRifleUnlockBar;
 
 	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* DashCooldown;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UImage* AutoPistolIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* ShotgunIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* AssaultRifleIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* SniperRifleIcon;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* AutoPistolPadlock;
@@ -109,7 +133,7 @@ public:
 	void StartJetpackUpdate();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateHealth(AShooterCharacter* Player);
+	void UpdateHealth(float HealthPercent);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
@@ -139,6 +163,15 @@ private:
 
 	UFUNCTION()
 	void DashCooldownFinished();
+
+	UFUNCTION()
+	void StartUnlockTimeline(EWeaponType WeaponToUnlock);
+
+	UFUNCTION()
+	void UpdateUnlockTimeline(float Output);
+
+	UFUNCTION()
+	void UnlockTimelineFinished();
 	
 	UFUNCTION()
 	void OnPickup(int32 NewCurrencyAmount);
@@ -192,7 +225,10 @@ private:
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
 
 	UFUNCTION()
-	void ShowCrosshair(bool bShow);
+	UProgressBar* GetUnlockBar(EWeaponType Weapon) const;
+
+	UFUNCTION()
+	void UpdateCrosshairVisibility(EWeaponType Weapon);
 
 	UFUNCTION()
 	void StartReloadCooldown(float Cooldown);
@@ -242,8 +278,12 @@ private:
 	bool bHasDashCooldown;
 	bool bJetpackFuelFull = true;
 
-	UBorder* EquippedWeaponBorder;
+	UProgressBar* EquippedWeaponBar;
+	UImage* EquippedWeaponImage;
 
+	UPROPERTY()
+	UProgressBar* UnlockBar;
+	
 	FTimerHandle HitmarkTimerHandle;
 	FTimerHandle JetpackTimerHandle;
 	FTimerHandle AbilityUnlockedHandle;
@@ -267,4 +307,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* DashCurve;
+
+	UPROPERTY()
+	class UTimelineComponent* UnlockTimeline;
+
+	UPROPERTY()
+	FOnTimelineFloat UnlockOnTimelineFloat;
+
+	UPROPERTY(EditDefaultsOnly)
+	UCurveFloat* UnlockCurve;
 };

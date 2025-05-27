@@ -261,6 +261,7 @@ public:
 	virtual void WeaponAbility();
 	virtual void StopWeaponAbility();
 	virtual void ApplyUpgrade(int NewLevel);
+	void UpdateAmmoText();
 	void UpdateWeaponAbilityCooldown();
 	void ResetCanFire();
 	void ReleaseTrigger();

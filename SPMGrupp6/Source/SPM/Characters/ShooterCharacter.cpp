@@ -150,7 +150,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	
 	OnTakeDamage.Broadcast();
 	ReduceSpeed();
-	UpdatePlayerHealth();
+	OnHealthUpdated.Broadcast(GetHealthPercent());
 
 	if(IsDead())
 	{
@@ -196,11 +196,8 @@ void AShooterCharacter::UseJetpack()
 		}
 		LaunchCharacter(FVector(0, 0, JetpackPower), false, true);
 
-		if (PlayerController && PlayerController->HUDWidget)
-		{
-			// Start updating jetpack fuel indicator.
-			OnUsedJetpack.Broadcast();
-		}
+		// Start updating jetpack fuel indicator.
+		OnUsedJetpack.Broadcast();
 	}
 
 	JetpackCharge--;
@@ -373,7 +370,7 @@ void AShooterCharacter::StopReload()
 void AShooterCharacter::Heal(int HealAmount)
 {
 	Health = FMath::Min(HealAmount+Health, MaxHealth);
-	UpdatePlayerHealth();
+	OnHealthUpdated.Broadcast(GetHealthPercent());
 }
 void AShooterCharacter::WeaponAbility()
 {
@@ -384,16 +381,6 @@ void AShooterCharacter::StopWeaponAbility()
 {
 	if (!Gun) return;
 	Gun->StopWeaponAbility();
-}
-
-void AShooterCharacter::UpdatePlayerHealth()
-{
-	// The hud exists.
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		// Update player's health.
-		PlayerController->HUDWidget->UpdateHealth(this);
-	}
 }
 
 void AShooterCharacter::SetGamepadRotationSensitivity(float NewSensitivity)
