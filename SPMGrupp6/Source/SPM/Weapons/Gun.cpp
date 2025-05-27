@@ -220,6 +220,18 @@ void AGun::PullTrigger()
 		{
 			StartAutomaticFireSequence();
 		}
+		else
+		{
+			float FireInTime = LastFireTime + FireRate - CurrentTime;
+			if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading)
+			{
+				StopAutoFire();
+				return;
+			}
+
+			Fire();
+			GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AGun::HandleNextAutoFire, FireInTime, false);
+		}
 	}
 	else
 	{
@@ -450,7 +462,7 @@ void AGun::StartAutomaticFireSequence()
 }
 void AGun::HandleNextAutoFire()
 {
-	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading || BulletsLeft <= 0)
+	if (!bIsTriggerHeld || !bIsWeaponEquipped || bIsReloading)
 	{
 		StopAutoFire();
 		return;

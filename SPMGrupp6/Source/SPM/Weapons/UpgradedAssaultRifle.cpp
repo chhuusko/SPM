@@ -42,13 +42,18 @@ void AUpgradedAssaultRifle::WeaponAbility()
 		return;
 	}
 
-	GetWorld()->SpawnActor<AExplosiveProjectile>(
+	AHomingMissile* Missile = Cast<AHomingMissile>(GetWorld()->SpawnActor<AExplosiveProjectile>(
 		HomingMissileClass,
 		SpawnLocation,
 		SpawnRotation,
 		SpawnParams
-		);
+		));
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
+
+	if (Missile)
+	{
+		Missile->InitializeDamageValues(ExtraAbilityMinDamage, ExtraAbilityMaxDamage);
+	}
 }
 
 void AUpgradedAssaultRifle::ApplyUpgrade(int NewLevel)
