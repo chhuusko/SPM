@@ -190,9 +190,9 @@ void UCombinedMinimap::SetRenderTransformAngle(UCanvasPanel* Canvas, float Angle
 
 FVector2D UCombinedMinimap::GetMinimapPosition(const FVector& WorldLocation) const
 {
-	if (!SceneCaptureRef || !MinimapIconsCanvas) return FVector2D::ZeroVector;
+	if (!MinimapIconsCanvas) return FVector2D::ZeroVector;
 
-	float OrthoWidth = SceneCaptureRef->OrthoWidth;
+	float OrthoWidth = SceneCaptureRef ? SceneCaptureRef->OrthoWidth : SceneCaptureOrtho;
 	FVector2D CanvasSize = MinimapIconsCanvas->GetCachedGeometry().GetLocalSize();
 
 	float X = (WorldLocation.X / OrthoWidth) + 0.5f;
@@ -245,6 +245,7 @@ void UCombinedMinimap::OnRedPlayerFire()
     }
 	
 	FVector2D MinimapPos = GetMinimapPosition(RedPlayer->GetActorLocation());
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] Setting Red Player to %s"), *MinimapPos.ToString());
 	
 	if (!RedPlayerRadarIcon)
 	{
@@ -254,7 +255,7 @@ void UCombinedMinimap::OnRedPlayerFire()
 	{
 		CanvasSlot->SetPosition(MinimapPos);
 	}
-	else if(Debug)  UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player Icon!"));
+	else if(Debug) UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player Icon!"));
 }
 
 void UCombinedMinimap::BindOnBluePlayerSetGun()
@@ -281,6 +282,7 @@ void UCombinedMinimap::OnBluePlayerFire()
 	if (!BluePlayer) return;
 	
 	FVector2D MinimapPos = GetMinimapPosition(BluePlayer->GetActorLocation());
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] Setting Blue Player to %s"), *MinimapPos.ToString());
 	if (!BluePlayerRadarIcon)
 	{
 		BluePlayerRadarIcon = SpawnIconOn(MinimapPos, BluePlayerRadarIconClass);
@@ -383,9 +385,9 @@ void UCombinedMinimap::CheckForStillImage()
 		{
 			ImageIsSet = false;
 			// Fallback: use SceneCapture's render target
-			FSlateBrush RenderBrush;
-			RenderBrush.SetResourceObject(RenderTarget);
-			Map->SetBrush(RenderBrush);
+			//FSlateBrush RenderBrush;
+			//RenderBrush.SetResourceObject(RenderTarget);
+			//Map->SetBrush(RenderBrush);
 		}
 	}
 }

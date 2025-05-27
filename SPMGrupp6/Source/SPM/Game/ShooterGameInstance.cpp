@@ -115,7 +115,7 @@ void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
 void UShooterGameInstance::LoadCombinedMinimap()
 {
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar] Initializing"));
-	if (!GlobalMinimapWidget && GlobalMinimapWidgetClass)
+	if (CombinedRadarEnabled && GlobalMinimapWidgetClass)
 	{
 		GlobalMinimapWidget = CreateWidget<UCombinedMinimap>(this, GlobalMinimapWidgetClass);
 		if (GlobalMinimapWidget)

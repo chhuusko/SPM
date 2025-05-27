@@ -60,8 +60,8 @@ void AUpgradedAssaultRifle::ApplyUpgrade(int NewLevel)
 {
 	Super::ApplyUpgrade(NewLevel);
 	
-	ExtraAbilityMinDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, ExtraAbilityMinDamage, AbilityDamageDefaultIncreasePerLevel);
-	ExtraAbilityMaxDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, ExtraAbilityMaxDamage, AbilityDamageDefaultIncreasePerLevel);
+	ExtraAbilityMinDamage = GetScaledStatValue<float>(AbilityMinDamagePerLevel, NewLevel, ExtraAbilityMinDamage, AbilityMinDamageDefaultIncreasePerLevel);
+	ExtraAbilityMaxDamage = GetScaledStatValue<float>(AbilityMaxDamagePerLevel, NewLevel, ExtraAbilityMaxDamage, AbilityMaxDamageDefaultIncreasePerLevel);
 }
 
 void AUpgradedAssaultRifle::ResetAbilityCooldown()
