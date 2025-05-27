@@ -487,8 +487,6 @@ void UHUDWidget::StartReloadCooldown(float Cooldown)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Reload Time: %f"), Cooldown);
 	
 	// Bind function for updating reload slider.
 	ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
