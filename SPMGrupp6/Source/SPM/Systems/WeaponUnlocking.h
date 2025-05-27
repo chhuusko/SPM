@@ -103,6 +103,8 @@ private:
 	UPROPERTY()
 	AShooterPlayerController* PlayerController;
 	
+	UPROPERTY(EditAnywhere)
+	bool Debug = false;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
 	TMap<EWeaponType, FWeaponUpgradePath> WeaponClasses;
 	UPROPERTY()

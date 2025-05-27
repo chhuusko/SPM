@@ -42,7 +42,6 @@ void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime
 		if(PlayerPingProgress >= PlayerPingInterval)
 		{
 			PlayerPingProgress = 0.f;
-			//UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/Tick] Updating Player Pings"));
 			OnRedPlayerFire();
 			OnBluePlayerFire();
 		}
@@ -124,14 +123,14 @@ void UCombinedMinimap::SetSceneCapture()
 
 	
 	if (!SceneCaptureActor) {
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/SetSceneCapture] Failed to get/spawn SceneCaptureActor"));
+		if(Debug) UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/SetSceneCapture] Failed to get/spawn SceneCaptureActor"));
 		return;
 	}
 	
 	USceneCaptureComponent2D* CaptureComp = SceneCaptureActor->GetCaptureComponent2D();
 	if (!CaptureComp)
 	{
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/SetSceneCapture] Failed to get CaptureComponent2D"));
+		if(Debug) UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/SetSceneCapture] Failed to get CaptureComponent2D"));
 		return;
 	}
 	
@@ -235,7 +234,7 @@ void UCombinedMinimap::OnRedPlayerFire()
 {
     if (!RedPlayer)
     {
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player!"));
+		if(Debug) UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player!"));
     	return;
     }
 	
@@ -249,10 +248,7 @@ void UCombinedMinimap::OnRedPlayerFire()
 	{
 		CanvasSlot->SetPosition(MinimapPos);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player Icon!"));
-	}
+	else if(Debug)  UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance/Radar/RedPlayerUpdate] No Red Player Icon!"));
 }
 
 void UCombinedMinimap::BindOnBluePlayerSetGun()

@@ -15,7 +15,7 @@ UWeaponUnlocking::UWeaponUnlocking()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	
 	// ...
 }
@@ -35,7 +35,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 				SoundVolume, 
 				RandomPitch);
 		}
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponType %d not unlocked!"), (int32)WeaponType);
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponType %d not unlocked!"), (int32)WeaponType);
 		return;
 	}
 	
@@ -45,7 +45,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
 	if (!UpgradePath)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No upgrade path found for WeaponType %d"), (int32)WeaponType);
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No upgrade path found for WeaponType %d"), (int32)WeaponType);
 		return;
 	}
 	
@@ -60,7 +60,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	
 	if (ClosestAvailableLevel == -1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No weapon class found for WeaponType %d at or below Level %d"), (int32)WeaponType, Level);
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No weapon class found for WeaponType %d at or below Level %d"), (int32)WeaponType, Level);
 		return;
 	}
 	
@@ -69,7 +69,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	if (CurrentGun && CurrentGun->GetClass() == WeaponClass)
 	{
 		// Hoppa över, samma vapen redan utrustat
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponType %d already equipped"), (int32)WeaponType);
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponType %d already equipped"), (int32)WeaponType);
 		return;
 	}
 	
@@ -89,21 +89,21 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 
 void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 {
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] trying to UnlockOrUpgradeWeapon weapon: %d"), (int32)WeaponType);
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] trying to UnlockOrUpgradeWeapon weapon: %d"), (int32)WeaponType);
 	if (!ResourceComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] does not have a reference to ResourceComponent!"));
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] does not have a reference to ResourceComponent!"));
 		return;
 	}
 	if (!WeaponClasses.Contains(WeaponType))
 	{
-		UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] WeaponClasses does not contain weapon type %d!"), (int32)WeaponType);
+		if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] WeaponClasses does not contain weapon type %d!"), (int32)WeaponType);
 		return;
 	}
 	
 	FWeaponState& State = WeaponStates.FindOrAdd(WeaponType);
 	
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon: %d | Unlocked: %s | Level: %d"),
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon: %d | Unlocked: %s | Level: %d"),
 		(int32)WeaponType,
 		State.bUnlocked ? TEXT("Yes") : TEXT("No"),
 		State.Level);
@@ -115,7 +115,7 @@ void UWeaponUnlocking::TryUnlockOrUpgradeWeapon(EWeaponType WeaponType)
 	else if (WeaponPool.Contains(WeaponType))
 	{
 		UpgradingWeapon(WeaponType, State);
-	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d is not in WeaponPool!"),
+	} else if(Debug) UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Weapon %d is not in WeaponPool!"),
 									(int32)WeaponType);
 }
 
@@ -124,7 +124,7 @@ void UWeaponUnlocking::UnlockingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
 	if (!UpgradePath || !UpgradePath->LevelToClass.Contains(1))
 	{
-		UE_LOG(LogTemp, Error, TEXT("No basic weapon class defined for WeaponType %d (Level 1)"), (int32)WeaponType);
+		if(Debug) UE_LOG(LogTemp, Error, TEXT("No basic weapon class defined for WeaponType %d (Level 1)"), (int32)WeaponType);
 		return;
 	}
 	
@@ -165,7 +165,7 @@ void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponSta
 			SoundVolume, 
 			RandomPitch);
 	}
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
 }
 void UWeaponUnlocking::UnlockingWeaponFailed(const AGun* Gun) const
 {
@@ -178,7 +178,7 @@ void UWeaponUnlocking::UnlockingWeaponFailed(const AGun* Gun) const
 			SoundVolume, 
 			RandomPitch);
 	}
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock %s"),
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock %s"),
 							*Gun->GetName());
 }
 
@@ -195,7 +195,7 @@ void UWeaponUnlocking::UpgradingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 		{
 			UpgradingWeaponFailed(Gun, State);
 		}
-	} else UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
+	} else if(Debug) UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
 								(int32)WeaponType);
 }
 
@@ -249,13 +249,13 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to spawn upgraded weapon of class %s"), *NextClass->GetName());
+			if(Debug) UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to spawn upgraded weapon of class %s"), *NextClass->GetName());
 		}
 	}
 	else
 	{
 		// No evolution, stat upgrade only
-		UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Normal upgrade of weapon of class %s to level %d"), *NextClass->GetName(), State.Level);
+		if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Normal upgrade of weapon of class %s to level %d"), *NextClass->GetName(), State.Level);
 		Gun->ApplyUpgrade(State.Level);
 		OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
 	}
@@ -274,7 +274,7 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 			SoundVolume, 
 			RandomPitch);
 	}
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] %s upgraded!"),
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] %s upgraded!"),
 						*Gun->GetName());
 }
 void UWeaponUnlocking::UpgradingWeaponFailed(const AGun* Gun, const FWeaponState& State) const
@@ -288,7 +288,7 @@ void UWeaponUnlocking::UpgradingWeaponFailed(const AGun* Gun, const FWeaponState
 			SoundVolume, 
 			RandomPitch);
 	}
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade %s from level %d to  %d"),
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to upgrade %s from level %d to  %d"),
 						*Gun->GetName(),
 						State.Level,
 						State.Level+1);
@@ -309,7 +309,7 @@ int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 	const FWeaponUpgradePath* UpgradePath = WeaponClasses.Find(WeaponType);
 	if (!UpgradePath)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No upgrade path found for WeaponType %d"), (int32)WeaponType);
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] No upgrade path found for WeaponType %d"), (int32)WeaponType);
 		return -1;
 	}
 	
@@ -335,7 +335,7 @@ int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 
 	if (!WeaponClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Failed to get WeaponClass for WeaponType %d at NextLevel %d (fallback used)"),
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Failed to get WeaponClass for WeaponType %d at NextLevel %d (fallback used)"),
 			(int32)WeaponType, NextLevel);
 		return -1;
 	}
@@ -379,13 +379,13 @@ void UWeaponUnlocking::BeginPlay()
 
 	PlayerController = CharacterOwner->GetController<AShooterPlayerController>();
 	
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking BeginPlay - Owner: %s | Controller: %s | LocalController: %s"),
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking BeginPlay - Owner: %s | Controller: %s | LocalController: %s"),
 										*CharacterOwner->GetName(),
 										*GetNameSafe(CharacterOwner->GetController()),
 										*GetNameSafe(CharacterOwner->GetLocalViewingPlayerController()));
 	if (!CharacterOwner->GetController())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking player does not have a LocalController yet. Delaying Weapon creation."));
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("WeaponUnlocking player does not have a LocalController yet. Delaying Weapon creation."));
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponUnlocking::InitializeWeaponUnlockingSystem);
 		return;
 	}
@@ -444,7 +444,7 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 		Input->BindAction(IA_SwapForward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapBackward);
 		Input->BindAction(IA_SwapBackward, ETriggerEvent::Triggered, this, &UWeaponUnlocking::SwapForward);
 	}
-	UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking started successfully"));
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking started successfully"));
 }
 
 void UWeaponUnlocking::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -549,19 +549,19 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 {
 	if (!WeaponClass)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponClass not valid"));
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] WeaponClass not valid"));
 		return;
 	}
 	if (!CharacterOwner)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] CharacterOwner not valid"));
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] CharacterOwner not valid"));
 		return;
 	}
 
 	UWorld* World = GetWorld();
 	if (!World)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] World not valid"));
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] World not valid"));
 		return;
 	}
 
@@ -584,7 +584,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 	}
 	if (!bFound)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] SpawnAndAttachWeapon: Class not found in WeaponClasses map."));
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] SpawnAndAttachWeapon: Class not found in WeaponClasses map."));
 		return;
 	}
 	
@@ -594,7 +594,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 		PooledGun = World->SpawnActor<AGun>(WeaponClass);
 		if (!PooledGun)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Failed to spawn weapon of class %s"), *WeaponClass->GetName());
+			if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Failed to spawn weapon of class %s"), *WeaponClass->GetName());
 			return;
 		}
 		
@@ -624,5 +624,5 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 	PooledGun->SetActorHiddenInGame(false);
 	CharacterOwner->SetGun(PooledGun);
 	PooledGun->SetWeaponEquipped(true);
-	UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Succeeded in equipping %s"), *WeaponClass->GetName());
+	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Succeeded in equipping %s"), *WeaponClass->GetName());
 }

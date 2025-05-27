@@ -69,6 +69,9 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* MinimapIconsCanvas;
 	
+	UPROPERTY(EditAnywhere)
+	bool Debug = false;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	UTextureRenderTarget2D* RenderTarget;
 	
