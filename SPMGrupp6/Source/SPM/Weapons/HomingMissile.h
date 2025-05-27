@@ -19,6 +19,8 @@ class SPM_API AHomingMissile : public AExplosiveProjectile
 public:
 	virtual void Tick(float DeltaTime) override;
 	AHomingMissile();
+
+	void InitializeDamageValues(const float ExtraMinDamage, const float ExtraMaxDamage);
 	
 protected:
 	virtual void BeginPlay() override;

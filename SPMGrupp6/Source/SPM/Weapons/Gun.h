@@ -150,6 +150,7 @@ protected:
 	bool bIsRecoiling = false;
 	bool bIsTriggerHeld = false;
 	bool bIsFiringWithTimer = false;
+	float LastFireTime = 0;
 
 	int TimesFired = 0;
 	FTimerHandle FireRateTimer;

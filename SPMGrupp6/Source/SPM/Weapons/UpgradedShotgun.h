@@ -30,14 +30,14 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* LaunchGrenadeSound;
+	
+	UPROPERTY(EditAnywhere)
+	float AbilityEffectTime = 2.5f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
-	
-	// UPROPERTY(EditAnywhere)
-	// float AbilityCooldown = 5.0f;
 
 	void ResetAbilityCooldown();
 	bool bCanUseAbility = true;

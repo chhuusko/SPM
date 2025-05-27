@@ -42,21 +42,26 @@ void AUpgradedAssaultRifle::WeaponAbility()
 		return;
 	}
 
-	GetWorld()->SpawnActor<AExplosiveProjectile>(
+	AHomingMissile* Missile = Cast<AHomingMissile>(GetWorld()->SpawnActor<AExplosiveProjectile>(
 		HomingMissileClass,
 		SpawnLocation,
 		SpawnRotation,
 		SpawnParams
-		);
+		));
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), LaunchGrenadeSound, GetActorLocation());
+
+	if (Missile)
+	{
+		Missile->InitializeDamageValues(ExtraAbilityMinDamage, ExtraAbilityMaxDamage);
+	}
 }
 
 void AUpgradedAssaultRifle::ApplyUpgrade(int NewLevel)
 {
 	Super::ApplyUpgrade(NewLevel);
-
-	// AbilityDamage is not exposed here
-	// AbilityDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, AbilityDamage, AbilityDamageDefaultIncreasePerLevel);
+	
+	ExtraAbilityMinDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, ExtraAbilityMinDamage, AbilityDamageDefaultIncreasePerLevel);
+	ExtraAbilityMaxDamage = GetScaledStatValue<float>(AbilityDamagePerLevel, NewLevel, ExtraAbilityMaxDamage, AbilityDamageDefaultIncreasePerLevel);
 }
 
 void AUpgradedAssaultRifle::ResetAbilityCooldown()

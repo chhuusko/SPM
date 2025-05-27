@@ -28,6 +28,8 @@ AHomingMissile::AHomingMissile()
 	GlowingParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("GlowingParticle"));
 	GlowingParticle->SetupAttachment(RootComponent);
 	GlowingParticle->bAutoActivate = true;
+
+
 }
 
 void AHomingMissile::BeginPlay()
@@ -46,6 +48,13 @@ void AHomingMissile::BeginPlay()
 	}
 	Controller = Cast<APlayerController>(GetInstigatorController());
 }
+
+void AHomingMissile::InitializeDamageValues(const float ExtraMinDamage, const float ExtraMaxDamage)
+{
+	MinDamage += ExtraMinDamage;
+	MaxDamage += ExtraMaxDamage;
+}
+
 
 void AHomingMissile::Tick(float DeltaTime)
 {
