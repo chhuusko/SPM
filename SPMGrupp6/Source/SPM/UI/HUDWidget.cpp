@@ -2,6 +2,8 @@
 
 
 #include "HUDWidget.h"
+
+#include "GroomVisualizationData.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Border.h"
@@ -16,7 +18,9 @@ void UHUDWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	// First weapon equipped on start is the auto pistol.
-	EquippedWeaponBorder = AutoPistolBorder;
+	//EquippedWeaponBorder = AutoPistolBorder;
+	EquippedWeaponBar = AutoPistolUnlockBar;
+	EquippedWeaponImage = AutoPistolIcon;
 
 	// Set the start color from the assigned value in the widget blueprint.
 	HealthBarStartColor = HealthBar->WidgetStyle.FillImage.TintColor.GetSpecifiedColor();
@@ -243,43 +247,55 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		ReloadCooldown->SetValue(0.f);
 	}
 	
-	UBorder* NextWeaponBorder;
-	UImage* Image;
+	//UBorder* NextWeaponBorder;
+	UProgressBar* NextWeaponBar;
+	UImage* WeaponPadlock;
+	UImage* WeaponImage;
 	CurrentWeapon = Weapon;
 	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
-		NextWeaponBorder = AutoPistolBorder;
-		Image = AutoPistolPadlock;
+		//NextWeaponBorder = AutoPistolBorder;
+		NextWeaponBar = AutoPistolUnlockBar;
+		WeaponPadlock = AutoPistolPadlock;
+		WeaponImage = AutoPistolIcon;
 		break;
 	case EWeaponType::Shotgun:
-		NextWeaponBorder = ShotgunBorder;
-		Image = ShotgunPadlock;
+		//NextWeaponBorder = ShotgunBorder;
+		NextWeaponBar = ShotgunUnlockBar;
+		WeaponPadlock = ShotgunPadlock;
+		WeaponImage = ShotgunIcon;
 		break;
-	case EWeaponType::SniperRifle:
-		NextWeaponBorder = SniperRifleBorder;
-		Image = SniperRiflePadlock;
+	case EWeaponType::AssaultRifle:
+		//NextWeaponBorder = SniperRifleBorder;
+		NextWeaponBar = AssaultRifleUnlockBar;
+		WeaponPadlock = AssaultRiflePadlock;
+		WeaponImage = AssaultRifleIcon;
 		break;
 	default:
-		NextWeaponBorder = AssaultRifleBorder;
-		Image = AssaultRiflePadlock;
+		//NextWeaponBorder = AssaultRifleBorder;
+		NextWeaponBar = SniperRifleUnlockBar;
+		WeaponPadlock = SniperRiflePadlock;
+		WeaponImage = SniperRifleIcon;
 		break;
 	}
 
 	// Change color of currently equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(.025f, .025f, .025f, .6f));
-	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, .6f));
+	EquippedWeaponBar->WidgetStyle.BackgroundImage.TintColor = FLinearColor(0.02f, 0.02f, 0.02f, 0.1f);
+	EquippedWeaponImage->SetColorAndOpacity(FLinearColor(1.f, 1.f, 1.f, .6f));
 	
-	EquippedWeaponBorder = NextWeaponBorder;
+	//EquippedWeaponBorder = NextWeaponBorder;
+	EquippedWeaponBar = NextWeaponBar;
+	EquippedWeaponImage = WeaponImage;
 
-	// Change color of newly equipped weapon and it's border.
-	EquippedWeaponBorder->SetBrushColor(FLinearColor(.75f, .75f, .75f, 1.f));
-	EquippedWeaponBorder->SetContentColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
+	// Change color of newly equipped weapon and it's border
+	EquippedWeaponBar->WidgetStyle.BackgroundImage.TintColor = FLinearColor(0.7f, 0.7f, 0.7f, 0.6f);
+	EquippedWeaponImage->SetColorAndOpacity(FLinearColor(0.f, 0.f, 0.f, 1.f));
 
 	// Weapon has been unlocked.
-	if (Image->GetBrush().GetResourceObject() == PadlockTexture && Image->IsVisible())
+	if (WeaponPadlock->GetBrush().GetResourceObject() == PadlockTexture && WeaponPadlock->IsVisible())
 	{
-		Image->SetVisibility(ESlateVisibility::Hidden);
+		WeaponPadlock->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

@@ -39,23 +39,47 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AbilityUnlockedPrompt;
 
-	UPROPERTY(meta = (BindWidget))
-	class UBorder* AutoPistolBorder;
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* AutoPistolBorder;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* ShotgunBorder;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* AssaultRifleBorder;
+	//
+	// UPROPERTY(meta = (BindWidget))
+	// class UBorder* SniperRifleBorder;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* ShotgunBorder;
+	class UProgressBar* AutoPistolUnlockBar;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* AssaultRifleBorder;
+	class UProgressBar* ShotgunUnlockBar;
 
 	UPROPERTY(meta = (BindWidget))
-	class UBorder* SniperRifleBorder;
+	class UProgressBar* AssaultRifleUnlockBar;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* SniperRifleUnlockBar;
 
 	UPROPERTY(meta = (BindWidget))
 	class URadialSlider* DashCooldown;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UImage* AutoPistolIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* ShotgunIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* AssaultRifleIcon;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* SniperRifleIcon;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* AutoPistolPadlock;
@@ -242,7 +266,9 @@ private:
 	bool bHasDashCooldown;
 	bool bJetpackFuelFull = true;
 
-	UBorder* EquippedWeaponBorder;
+	//UBorder* EquippedWeaponBorder;
+	UProgressBar* EquippedWeaponBar;
+	UImage* EquippedWeaponImage;
 
 	FTimerHandle HitmarkTimerHandle;
 	FTimerHandle JetpackTimerHandle;
