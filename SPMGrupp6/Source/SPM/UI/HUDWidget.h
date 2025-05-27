@@ -163,6 +163,15 @@ private:
 
 	UFUNCTION()
 	void DashCooldownFinished();
+
+	UFUNCTION()
+	void StartUnlockTimeline(EWeaponType WeaponToUnlock);
+
+	UFUNCTION()
+	void UpdateUnlockTimeline(float Output);
+
+	UFUNCTION()
+	void UnlockTimelineFinished();
 	
 	UFUNCTION()
 	void OnPickup(int32 NewCurrencyAmount);
@@ -216,6 +225,9 @@ private:
 	UTextBlock* GetUpgradeCostTextFromWeapon(EWeaponType Weapon);
 
 	UFUNCTION()
+	UProgressBar* GetUnlockBar(EWeaponType Weapon) const;
+
+	UFUNCTION()
 	void UpdateCrosshairVisibility(EWeaponType Weapon);
 
 	UFUNCTION()
@@ -266,10 +278,12 @@ private:
 	bool bHasDashCooldown;
 	bool bJetpackFuelFull = true;
 
-	//UBorder* EquippedWeaponBorder;
 	UProgressBar* EquippedWeaponBar;
 	UImage* EquippedWeaponImage;
 
+	UPROPERTY()
+	UProgressBar* UnlockBar;
+	
 	FTimerHandle HitmarkTimerHandle;
 	FTimerHandle JetpackTimerHandle;
 	FTimerHandle AbilityUnlockedHandle;

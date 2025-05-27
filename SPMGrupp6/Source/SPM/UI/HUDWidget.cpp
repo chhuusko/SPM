@@ -2,8 +2,6 @@
 
 
 #include "HUDWidget.h"
-
-#include "GroomVisualizationData.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Border.h"
@@ -293,29 +291,25 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 		ReloadCooldown->SetValue(0.f);
 	}
 	
-	UProgressBar* NextWeaponBar;
+	UProgressBar* NextWeaponBar = GetUnlockBar(Weapon);
 	UImage* WeaponPadlock;
 	UImage* WeaponImage;
 	CurrentWeapon = Weapon;
 	switch (Weapon)
 	{
 	case EWeaponType::Pistol:
-		NextWeaponBar = AutoPistolUnlockBar;
 		WeaponPadlock = AutoPistolPadlock;
 		WeaponImage = AutoPistolIcon;
 		break;
 	case EWeaponType::Shotgun:
-		NextWeaponBar = ShotgunUnlockBar;
 		WeaponPadlock = ShotgunPadlock;
 		WeaponImage = ShotgunIcon;
 		break;
 	case EWeaponType::AssaultRifle:
-		NextWeaponBar = AssaultRifleUnlockBar;
 		WeaponPadlock = AssaultRiflePadlock;
 		WeaponImage = AssaultRifleIcon;
 		break;
 	default:
-		NextWeaponBar = SniperRifleUnlockBar;
 		WeaponPadlock = SniperRiflePadlock;
 		WeaponImage = SniperRifleIcon;
 		break;
@@ -371,6 +365,27 @@ UTextBlock* UHUDWidget::GetUpgradeCostTextFromWeapon(EWeaponType Weapon)
 	default:
 		return nullptr;
 	}
+}
+
+UProgressBar* UHUDWidget::GetUnlockBar(EWeaponType Weapon) const
+{
+	UProgressBar* UpgradeCooldownBar;
+	switch (Weapon)
+	{
+	case EWeaponType::Pistol:
+		UpgradeCooldownBar = AutoPistolUnlockBar;
+		break;
+	case EWeaponType::Shotgun:
+		UpgradeCooldownBar = ShotgunUnlockBar;
+		break;
+	case EWeaponType::AssaultRifle:
+		UpgradeCooldownBar = AssaultRifleUnlockBar;
+		break;
+	default:
+		UpgradeCooldownBar = SniperRifleUnlockBar;
+		break;
+	}
+	return UpgradeCooldownBar;
 }
 
 UProgressBar* UHUDWidget::GetAbilityBar(EWeaponType Weapon) const
@@ -575,4 +590,38 @@ void UHUDWidget::DashCooldownFinished()
 {
 	// Reset indicator.
 	DashCooldown->SetValue(0.f);
+}
+
+void UHUDWidget::StartUnlockTimeline(EWeaponType WeaponToUnlock)
+{
+	if (!UnlockTimeline || !UnlockCurve)
+	{
+		return;
+	}
+
+	UnlockOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateUnlockTimeline);
+	UnlockTimeline->AddInterpFloat(UnlockCurve, UnlockOnTimelineFloat);
+
+	UnlockTimeline->SetTimelineLength(.5f);
+	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+
+	FOnTimelineEvent TimelineEvent;
+	TimelineEvent.BindUFunction(this, FName("UnlockTimelineFinished"));
+	UnlockTimeline->SetTimelineFinishedFunc(TimelineEvent);
+
+	if (IsValid(UnlockTimeline) && UnlockTimeline->IsRegistered())
+	{
+		UnlockTimeline->PlayFromStart();
+	}
+}
+
+void UHUDWidget::UpdateUnlockTimeline(float Output)
+{
+	UnlockBar = GetUnlockBar(CurrentWeapon);
+	UnlockBar->SetPercent(0.f);
+}
+
+void UHUDWidget::UnlockTimelineFinished()
+{
+	EquippedWeaponBar->SetPercent(0.f);
 }
