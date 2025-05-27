@@ -109,7 +109,7 @@ public:
 	void StartJetpackUpdate();
 
 	UFUNCTION(BlueprintCallable)
-	void UpdateHealth(AShooterCharacter* Player);
+	void UpdateHealth(float HealthPercent);
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 

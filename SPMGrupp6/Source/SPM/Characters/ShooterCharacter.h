@@ -14,6 +14,7 @@ class UTutorialComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTakeDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, HealthPercent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUsedJetpack);
 
 UCLASS()
@@ -29,6 +30,8 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Gun")
 	FOnSetGun OnSetGun;
 	FOnUsedJetpack OnUsedJetpack;
+	FOnTakeDamage OnTakeDamage;
+	FOnHealthUpdated OnHealthUpdated;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -48,7 +51,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
-	FOnTakeDamage OnTakeDamage;
+	
 	
 	void Heal(int HealAmount);
 	// Called every frame
@@ -149,7 +152,6 @@ public:
 	
 private:
 	void SetPlayerController();
-	void UpdatePlayerHealth();
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)

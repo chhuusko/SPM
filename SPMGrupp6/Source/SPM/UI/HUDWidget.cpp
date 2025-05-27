@@ -135,6 +135,7 @@ void UHUDWidget::GetPlayerCharacter()
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
+		PlayerCharacter->OnHealthUpdated.AddDynamic(this, &UHUDWidget::UpdateHealth);
 	}
 	else
 	{
@@ -218,9 +219,9 @@ void UHUDWidget::SetSliderColor(URadialSlider* Slider, float Percent, FLinearCol
 }
 
 // Update health bar value.
-void UHUDWidget::UpdateHealth(AShooterCharacter* Player)
+void UHUDWidget::UpdateHealth(float HealthPercent)
 {
-	float HealthPercent = Player->GetHealthPercent();
+	//float HealthPercent = Player->GetHealthPercent();
 
 	SetBarColor(HealthBar, HealthPercent, HealthBarStartColor);
 

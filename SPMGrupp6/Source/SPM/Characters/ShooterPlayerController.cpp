@@ -301,7 +301,7 @@ void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target
 void AShooterPlayerController::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatorController, AActor* DamageCauser)
 {
-	HUDWidget->UpdateHealth(Cast<AShooterCharacter>(GetPawn()));
+	//HUDWidget->UpdateHealth(Cast<AShooterCharacter>(GetPawn())->GetHealthPercent());
 }
 
 
