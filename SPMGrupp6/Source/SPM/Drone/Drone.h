@@ -10,6 +10,7 @@
 #include "GameFramework/Pawn.h"
 #include "Drone.generated.h"
 
+class ASVOGrid;
 class FDroneState;
 class ADroneSpawn;
 
@@ -96,10 +97,13 @@ private:
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneMissile> MissileClass;
-
+	
 	//Timehandler
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;
+
+	//Grid
+	ASVOGrid* Grid;
 	
 	//Properties
 	UPROPERTY(EditAnywhere)

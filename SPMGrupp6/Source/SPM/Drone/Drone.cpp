@@ -7,6 +7,7 @@
 #include "DroneState.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "DroneSpawn.h"
+#include "SVOGrid.h"
 #include "Components/AudioComponent.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Weapons/UpgradedPistol.h"
@@ -35,6 +36,8 @@ ADrone::ADrone()
 	ProjectileSpawn->SetupAttachment(TurretMesh);
 	ProjectileSpawnAlt = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnAltPoint"));
 	ProjectileSpawnAlt->SetupAttachment(TurretMeshAlt);
+
+	
 }
 
 // Called when the game starts or when spawned
@@ -42,6 +45,7 @@ void ADrone::BeginPlay()
 {
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
+	
 	
 }
 // Called every frame
@@ -78,7 +82,7 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 {
 	Target = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
-	
+	ASVOGrid::GetInstance(GetWorld())->GetNearestGridPosition(GetActorLocation());
 	if (Health <= 0)
 	{
 		if (Spawner != nullptr)

@@ -3,21 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Node.h"
 
 /**
  * 
  */
-class SPM_API FOctNode
+class SPM_API FOctNode : public FNode
 {
 	
 public:
-	FOctNode(FVector Position, FVector Size) : Position(Position), Size(Size), Parent(nullptr) {
+	FOctNode(FVector Position, FVector Size) : FNode(Position, Size), Parent(nullptr) {
         for (int i = 0; i < 8; ++i) {
             Children[i] = nullptr;
         }
     }
-	FVector Position;
-	FVector Size;
 	FOctNode* Parent;
 	FOctNode* Children[8];
 	bool IsLeaf = false;

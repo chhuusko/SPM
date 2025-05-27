@@ -7,6 +7,7 @@
 #include <vector>
 #include "SVOGrid.generated.h"
 
+class FNode;
 class FOctNode;
 
 UCLASS()
@@ -29,20 +30,23 @@ public:
 	TArray<FVector>GetPossibleDirections(FVector Position);
 	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);
+
+	static ASVOGrid* GetInstance(UWorld* World){return GridInstance;};
+	
 	virtual void Tick(float DeltaTime) override;
 private:
 	void CreateStandardGrid();
 	// Temp Grid
 	static const int GridLength = 32;
-	
+	static ASVOGrid* GridInstance;
 	
 	// Declare and initialize all to false
-	TArray<TArray<TArray<bool>>> GridArray;
-	
+	TArray<TArray<TArray<FNode*>>> GridArray;
+	TArray<FVector> Path;
 	FOctNode* RootNode;
 	void CreateGrid();
 	
-	bool HasObjectWithin(FOctNode* Node);
+	bool HasObjectWithin(FNode* Node);
 	UPROPERTY(EditDefaultsOnly)
 	FVector AreaPosition;
 	UPROPERTY(EditDefaultsOnly)

@@ -4,3 +4,7 @@
 #include "Node.h"
 
 
+bool FNode::IsClearAndNotVisited() const
+{
+	return IsClear && !IsVisited;
+}

@@ -6,9 +6,12 @@
 #include "AnimationEditorViewportClient.h"
 #include "MeshAttributes.h"
 #include "OctNode.h"
+#include "Node.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
 
+
+ASVOGrid* ASVOGrid::GridInstance = nullptr;
 // Sets default values
 ASVOGrid::ASVOGrid()
 {
@@ -21,6 +24,10 @@ ASVOGrid::ASVOGrid()
 // Called when the game starts or when spawned
 void ASVOGrid::BeginPlay()
 {
+	if (!GridInstance)
+	{
+		GridInstance = this;
+	}
 	CreateStandardGrid();
 	Super::BeginPlay();
 }
@@ -41,10 +48,10 @@ void ASVOGrid::CreateStandardGrid()
 			GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2].SetNum(GridLength+1);
 			for (int z = -1*GridLength; z <= GridLength; z += 2) {
 				FVector Offset(x * Quarter, y * Quarter, z * Quarter);
-				FOctNode* ChildCube = new FOctNode(AreaPosition+Offset, AreaSize / GridLength);
-				GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = false;
-				if (HasObjectWithin(ChildCube)) GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = true;
+				FNode* Cube = new FNode(AreaPosition+Offset, AreaSize / GridLength);
 				
+				GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = Cube;
+				GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2]->IsClear = HasObjectWithin(Cube);
 			}
 		}
 	}
@@ -56,7 +63,6 @@ void ASVOGrid::CreateGrid()
 	RootNode = new FOctNode(AreaPosition, AreaSize);
 	if (HasObjectWithin(RootNode))
 	{
-		DrawDebugBox(GetWorld(), AreaPosition, AreaSize, FColor::Red, true, 5.f, 0, 10);
 	}
 	for(int i = 0; i <= MaxDepth; i++)
 	{
@@ -65,7 +71,7 @@ void ASVOGrid::CreateGrid()
 }
 FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 {
-	float Quarter = AreaSize.X / GridLength;
+	float Quarter = AreaSize.X / (GridLength/2);
 	FVector LocationGrid = FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
 	DrawDebugSolidBox(GetWorld(),
 	LocationGrid,
@@ -74,24 +80,23 @@ FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 	true,
 	5.f,
 	1);
-	
-	return FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
+	UE_LOG(LogTemp, Warning, TEXT("Location Grid Location: %s"), *LocationGrid.ToString());
+	return LocationGrid;
 }
 
 TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions
 	TArray<FVector> Directions;
-	if (GridArray[Position.X+1][Position.Y][Position.Z]) Directions.Add(FVector(Position.X+1, Position.Y, Position.Z));
-	if (GridArray[Position.X-1][Position.Y][Position.Z]) Directions.Add(FVector(Position.X-1, Position.Y, Position.Z));
+	if (GridArray[Position.X+1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X+1, Position.Y, Position.Z));
+	if (GridArray[Position.X-1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X-1, Position.Y, Position.Z));
 
-	if (GridArray[Position.X][Position.Y+1][Position.Z]) Directions.Add(FVector(Position.X, Position.Y+1, Position.Z));
-	if (GridArray[Position.X][Position.Y-1][Position.Z]) Directions.Add(FVector(Position.X, Position.Y-1, Position.Z));
+	if (GridArray[Position.X][Position.Y+1][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y+1, Position.Z));
+	if (GridArray[Position.X][Position.Y-1][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y-1, Position.Z));
 	
-	if (GridArray[Position.X][Position.Y][Position.Z+1]) Directions.Add(FVector(Position.X, Position.Y, Position.Z+1));
-	if (GridArray[Position.X][Position.Y][Position.Z-1]) Directions.Add(FVector(Position.X, Position.Y, Position.Z-1));
-
-	UE_LOG(LogTemp, Warning, TEXT("ConvertToGrid: %d"), Directions.Num());
+	if (GridArray[Position.X][Position.Y][Position.Z+1]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y, Position.Z+1));
+	if (GridArray[Position.X][Position.Y][Position.Z-1]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y, Position.Z-1));
+	
 	return Directions;
 	// if all no avalable and all visited go back
 	
@@ -102,7 +107,6 @@ FVector ASVOGrid::ConvertToGrid(FVector Position)
 	FVector ConvertGrid =  FVector(((GetNearestGridPosition(Position).X/Quarter)+(1*GridLength))/2,
 	((GetNearestGridPosition(Position).Y/Quarter)+(1*GridLength))/2,
 	((GetNearestGridPosition(Position).Z/Quarter)+(1*GridLength))/2);
-	UE_LOG(LogTemp, Warning, TEXT("ConvertToGrid: %s"), *ConvertGrid.ToString());
 	return ConvertGrid;
 }
 
@@ -121,10 +125,16 @@ FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desinati
 
 TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 {
-	return TArray<FVector>();
+	bool PathFound = false;
+	
+	while (PathFound)
+	{
+		GetLowestHPosition(GetPossibleDirections(GetLowestHPosition(GetPossibleDirections(From), To)), To);
+	}
+	return Path;
 }
 
-bool ASVOGrid::HasObjectWithin(FOctNode* Node)
+bool ASVOGrid::HasObjectWithin(FNode* Node)
 {
 	float Quarter = AreaSize.X / GridLength;
 	bool bHit = GetWorld()->OverlapBlockingTestByChannel(
@@ -136,8 +146,6 @@ bool ASVOGrid::HasObjectWithin(FOctNode* Node)
 	
 	if (bHit)
 	{
-		//TODO BoolArray[Node->Position.X+1*GridLength][Node->Position.Y+1*GridLength][Node->Position.Z+1*GridLength] = true;
-		//DrawDebugSolidBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0);
 		DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
 	}
 	return bHit;

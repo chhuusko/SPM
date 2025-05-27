@@ -7,10 +7,14 @@
 /**
  * 
  */
-class SPM_API Node 
+class SPM_API FNode 
 {
+	
 public:
-	bool IsClearAndNotVisited();
+	FNode(FVector Position, FVector Size) : Position(Position), Size(Size) {}
+	FVector Position;
+	FVector Size;
+	bool IsClearAndNotVisited() const;
 	bool IsClear = false;
 	bool IsVisited = false;
 };
