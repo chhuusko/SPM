@@ -108,7 +108,7 @@ void AShotgun::Fire()
 	AddRecoil();
 	TimesFired++;
 	BulletsLeft--;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	if (BulletsLeft <= 0)
 	{
 		Reload();

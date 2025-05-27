@@ -82,7 +82,7 @@ void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 	CurrentGun = CharacterOwner->GetGun();
 	if (CurrentGun)
 	{
-		CurrentGun->UpdateAmmoText();
+		CurrentGun->OnAmmoUpdated.Broadcast(CurrentGun->GetBulletsLeft(), CurrentGun->GetMagazineSize());
 	}
 	OnWeaponSwap.Broadcast(WeaponType);
 }

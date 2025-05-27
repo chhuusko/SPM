@@ -32,7 +32,7 @@ void AGun::BeginPlay()
 	BulletsLeft = MagazineSize;
 	
 	GetPlayerController();
-	GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	
 	MuzzleLocation = MuzzlePosition->GetComponentLocation();
 	MuzzleRotation = MuzzlePosition->GetComponentRotation();
@@ -177,7 +177,7 @@ void AGun::Fire()
 	AddRecoil();
 	BulletsLeft--;
 	TimesFired++;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
@@ -254,7 +254,7 @@ void AGun::ResetAmmo()
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
-	UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Continue shooting after reload if the player is still holding trigger.
 	if (bIsTriggerHeld && bIsAutomatic)
@@ -312,19 +312,6 @@ AController* AGun::GetOwnerController() const
 	return OwnerPawn->GetController();
 }
 
-void AGun::UpdateAmmoText()
-{
-	// Update players ammo text.
-	if (PlayerController && PlayerController->HUDWidget)
-	{
-		PlayerController->HUDWidget->UpdateAmmoText(BulletsLeft, MagazineSize);
-	}
-	else
-	{
-		GetWorldTimerManager().SetTimerForNextTick(this, &AGun::UpdateAmmoText);
-	}
-}
-
 void AGun::WeaponAbility()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
@@ -370,8 +357,7 @@ void AGun::ApplyUpgrade(int NewLevel)
 		AbilityUnlocked = true;
 		AbilityCooldown = GetScaledStatValue<float>(AbilityCooldownPerLevel, NewLevel, AbilityCooldown, AbilityCooldownDefaultIncreasePerLevel);
 	}
-	
-    UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 }
 
 int32 AGun::GetUpgradeCost(int Level) const
@@ -470,4 +456,9 @@ void AGun::HandleNextAutoFire()
 void AGun::StopAutoFire()
 {
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
+}
+
+int32 AGun::GetBulletsLeft() const
+{
+	return BulletsLeft;
 }

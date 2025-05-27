@@ -107,7 +107,7 @@ void APistol::Fire()
 		AddRecoil();
 		BulletsLeft--;
 		TimesFired++;
-		UpdateAmmoText();
+	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)

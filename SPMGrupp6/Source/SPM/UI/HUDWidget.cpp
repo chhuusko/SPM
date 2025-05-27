@@ -93,10 +93,13 @@ void UHUDWidget::GetGun()
 		Gun->OnHit.Clear();
 		Gun->OnCooldownUpdated.Clear();
 		Gun->OnReload.Clear();
-		
+		Gun->OnAmmoUpdated.Clear();
+
+		if (Gun->OnHit.Contains())
 		Gun->OnHit.AddDynamic(this, &UHUDWidget::AddHitmarker);
 		Gun->OnCooldownUpdated.AddDynamic(this, &UHUDWidget::UpdateWeaponCooldown);
 		Gun->OnReload.AddDynamic(this, &UHUDWidget::StartReloadCooldown);
+		Gun->OnAmmoUpdated.AddDynamic(this, &UHUDWidget::UpdateAmmoText);
 	}
 	else
 	{

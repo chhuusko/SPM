@@ -10,8 +10,9 @@ class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHit, AActor*, HitActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCooldownUpdated, AGun*, Gun, float, CooldownPercentage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReload, float, ReloadTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCooldownUpdated, AGun*, Gun, float, CooldownPercentage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoUpdated, int32, BulletsLeft, int32, MagazineSize);
 
 UCLASS()
 class SPM_API AGun : public AActor
@@ -34,6 +35,7 @@ public:
 	FOnHit OnHit;
 	FOnCooldownUpdated OnCooldownUpdated;
 	FOnReload OnReload;
+	FOnAmmoUpdated OnAmmoUpdated;
 	
 	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
 protected:
@@ -247,8 +249,6 @@ private:
 	float LegsHitMultiplier = 0.75;
 
 	void StartAutomaticFireSequence();
-
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -263,7 +263,6 @@ public:
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
-	void UpdateAmmoText();
 	float CalculateDamageFalloff(float TraceLength);
     int32 GetUpgradeCost(int Level) const;
 	void StopPendingActions();
@@ -271,4 +270,5 @@ public:
 	void EnableCanPlayEmptyMagSound();
 	void HandleNextAutoFire();
 	void StopAutoFire();
+	int32 GetBulletsLeft() const; 
 };
