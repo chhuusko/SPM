@@ -4,8 +4,10 @@
 #include "CombinedMinimap.h"
 
 #include "Components/CanvasPanel.h"
+#include "Components/Image.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "Engine/SceneCapture2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Systems/LootBoxSpawner.h"
@@ -18,22 +20,49 @@ void UCombinedMinimap::NativeConstruct()
 	Super::NativeConstruct();
 	
     InitializeMap();
+	if (Map)
+	{
+		UObject* ImageObject = MinimapImage.GetResourceObject();
+
+		if (ImageObject != nullptr && Cast<UTexture2D>(ImageObject) != nullptr)
+		{
+			// Use the static image as background
+			Map->SetBrush(MinimapImage);
+			ImageIsSet = true;
+
+			if (SceneCaptureRef)
+			{
+				SceneCaptureRef->Deactivate();
+			}
+		}
+		else if (RenderTarget)
+		{
+		    ImageIsSet = false;
+			// Fallback: use SceneCapture's render target
+			FSlateBrush RenderBrush;
+			RenderBrush.SetResourceObject(RenderTarget);
+			Map->SetBrush(RenderBrush);
+		}
+	}
 }
 
 void UCombinedMinimap::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	
-	if (!IsValid(SceneCaptureRef))
+
+	if (!ImageIsSet)
 	{
-		InitializeMap();
-		return;
-	}
+		if (!IsValid(SceneCaptureRef))
+		{
+			InitializeMap();
+			return;
+		}
 	
-	if (UpdateEveryNFrame <= 1 || (++FrameCounter % UpdateEveryNFrame == 0))
-	{
-		FrameCounter = 0;
-		SceneCaptureRef->CaptureScene();
+		if (UpdateEveryNFrame <= 1 || (++FrameCounter % UpdateEveryNFrame == 0))
+		{
+			FrameCounter = 0;
+			SceneCaptureRef->CaptureScene();
+		}
 	}
 	
 	if (AlwaysShowPlayers)
@@ -52,7 +81,7 @@ void UCombinedMinimap::InitializeMap()
 {
 	SetAlwaysShowPlayers(ShowPlayersFromStart);
 	FlipMapDependingOnPlayerSpawn();
-	SetSceneCapture();
+	if (!ImageIsSet) SetSceneCapture();
 	
 	BindOnRedPlayerSetGun();
 	BindOnRedPlayerFire();

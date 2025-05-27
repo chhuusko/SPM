@@ -7,6 +7,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "CombinedMinimap.generated.h"
 
+class UImage;
 class AShooterCharacter;
 class UCanvasPanel;
 class AActor;
@@ -67,7 +68,13 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* MiniMapCanvasPanel;
 	UPROPERTY(meta = (BindWidget))
+	UImage* Map;
+	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* MinimapIconsCanvas;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
+	FSlateBrush MinimapImage;
+	bool ImageIsSet = false;
 	
 	UPROPERTY(EditAnywhere)
 	bool Debug = false;
