@@ -2,6 +2,9 @@
 
 
 #include "HUDWidget.h"
+
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Border.h"
@@ -9,6 +12,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
+#include "SPM/Characters/ShooterPlayerController.h"
 #include "SPM/Weapons/Gun.h"
 
 void UHUDWidget::NativeConstruct()
@@ -38,6 +42,32 @@ void UHUDWidget::NativeConstruct()
 	if (!DashTimeline)
 	{
 		CreateDashTimeline();
+	}
+	if (!UnlockTimeline)
+	{
+		CreateUnlockTimeline();
+	}
+
+	if (AShooterPlayerController* PC = Cast<AShooterPlayerController>(PlayerCharacter->GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			if (WeaponUpgradeMappingContext)
+			{
+				//Subsystem->AddMappingContext(WeaponUpgradeMappingContext, 0);
+			}
+		}
+		if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PC->InputComponent))
+		{
+			Input->BindAction(StartedUpgrade1Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeAutoPistol);
+			Input->BindAction(StartedUpgrade2Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeShotgun);
+			Input->BindAction(StartedUpgrade3Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeAssaultRifle);
+			Input->BindAction(StartedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeSniperRifle);
+			Input->BindAction(StoppedUpgrade1Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
+			Input->BindAction(StoppedUpgrade2Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
+			Input->BindAction(StoppedUpgrade3Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
+			Input->BindAction(StoppedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
+		}
 	}
 }
 
@@ -80,6 +110,17 @@ void UHUDWidget::CreateDashTimeline()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Dash Timeline"));
+	}
+}
+
+void UHUDWidget::CreateUnlockTimeline()
+{
+	UnlockTimeline = NewObject<UTimelineComponent>(this, FName("UnlockTimeline"));
+
+	if (UnlockTimeline)
+	{
+		UnlockTimeline->CreationMethod = EComponentCreationMethod::Native;
+		UnlockTimeline->RegisterComponentWithWorld(GetWorld());
 	}
 }
 
@@ -592,18 +633,41 @@ void UHUDWidget::DashCooldownFinished()
 	DashCooldown->SetValue(0.f);
 }
 
-void UHUDWidget::StartUnlockTimeline(EWeaponType WeaponToUnlock)
+void UHUDWidget::StartUpgradeAutoPistol(const FInputActionInstance& Instance)
 {
-	if (!UnlockTimeline || !UnlockCurve)
+	UE_LOG(LogTemp, Warning, TEXT("StartUpgradeAutoPistol"));
+	StartUnlockTimeline(EWeaponType::Pistol);
+}
+
+void UHUDWidget::StartUpgradeShotgun(const FInputActionInstance& Instance)
+{
+	StartUnlockTimeline(EWeaponType::Shotgun);
+}
+
+void UHUDWidget::StartUpgradeAssaultRifle(const FInputActionInstance& Instance)
+{
+	StartUnlockTimeline(EWeaponType::AssaultRifle);
+}
+
+void UHUDWidget::StartUpgradeSniperRifle(const FInputActionInstance& Instance)
+{
+	StartUnlockTimeline(EWeaponType::SniperRifle);
+}
+
+void UHUDWidget::StartUnlockTimeline(EWeaponType Weapon)
+{
+	if (!UnlockTimeline || !UnlockCurve|| !WeaponUnlocking->CanAffordUpgrade(Weapon))
 	{
 		return;
 	}
+
+	UnlockBar = GetUnlockBar(Weapon);
 
 	UnlockOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateUnlockTimeline);
 	UnlockTimeline->AddInterpFloat(UnlockCurve, UnlockOnTimelineFloat);
 
 	UnlockTimeline->SetTimelineLength(.5f);
-	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	UnlockTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
 
 	FOnTimelineEvent TimelineEvent;
 	TimelineEvent.BindUFunction(this, FName("UnlockTimelineFinished"));
@@ -617,11 +681,16 @@ void UHUDWidget::StartUnlockTimeline(EWeaponType WeaponToUnlock)
 
 void UHUDWidget::UpdateUnlockTimeline(float Output)
 {
-	UnlockBar = GetUnlockBar(CurrentWeapon);
-	UnlockBar->SetPercent(0.f);
+	float NormalizedValue = UnlockTimeline->GetPlaybackPosition() / UnlockTimeline->GetTimelineLength();
+	UnlockBar->SetPercent(FMath::Clamp(NormalizedValue, 0.f, 1.f));
 }
 
 void UHUDWidget::UnlockTimelineFinished()
 {
-	EquippedWeaponBar->SetPercent(0.f);
+	if (UnlockBar)
+	{
+		UnlockTimeline->Stop();
+		UnlockBar->SetPercent(0.f);
+	}
+	
 }
