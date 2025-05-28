@@ -420,5 +420,10 @@ void AShooterCharacter::ResetMouseRotationSensitivity()
 	MouseRotationRate = MouseDefaultRotationRate;
 }
 
+void AShooterCharacter::SetSensitivitySetting(float NewSensitivity)
+{
+	SensitivitySetting = NewSensitivity;
+}
+
 
 
