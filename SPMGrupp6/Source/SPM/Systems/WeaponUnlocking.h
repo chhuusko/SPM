@@ -8,6 +8,7 @@
 #include "WeaponUnlocking.generated.h"
 
 class AShooterPlayerController;
+class UShooterGameInstance;
 class UResources;
 class AGun;
 class AShooterCharacter;
@@ -98,6 +99,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
+	UPROPERTY()
+	UShooterGameInstance* GI;
 	UPROPERTY()
 	AShooterCharacter* CharacterOwner;
 	UPROPERTY()

@@ -25,6 +25,7 @@ public:
 
 	void AddSniperScope();
 	void RemoveSniperScope();
+	int32 GetPlayerID();
 
 protected:
 	virtual void BeginPlay() override;

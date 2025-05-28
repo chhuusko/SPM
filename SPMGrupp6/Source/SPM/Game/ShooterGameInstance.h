@@ -71,6 +71,13 @@ public:
 	bool HasMatchEnded();
 	void ResetScore();
 
+	UFUNCTION(BlueprintCallable, Category = "WeaponSkins")
+	void SetP1WeaponSkin(const TSubclassOf<AGun>& WeaponClass, UMaterialInterface* NewSkin);
+	UMaterialInterface* GetP1WeaponSkin(const TSubclassOf<AGun>& WeaponClass);
+	UFUNCTION(BlueprintCallable, Category = "WeaponSkins")
+	void SetP2WeaponSkin(const TSubclassOf<AGun>& WeaponClass, UMaterialInterface* NewSkin);
+	UMaterialInterface* GetP2WeaponSkin(const TSubclassOf<AGun>& WeaponClass);
+	
 private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
@@ -83,6 +90,9 @@ private:
 	void OnPostLoadMap(UWorld* LoadedWorld);
 	void LoadCombinedMinimap();
 
+	UPROPERTY(EditAnywhere)
+	bool Debug = false;
+	
 	UPROPERTY(EditDefaultsOnly, Category= "Audio")
 	USoundBase* RoundOverAudio;
 	UPROPERTY(BlueprintGetter = GetGlobalMinimapWidget)
@@ -91,4 +101,9 @@ private:
 	float SceneCaptureOrtho = 10000;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	FVector SceneCapturePosition = FVector(0, 0, 10000);
+	
+	UPROPERTY(EditAnywhere, Category = "WeaponSkins")
+	TMap<TSubclassOf<AGun>, UMaterialInterface*> P1WeaponSkins;
+	UPROPERTY(EditAnywhere, Category = "WeaponSkins")
+	TMap<TSubclassOf<AGun>, UMaterialInterface*> P2WeaponSkins;
 };

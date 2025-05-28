@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "SPM/Characters/ShooterPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Game/ShooterGameInstance.h"
 
 // Sets default values for this component's properties
 UWeaponUnlocking::UWeaponUnlocking()
@@ -373,9 +374,14 @@ void UWeaponUnlocking::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (GetWorld())
+	{
+		GI = Cast<UShooterGameInstance>(GetWorld()->GetGameInstance());
+	}
+	
 	CharacterOwner = Cast<AShooterCharacter>(GetOwner());
 	if (!CharacterOwner) return;
-
+	
 	PlayerController = CharacterOwner->GetController<AShooterPlayerController>();
 	
 	if(Debug) UE_LOG(LogTemp, Log, TEXT("WeaponUnlocking BeginPlay - Owner: %s | Controller: %s | LocalController: %s"),
@@ -597,6 +603,17 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 			return;
 		}
 		
+		if (GI && PlayerController)
+		{
+			UMaterialInterface* Skin = PlayerController->GetPlayerID() == 0
+						? GI->GetP1WeaponSkin(PooledGun->GetClass())
+						: GI->GetP2WeaponSkin(PooledGun->GetClass());
+			if (Skin)
+			{
+				PooledGun->GetMesh()->SetMaterial(0, Skin);
+			}
+		}
+		
 		WeaponPool.Add(WeaponType, PooledGun);
 		PooledGun->SetOwner(CharacterOwner);
 		PooledGun->SetActorEnableCollision(false);
@@ -623,7 +640,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 			SoundVolume, 
 			RandomPitch);
 	}
-
+	
 	PooledGun->AttachToComponent(CharacterOwner->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, WeaponSocketName);
 	PooledGun->SetActorHiddenInGame(false);
 	CharacterOwner->SetGun(PooledGun);
