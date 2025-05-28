@@ -31,6 +31,11 @@ void AShooterCharacter::BeginPlay()
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &AShooterCharacter::SetPlayerController);
 	}
+	else
+	{
+		// If controller has been created, set camera clamp.
+		SetCameraClamp();
+	}
 
 	Health = MaxHealth;
 	GamepadRotationRate = GamepadDefaultRotationRate;
@@ -75,7 +80,19 @@ bool AShooterCharacter::IsFirstCharacter()
 void AShooterCharacter::SetPlayerController()
 {
 	PlayerController = Cast<AShooterPlayerController>(GetController());
+	SetCameraClamp();
 }
+
+void AShooterCharacter::SetCameraClamp()
+{
+	// Set clamp on camera to limit vertical rotation.
+	if (PlayerController && PlayerController->PlayerCameraManager)
+	{
+		PlayerController->PlayerCameraManager->ViewPitchMin = MinVerticalRotation;
+		PlayerController->PlayerCameraManager->ViewPitchMax = MaxVerticalRotation;
+	}
+}
+
 
 bool AShooterCharacter::IsDead() const
 {
@@ -401,6 +418,11 @@ void AShooterCharacter::SetMouseRotationSensitivity(float NewSensitivity)
 void AShooterCharacter::ResetMouseRotationSensitivity()
 {
 	MouseRotationRate = MouseDefaultRotationRate;
+}
+
+void AShooterCharacter::SetSensitivitySetting(float NewSensitivity)
+{
+	SensitivitySetting = NewSensitivity;
 }
 
 

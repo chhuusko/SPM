@@ -99,6 +99,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetMouseRotationSensitivity();
 
+	UFUNCTION(BlueprintCallable)
+	void SetSensitivitySetting(float NewSensitivity);
+	
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;
 
@@ -152,15 +155,22 @@ public:
 	
 private:
 	void SetPlayerController();
+	void SetCameraClamp();
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)
 	float GamepadDefaultRotationRate = 70;
 	UPROPERTY(EditAnywhere)
 	float MouseDefaultRotationRate = 1;
+	UPROPERTY(EditAnywhere)
+	float MaxVerticalRotation = 60;
+	UPROPERTY(EditAnywhere)
+	float MinVerticalRotation = -60;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
+	float SensitivitySetting = 1.0f;
+	
 	UPROPERTY(EditDefaultsOnly)
 	float WalkSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)
