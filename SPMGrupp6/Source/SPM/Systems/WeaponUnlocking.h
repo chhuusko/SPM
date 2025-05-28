@@ -124,6 +124,7 @@ private:
 	void UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun, FWeaponState& State, int32 UpgradeCost);
 	void UpgradingWeaponFailed(const AGun* Gun, const FWeaponState& State) const;
 	
+	void SetWeaponSkin(AGun* Weapon);
 	
 	UFUNCTION()
 	void OnCurrencyPickup();

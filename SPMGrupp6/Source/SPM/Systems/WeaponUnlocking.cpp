@@ -198,7 +198,6 @@ void UWeaponUnlocking::UpgradingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 	} else if(Debug) UE_LOG(LogTemp, Error, TEXT("[WeaponUnlocking] Failed to get Weapon %d from WeaponPool!"),
 								(int32)WeaponType);
 }
-
 void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun, FWeaponState& State, int32 UpgradeCost)
 {
 	ResourceComponent->SpendResources(UpgradeCost);
@@ -241,6 +240,7 @@ void UWeaponUnlocking::UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun,
 			WeaponPool[WeaponType] = NewGun;
 			NewGun->SetWeaponEquipped(true);
 			NewGun->ApplyUpgrade(State.Level);
+			SetWeaponSkin(NewGun);
 			if (CurrentWeapon == WeaponType)
 			{
 				SpawnAndAttachWeapon(NextClass);
@@ -292,6 +292,20 @@ void UWeaponUnlocking::UpgradingWeaponFailed(const AGun* Gun, const FWeaponState
 						*Gun->GetName(),
 						State.Level,
 						State.Level+1);
+}
+
+void UWeaponUnlocking::SetWeaponSkin(AGun* Weapon)
+{
+	if (GI && PlayerController)
+	{
+		UMaterialInterface* Skin = PlayerController->GetPlayerID() == 0
+					? GI->GetP1WeaponSkin(Weapon->GetClass())
+					: GI->GetP2WeaponSkin(Weapon->GetClass());
+		if (Skin)
+		{
+			Weapon->GetMesh()->SetMaterial(0, Skin);
+		}
+	}
 }
 
 bool UWeaponUnlocking::CanAffordUpgrade(EWeaponType WeaponType)
@@ -603,17 +617,7 @@ void UWeaponUnlocking::SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass
 			return;
 		}
 		
-		if (GI && PlayerController)
-		{
-			UMaterialInterface* Skin = PlayerController->GetPlayerID() == 0
-						? GI->GetP1WeaponSkin(PooledGun->GetClass())
-						: GI->GetP2WeaponSkin(PooledGun->GetClass());
-			if (Skin)
-			{
-				PooledGun->GetMesh()->SetMaterial(0, Skin);
-			}
-		}
-		
+		SetWeaponSkin(PooledGun);
 		WeaponPool.Add(WeaponType, PooledGun);
 		PooledGun->SetOwner(CharacterOwner);
 		PooledGun->SetActorEnableCollision(false);
