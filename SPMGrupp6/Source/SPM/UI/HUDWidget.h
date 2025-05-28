@@ -165,7 +165,16 @@ private:
 	void DashCooldownFinished();
 
 	UFUNCTION()
-	void StartUnlockTimeline(EWeaponType WeaponToUnlock);
+	void StartUnlockTimeline(EWeaponType Weapon);
+
+	UFUNCTION()
+	void StartUpgradeAutoPistol(const FInputActionInstance& Instance);
+	UFUNCTION()
+	void StartUpgradeShotgun(const FInputActionInstance& Instance);
+	UFUNCTION()
+	void StartUpgradeAssaultRifle(const FInputActionInstance& Instance);
+	UFUNCTION()
+	void StartUpgradeSniperRifle(const FInputActionInstance& Instance);
 
 	UFUNCTION()
 	void UpdateUnlockTimeline(float Output);
@@ -241,6 +250,7 @@ private:
 
 	void CreateReloadTimeline();
 	void CreateDashTimeline();
+	void CreateUnlockTimeline();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -316,4 +326,23 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UCurveFloat* UnlockCurve;
+
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StartedUpgrade1Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StartedUpgrade2Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StartedUpgrade3Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StartedUpgrade4Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StoppedUpgrade1Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StoppedUpgrade2Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StoppedUpgrade3Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* StoppedUpgrade4Action;
+	UPROPERTY(EditDefaultsOnly)
+	UInputMappingContext* WeaponUpgradeMappingContext;
 };
