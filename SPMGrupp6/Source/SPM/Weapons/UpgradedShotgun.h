@@ -16,6 +16,9 @@ class SPM_API AUpgradedShotgun : public AShotgun
 	GENERATED_BODY()
 public:
 	AUpgradedShotgun();
+
+	UFUNCTION()
+	void TurnInvisible();
 	
 protected:
 	virtual void WeaponAbility() override;
@@ -32,15 +35,25 @@ private:
 	USoundBase* LaunchGrenadeSound;
 	
 	UPROPERTY(EditAnywhere)
-	float AbilityEffectTime = 2.5f;
+	float AbilityEffectTime = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* TurnVisibleParticles;
+
+	UPROPERTY(EditAnywhere)
+	UParticleSystem* TurnInvisibleParticles;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
 
+	void TurnVisibleAgain() const;
+	void ChangePlayerVisibility(const bool bShouldBeInvisible) const;
 	void ResetAbilityCooldown();
 	bool bCanUseAbility = true;
 
 	FTimerHandle AbilityCooldownTimerHandle;
+
+	FTimerHandle AbilityEffectTimerHandle;
 };

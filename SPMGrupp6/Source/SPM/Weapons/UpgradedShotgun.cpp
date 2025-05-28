@@ -2,8 +2,8 @@
 
 
 #include "UpgradedShotgun.h"
-
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 AUpgradedShotgun::AUpgradedShotgun()
 {
@@ -48,4 +48,27 @@ void AUpgradedShotgun::ApplyUpgrade(int NewLevel)
 void AUpgradedShotgun::ResetAbilityCooldown()
 {
 	bCanUseAbility = true;
+}
+
+void AUpgradedShotgun::TurnInvisible()
+{
+	ChangePlayerVisibility(true);
+
+	GetWorldTimerManager().SetTimer(AbilityEffectTimerHandle, this, &AUpgradedShotgun::TurnVisibleAgain, AbilityEffectTime, false);
+}
+
+void AUpgradedShotgun::TurnVisibleAgain() const
+{
+	ChangePlayerVisibility(false);
+}
+
+void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) const
+{
+	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
+	if (Player && Player->GetMesh())
+	{
+		Player->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
+		Player->GetMesh()->SetOwnerNoSee(false);
+		UGameplayStatics::SpawnEmitterAtLocation( GetWorld(), bShouldBeInvisible ? TurnInvisibleParticles : TurnVisibleParticles, Player->GetActorLocation());
+	}
 }
