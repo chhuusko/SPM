@@ -99,6 +99,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetMouseRotationSensitivity();
 
+	UFUNCTION(BlueprintCallable)
+	void SetSensitivitySetting(float NewSensitivity);
+	
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;
 
@@ -166,6 +169,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
+	float SensitivitySetting = 1.0f;
+	
 	UPROPERTY(EditDefaultsOnly)
 	float WalkSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)
