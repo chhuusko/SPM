@@ -20,10 +20,10 @@ ASVOGrid::ASVOGrid()
 // Called when the game starts or when spawned
 void ASVOGrid::BeginPlay()
 {
-	if (!GridInstance)
-	{
-		GridInstance = this;
-	}
+	//if (!GridInstance)
+	//{
+	GridInstance = this;
+	//}
 	CreateStandardGrid();
 	Super::BeginPlay();
 }
@@ -45,9 +45,8 @@ void ASVOGrid::CreateStandardGrid()
 			for (int z = -1*GridLength; z <= GridLength; z += 2) {
 				FVector Offset(x * Quarter, y * Quarter, z * Quarter);
 				FNode* Cube = new FNode(AreaPosition+Offset, AreaSize / GridLength);
-				
+				Cube->IsClear = !HasObjectWithin(Cube);
 				GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2] = Cube;
-				GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2]->IsClear = HasObjectWithin(Cube);
 			}
 		}
 	}
@@ -78,39 +77,51 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions if clear and not visited
 	if (Position.X > GridArray.Num()) return TArray<FVector>();
+	if (Position.Y > GridArray.Num()) return TArray<FVector>();
+	if (Position.Z> GridArray.Num()) return TArray<FVector>();
 	TArray<FVector> Directions;
-	if (GridArray[Position.X+1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X+1, Position.Y, Position.Z));
-	if (GridArray[Position.X-1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X-1, Position.Y, Position.Z));
+	if (GridArray[Position.X+1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X+0.5f, Position.Y, Position.Z));
+	if (GridArray[Position.X-1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X-0.5f, Position.Y, Position.Z));
 
-	if (GridArray[Position.X][Position.Y+1][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y+1, Position.Z));
-	if (GridArray[Position.X][Position.Y-1][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y-1, Position.Z));
+	if (GridArray[Position.X][Position.Y+1][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y+0.5f, Position.Z));
+	if (GridArray[Position.X][Position.Y-1][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y-0.5f, Position.Z));
 	
-	if (GridArray[Position.X][Position.Y][Position.Z+1]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y, Position.Z+1));
-	if (GridArray[Position.X][Position.Y][Position.Z-1]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y, Position.Z-1));
-	
+	if (GridArray[Position.X][Position.Y][Position.Z+1]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y, Position.Z+0.5f));
+	if (GridArray[Position.X][Position.Y][Position.Z-1]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X, Position.Y, Position.Z-0.5f));
+
+	for (FVector direction : Directions)
+	{
+		ConvertToWorldSpace(direction);
+	}
 	return Directions;
 	// if all no avalable and all visited go back
 	
 }
-FVector ASVOGrid::ConvertToGrid(FVector Position)
+FVector ASVOGrid::ConvertToGrid(FVector WorldPos)
 {
-	FVector ConvertGrid =  FVector(((GetNearestGridPosition(Position).X/Quarter)+(1*GridLength))/2,
-	((GetNearestGridPosition(Position).Y/Quarter)+(1*GridLength))/2,
-	((GetNearestGridPosition(Position).Z/Quarter)+(1*GridLength))/2);
+	//Takes Wrold
+	FVector ConvertGrid =  FVector(((GetNearestGridPosition(WorldPos).X/Quarter)+(1*GridLength))/2,
+	((GetNearestGridPosition(WorldPos).Y/Quarter)+(1*GridLength))/2,
+	((GetNearestGridPosition(WorldPos).Z/Quarter)+(1*GridLength))/2);
 	return ConvertGrid;
 }
 
 FVector ASVOGrid::ConvertToWorldSpace(FVector Position)
 {
 	Quarter = AreaSize.X / GridLength;
-	FVector Offset = Position * Quarter;
-	return Offset;
+	FVector ConvertWorld = FVector(
+		((Position.X)-(GridLength)/2)*Quarter*4,
+		((Position.Y)-(GridLength)/2)*Quarter*4,
+		((Position.Z)-(GridLength)/2)*Quarter*4);
+	DrawDebugSolidBox(GetWorld(), ConvertWorld, AreaSize/GridLength/2, FColor::Blue, true, 5.f, 0);
+
+	return ConvertWorld;
 }
 
 //takes gridpos
 FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desination)
 {
-	if (Positions.IsEmpty() == false)
+	if (!Positions.IsEmpty())
 	{
 		FVector Lowest = Positions[0];
 		for (FVector Position : Positions)
@@ -120,8 +131,10 @@ FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desinati
         		Lowest = Position;
         	}
         }
+		
 		return Lowest;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("IsEmpty"));
 	return FVector::ZeroVector;
 }
 
@@ -133,10 +146,11 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 	//bool PathFound = false;
 	FVector PathNode = ConvertToGrid(From);
 	FVector ToNode = ConvertToGrid(To);
-	//Path.Add(PathNode);
+	//DrawDebugSolidBox(GetWorld(), To, AreaSize/GridLength/2, FColor::Yellow, true, 5.f, 0);
+	Path.Add(From);
 	//while (!PathFound || attempts > maxAttempts)
 	//{
-	//	PathNode = GetLowestHPosition(GetPossibleDirections(Path.Last()), ToNode);
+	Path.Add(ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)));
 	//	UE_LOG(LogTemp, Warning, TEXT("GrodPath Found: %s"), *PathNode.ToString());
 	//	if (PathNode == ConvertToGrid(ToNode)) PathFound = true;
 	//	attempts++;
@@ -146,8 +160,8 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 	//	Position = ConvertToWorldSpace(Position);
 	//	UE_LOG(LogTemp, Warning, TEXT("Path Found: %s"), *Position.ToString());
 	//}
-	Path.Add(ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)));
-	
+	//Path.Add(ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)));
+	//DrawDebugSolidBox(GetWorld(), ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)), AreaSize/GridLength/2, FColor::Blue, true, 5.f, 0);
 	//ToNode = ConvertToWorldSpace(Path.Last());
 	//UE_LOG(LogTemp, Error, TEXT("TruePath %s"), *ToNode.ToString());
 	return Path;

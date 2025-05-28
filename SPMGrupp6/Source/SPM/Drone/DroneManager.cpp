@@ -15,10 +15,7 @@ ADroneManager::ADroneManager()
 void ADroneManager::BeginPlay()
 {
 	Super::BeginPlay();
-	ASVOGrid* SpawnedGrid = GetWorld()->SpawnActor<ASVOGrid>(Grid, GetActorLocation(), GetActorRotation());
-	SpawnedGrid->GetNearestGridPosition(GetActorLocation());
-	SpawnedGrid->ConvertToGrid(GetActorLocation());
-	SpawnedGrid->GetPossibleDirections(SpawnedGrid->ConvertToGrid(GetActorLocation()));
+	GetWorld()->SpawnActor<ASVOGrid>(Grid, GetActorLocation(), GetActorRotation());
 }
 
 // Called every frame

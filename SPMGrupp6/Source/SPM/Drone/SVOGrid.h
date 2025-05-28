@@ -38,7 +38,7 @@ public:
 private:
 	void CreateStandardGrid();
 	// Temp Grid
-	const int GridLength = 32;
+	const int GridLength = 64;
 	static ASVOGrid* GridInstance;
 	float Quarter;
 	

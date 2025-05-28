@@ -166,7 +166,7 @@ void ADrone::FollowPath()
 	{
 		MoveTo(Path[0]);
 		if (FVector::Dist(Path[0], GetActorLocation()) < 100.f) Path.RemoveAt(0);
-	}
+	} 
 }
 
 void ADrone::LostPlayer()
