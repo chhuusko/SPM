@@ -78,6 +78,15 @@ void AShooterPlayerController::RemoveSniperScope()
 	}
 }
 
+int32 AShooterPlayerController::GetPlayerID()
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		return LocalPlayer->GetControllerId();
+	}
+	return -1; 
+}
+
 // Spawn player HUD.
 void AShooterPlayerController::InitializeUI()
 {

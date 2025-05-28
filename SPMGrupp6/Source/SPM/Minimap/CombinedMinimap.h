@@ -81,6 +81,10 @@ protected:
 	bool Debug = false;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
+	float RedTopAngle = -45.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
+    float BlueTopAngle = 135.0f;
+	UPROPERTY(EditDefaultsOnly, Category = "Minimap")
 	UTextureRenderTarget2D* RenderTarget;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Minimap")

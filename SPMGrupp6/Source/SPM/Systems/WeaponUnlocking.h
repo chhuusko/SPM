@@ -8,6 +8,7 @@
 #include "WeaponUnlocking.generated.h"
 
 class AShooterPlayerController;
+class UShooterGameInstance;
 class UResources;
 class AGun;
 class AShooterCharacter;
@@ -99,6 +100,8 @@ public:
 
 private:
 	UPROPERTY()
+	UShooterGameInstance* GI;
+	UPROPERTY()
 	AShooterCharacter* CharacterOwner;
 	UPROPERTY()
 	AShooterPlayerController* PlayerController;
@@ -121,6 +124,7 @@ private:
 	void UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun, FWeaponState& State, int32 UpgradeCost);
 	void UpgradingWeaponFailed(const AGun* Gun, const FWeaponState& State) const;
 	
+	void SetWeaponSkin(AGun* Weapon);
 	
 	UFUNCTION()
 	void OnCurrencyPickup();

@@ -83,7 +83,7 @@ void UCombinedMinimap::FlipMapDependingOnPlayerSpawn()
 	
 	if (MiniMapCanvasPanel)
 	{
-		float Angle = bNearRedSpawn ? -45.0f : 135.0f;
+		float Angle = bNearRedSpawn ? RedTopAngle : BlueTopAngle;
 
 		FWidgetTransform Transform;
 		Transform.Angle = Angle;
