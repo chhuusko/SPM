@@ -62,3 +62,12 @@ public:
 	virtual void Exit() override;
 	
 };
+
+class SPM_API FDroneStateTest : public FDroneState
+{
+public:
+	FDroneStateTest(ADrone* Drone, AActor* Spawner, AActor* Target) : FDroneState(Drone, Spawner) {this->Target = Target;};
+	virtual void Move() override;
+private:
+	AActor* Target;
+};

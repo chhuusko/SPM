@@ -2,6 +2,8 @@
 
 #include "DroneState.h"
 
+#include "SVOGrid.h"
+
 FDroneState::FDroneState(ADrone* Drone, AActor* Spawner)
 {
 	this->Drone = Drone;
@@ -41,8 +43,8 @@ void FDroneStateAttack::Move()
 		Drone->CancellAggroTimeHandler();
 		if (FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) < MaxSpawnDistance)
 		{
-			NewLocation = Target->GetActorLocation();
-			Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+			Drone->MoveTo(Target->GetActorLocation() + DesiredElevation);
+			
 		}
 	}
 }
@@ -100,5 +102,18 @@ void FDroneStateReturn::Exit()
 	{
 		Drone->ChangeState(new FDroneStateIdle(Drone, Spawner));
 	}
+}
+void FDroneStateTest::Move()
+{
+	if (Drone->GetPathList().IsEmpty())
+	{
+		Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
+	} else
+	{
+		UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
+		Drone->MoveTo(Drone->GetPathList()[0]);	
+	}
+	
+	
 }
 

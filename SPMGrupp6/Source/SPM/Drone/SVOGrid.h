@@ -27,6 +27,7 @@ public:
 	// Called every frame
 	FVector GetNearestGridPosition(FVector Position);
 	FVector ConvertToGrid(FVector Position);
+	FVector ConvertToWorldSpace(FVector Position);
 	TArray<FVector>GetPossibleDirections(FVector Position);
 	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);
@@ -37,12 +38,12 @@ public:
 private:
 	void CreateStandardGrid();
 	// Temp Grid
-	static const int GridLength = 32;
+	const int GridLength = 32;
 	static ASVOGrid* GridInstance;
+	float Quarter;
 	
 	// Declare and initialize all to false
 	TArray<TArray<TArray<FNode*>>> GridArray;
-	TArray<FVector> Path;
 	FOctNode* RootNode;
 	void CreateGrid();
 	

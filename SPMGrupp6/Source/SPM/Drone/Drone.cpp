@@ -101,7 +101,8 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	}
 	if (Target != nullptr)
 	{
-		ChangeState(new FDroneStateAttack(this, Spawner, Target));
+		ChangeState(new FDroneStateTest(this, Spawner, Target));
+		//ChangeState(new FDroneStateAttack(this, Spawner, Target));
 	}
 	return NULL;
 }
@@ -157,6 +158,15 @@ void ADrone::MoveTo(FVector Location)
 	FVector Delta = TargetLocation - CurrentLocation;
 
 	AddActorWorldOffset(Delta, true);
+}
+
+void ADrone::FollowPath()
+{
+	if (!Path.IsEmpty())
+	{
+		MoveTo(Path[0]);
+		if (FVector::Dist(Path[0], GetActorLocation()) < 100.f) Path.RemoveAt(0);
+	}
 }
 
 void ADrone::LostPlayer()

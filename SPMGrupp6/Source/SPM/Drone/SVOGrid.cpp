@@ -4,6 +4,7 @@
 #include "SVOGrid.h"
 #include "OctNode.h"
 #include "Node.h"
+#include "Tasks/AITask.h"
 
 
 ASVOGrid* ASVOGrid::GridInstance = nullptr;
@@ -35,7 +36,7 @@ void ASVOGrid::Tick(float DeltaTime)
 
 void ASVOGrid::CreateStandardGrid()
 {
-	float Quarter = AreaSize.X / GridLength;
+	Quarter = AreaSize.X / GridLength;
 	GridArray.SetNum(GridLength+1);
 	for (int x = -1*GridLength; x <= GridLength; x += 2) {
 		GridArray[(x+(1*GridLength))/2].SetNum(GridLength+1);
@@ -66,22 +67,17 @@ void ASVOGrid::CreateGrid()
 }
 FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 {
-	float Quarter = AreaSize.X / (GridLength/2);
+	//use world position to get nearest world grid position
+	Quarter = AreaSize.X / (GridLength/2);
 	FVector LocationGrid = FVector(FMath::RoundToInt(Position.X / Quarter) * Quarter, FMath::RoundToInt(Position.Y / Quarter) * Quarter, FMath::RoundToInt(Position.Z / Quarter) * Quarter);
-	DrawDebugSolidBox(GetWorld(),
-	LocationGrid,
-	FVector::OneVector*(AreaSize / GridLength),
-	FColor::Green,
-	true,
-	5.f,
-	1);
-	UE_LOG(LogTemp, Warning, TEXT("Location Grid Location: %s"), *LocationGrid.ToString());
+	//DrawDebugSolidBox(GetWorld(),LocationGrid,FVector::OneVector*(AreaSize / GridLength),FColor::Green,true,5.f,1);
 	return LocationGrid;
 }
 
 TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
-	// get all 6 directions
+	// get all 6 directions if clear and not visited
+	if (Position.X > GridArray.Num()) return TArray<FVector>();
 	TArray<FVector> Directions;
 	if (GridArray[Position.X+1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X+1, Position.Y, Position.Z));
 	if (GridArray[Position.X-1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(FVector(Position.X-1, Position.Y, Position.Z));
@@ -98,40 +94,67 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 }
 FVector ASVOGrid::ConvertToGrid(FVector Position)
 {
-	float Quarter = AreaSize.X / GridLength;
 	FVector ConvertGrid =  FVector(((GetNearestGridPosition(Position).X/Quarter)+(1*GridLength))/2,
 	((GetNearestGridPosition(Position).Y/Quarter)+(1*GridLength))/2,
 	((GetNearestGridPosition(Position).Z/Quarter)+(1*GridLength))/2);
 	return ConvertGrid;
 }
 
+FVector ASVOGrid::ConvertToWorldSpace(FVector Position)
+{
+	Quarter = AreaSize.X / GridLength;
+	FVector Offset = Position * Quarter;
+	return Offset;
+}
+
+//takes gridpos
 FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desination)
 {
-	FVector Lowest = FVector::ZeroVector;
-	for (FVector Position : Positions)
+	if (Positions.IsEmpty() == false)
 	{
-		if (FVector::Dist(Position, Desination) > FVector::Dist(Lowest, Desination))
-		{
-			Lowest = Position;
-		}
+		FVector Lowest = Positions[0];
+		for (FVector Position : Positions)
+        {
+        	if (FVector::Dist(Position, Desination) < FVector::Dist(Lowest, Desination))
+        	{
+        		Lowest = Position;
+        	}
+        }
+		return Lowest;
 	}
-	return Lowest;
+	return FVector::ZeroVector;
 }
 
 TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 {
-	bool PathFound = false;
+	//int maxAttempts = 5;
+	//int attempts = 0;
+	TArray<FVector> Path;
+	//bool PathFound = false;
+	FVector PathNode = ConvertToGrid(From);
+	FVector ToNode = ConvertToGrid(To);
+	//Path.Add(PathNode);
+	//while (!PathFound || attempts > maxAttempts)
+	//{
+	//	PathNode = GetLowestHPosition(GetPossibleDirections(Path.Last()), ToNode);
+	//	UE_LOG(LogTemp, Warning, TEXT("GrodPath Found: %s"), *PathNode.ToString());
+	//	if (PathNode == ConvertToGrid(ToNode)) PathFound = true;
+	//	attempts++;
+	//}
+	//for (FVector Position : Path)
+	//{
+	//	Position = ConvertToWorldSpace(Position);
+	//	UE_LOG(LogTemp, Warning, TEXT("Path Found: %s"), *Position.ToString());
+	//}
+	Path.Add(ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)));
 	
-	while (PathFound)
-	{
-		GetLowestHPosition(GetPossibleDirections(GetLowestHPosition(GetPossibleDirections(From), To)), To);
-	}
+	//ToNode = ConvertToWorldSpace(Path.Last());
+	//UE_LOG(LogTemp, Error, TEXT("TruePath %s"), *ToNode.ToString());
 	return Path;
 }
 
 bool ASVOGrid::HasObjectWithin(FNode* Node)
 {
-	float Quarter = AreaSize.X / GridLength;
 	bool bHit = GetWorld()->OverlapBlockingTestByChannel(
 	Node->Position,
 	FRotator::ZeroRotator.Quaternion(),
