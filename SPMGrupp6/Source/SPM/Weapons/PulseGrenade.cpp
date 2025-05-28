@@ -6,6 +6,7 @@
 #include "Components/PrimitiveComponent.h"
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
+#include "SPM/Weapons/UpgradedShotgun.h"
 #include "Engine/EngineTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
@@ -32,7 +33,8 @@ void APulseGrenade::BeginPlay()
 	CurrentBeepInterval = SecondsUntilExplosion/2;
 	GetWorldTimerManager().SetTimer(BeepSoundTimer, this, &APulseGrenade::PlayBeepSound, CurrentBeepInterval, false);
 	GetWorldTimerManager().SetTimer(ExplosionTimer, this, &APulseGrenade::Explode, SecondsUntilExplosion, false);
-	
+
+	InstigatorGun = Cast<AUpgradedShotgun>(GetOwner());
 }
 
 void APulseGrenade::Explode()
@@ -90,6 +92,11 @@ void APulseGrenade::Explode()
 						PlayerController->ClientStartCameraShake(ExplosionCameraShake);
 					
 					// Would be nice to get more camera shake the closer you are to explosion
+				}
+				if (InstigatorGun && InstigatorGun->GetOwner() == HitCharacter)
+				{
+					UE_LOG(LogTemp, Display, TEXT("Turn invisible metoden kallas från pulse grenade"));
+					InstigatorGun->TurnInvisible();
 				}
 			}
 		}
