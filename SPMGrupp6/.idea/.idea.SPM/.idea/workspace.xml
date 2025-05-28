@@ -18,13 +18,10 @@
   <component name="ChangeListManager">
     <list default="true" id="b441fb19-a1f3-4497-9424-896203807a4e" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Maps/MainMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Maps/MainMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/Drone.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/Drone.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/Drone.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/Drone.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/DroneHeavy.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/DroneHeavy.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/DroneHeavy.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/DroneHeavy.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Weapons/Gun.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Weapons/Gun.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Weapons/UpgradedPistol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Weapons/UpgradedPistol.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Weapons/UpgradedPistol.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Weapons/UpgradedPistol.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/SVOGrid.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/SVOGrid.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/SVOGrid.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/SVOGrid.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +52,7 @@
     &quot;C/C++ Project.SPM.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;prog__Malte2&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;prog__Alex5&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -112,8 +109,13 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="PTY_MODE" value="Auto" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="AUTO_ATTACH_CHILDREN" value="0" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
       <option name="PROJECT_PATH" value="E:/Unreal/UE_5.5/Engine/Source/Programs/AutomationTool/AutomationTool.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
@@ -130,8 +132,13 @@
       <option name="WORKING_DIRECTORY" value="" />
       <option name="PASS_PARENT_ENVS" value="1" />
       <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="ENV_FILE_PATHS" value="" />
+      <option name="REDIRECT_INPUT_PATH" value="" />
+      <option name="PTY_MODE" value="Auto" />
       <option name="USE_MONO" value="0" />
       <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="AUTO_ATTACH_CHILDREN" value="0" />
+      <option name="MIXED_MODE_DEBUG" value="0" />
       <option name="PROJECT_PATH" value="E:/Unreal/UE_5.5/Engine/Source/Programs/UnrealBuildTool/UnrealBuildTool.csproj" />
       <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
       <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
@@ -191,6 +198,7 @@
       <workItem from="1747786449177" duration="1193000" />
       <workItem from="1747787668102" duration="467000" />
       <workItem from="1747843724334" duration="2747000" />
+      <workItem from="1748463677725" duration="3895000" />
     </task>
     <servers />
   </component>
