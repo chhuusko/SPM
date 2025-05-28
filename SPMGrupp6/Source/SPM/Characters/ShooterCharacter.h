@@ -152,12 +152,17 @@ public:
 	
 private:
 	void SetPlayerController();
+	void SetCameraClamp();
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)
 	float GamepadDefaultRotationRate = 70;
 	UPROPERTY(EditAnywhere)
 	float MouseDefaultRotationRate = 1;
+	UPROPERTY(EditAnywhere)
+	float MaxVerticalRotation = 60;
+	UPROPERTY(EditAnywhere)
+	float MinVerticalRotation = -60;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
