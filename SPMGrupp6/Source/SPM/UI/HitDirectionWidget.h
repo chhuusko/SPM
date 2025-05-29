@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "HitDirectionWidget.generated.h"
 
+class UShooterGameInstance;
 class AShooterCharacter;
 /**
  * 
@@ -33,4 +34,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* DamageIcon;
+
+	UShooterGameInstance* GameInstance;
 };

@@ -7,6 +7,7 @@
 #include "Components/Image.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "SPM/Characters/ShooterCharacter.h"
+#include "SPM/Game/ShooterGameInstance.h"
 
 void UHitDirectionWidget::NativeConstruct()
 {
@@ -17,6 +18,8 @@ void UHitDirectionWidget::NativeConstruct()
 	{
 		PlayerCharacter->OnTakeDamage.AddDynamic(this, &UHitDirectionWidget::ShowIndicator);
 	}
+
+	GameInstance = Cast<UShooterGameInstance>(GetOwningPlayer()->GetGameInstance());
 }
 
 void UHitDirectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -52,6 +55,12 @@ void UHitDirectionWidget::HideIndicator()
 // Updates the rotation of the indicator to show the damage causer's location.
 void UHitDirectionWidget::UpdateIndicator()
 {
+	if (GameInstance && GameInstance->HasMatchEnded())
+	{
+		bShowIndicator = false;
+		return;
+	}
+	
 	FVector3d DamageLocation = DamageCauser->GetActorLocation();
 	FVector3d PlayerLocation = PlayerCharacter->GetActorLocation();
 
