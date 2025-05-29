@@ -16,13 +16,17 @@ class SPM_API UHitDirectionWidget : public UUserWidget
 	GENERATED_BODY()
 private:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UFUNCTION()
-	void ShowIndicator(AActor* DamageCauser);
+	void ShowIndicator(AActor* NewDamageCauser);
 	void HideIndicator();
+	void UpdateIndicator();
 	
 	AShooterCharacter* PlayerCharacter;
 	FTimerHandle HideIndicatorTimer;
+	bool bShowIndicator;
+	AActor* DamageCauser;
 
 	UPROPERTY(EditDefaultsOnly)
 	float DisplayTime = 2.f;
