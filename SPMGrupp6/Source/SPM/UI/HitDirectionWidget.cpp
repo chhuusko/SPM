@@ -28,6 +28,7 @@ void UHitDirectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	}
 }
 
+// Sets the indicator as visible.
 void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 {
 	if (!NewDamageCauser || !PlayerCharacter)
@@ -41,12 +42,14 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
 }
 
+// Hides indicator from view.
 void UHitDirectionWidget::HideIndicator()
 {
 	bShowIndicator = false;
 	DamageIcon->SetVisibility(ESlateVisibility::Hidden);
 }
 
+// Updates the rotation of the indicator to show the damage causer's location.
 void UHitDirectionWidget::UpdateIndicator()
 {
 	FVector3d DamageLocation = DamageCauser->GetActorLocation();
@@ -57,5 +60,6 @@ void UHitDirectionWidget::UpdateIndicator()
 
 	float Rotation = LookRotation.Yaw - ControlRotation.Yaw;
 
+	// Set the rotation.
 	DamageIcon->SetRenderTransformAngle(Rotation);
 }
