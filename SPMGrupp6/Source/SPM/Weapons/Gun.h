@@ -232,6 +232,7 @@ protected:
 	void SetAbilityCooldown(bool Cooldown) { bIsAbilityOnCooldown = Cooldown; }
 	FString WhichBodyPartWasHit(FHitResult& HitResult);
 	float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
+	void ReloadAutomatically();
 
 private:
 	UPROPERTY(EditAnywhere)

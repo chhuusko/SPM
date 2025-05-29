@@ -151,7 +151,16 @@ public:
 	void OnWeaponUpgraded();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsFirstCharacter(); 
+	bool IsFirstCharacter();
+
+	UFUNCTION()
+	void CancelInvisibility();
+
+	UFUNCTION()
+	bool GetIsInvisible() const;
+
+	UFUNCTION()
+	void SetIsInvisible(const bool bInvisible);
 	
 private:
 	void SetPlayerController();
@@ -160,6 +169,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	bool bShouldStartWithResources = false;
+	UPROPERTY(VisibleAnywhere)
+	bool bIsInvisible = false;
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)

@@ -11,22 +11,23 @@ void AShotgun::Fire()
 {
 	// Checks if weapon can fire.
 	float CurrentTime = GetWorld()->GetTimeSeconds();
-	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
+	
+	if (bIsReloading || !bIsWeaponEquipped || Player->IsDead()) return;
 	if (CurrentTime - LastFireTime < FireRate) return;
-
+	
 	LastFireTime = CurrentTime;
+	
+	// If player is invisible, make player visible.
+	if (Player->GetIsInvisible())
+	{
+		Player->CancelInvisibility();
+	}
 	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
-		if (bCanPlayEmptyMagSound)
-		{
-			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
-			bCanPlayEmptyMagSound = false;
-			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
-		}
-		Reload();
+		ReloadAutomatically();
 		return;
 	}
 	
@@ -111,7 +112,7 @@ void AShotgun::Fire()
 	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	if (BulletsLeft <= 0)
 	{
-		Reload();
+		ReloadAutomatically();
 	}
 	
 	OnFired.Broadcast();

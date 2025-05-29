@@ -20,6 +20,9 @@ public:
 
 	UFUNCTION()
 	void TurnInvisible();
+	UFUNCTION()
+	void TurnVisibleAgain() const;
+	FTimerHandle AbilityEffectTimerHandle;
 	
 protected:
 	virtual void WeaponAbility() override;
@@ -55,12 +58,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityEffectTimeDefaultIncreasePerLevel = 1;
 
-	void TurnVisibleAgain() const;
 	void ChangePlayerVisibility(const bool bShouldBeInvisible) const;
 	void ResetAbilityCooldown();
 	bool bCanUseAbility = true;
 
 	FTimerHandle AbilityCooldownTimerHandle;
 
-	FTimerHandle AbilityEffectTimerHandle;
 };
