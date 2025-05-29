@@ -151,7 +151,11 @@ public:
 	void OnWeaponUpgraded();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsFirstCharacter(); 
+	bool IsFirstCharacter();
+
+	UFUNCTION()
+	void CancelInvisibility();
+	
 	
 private:
 	void SetPlayerController();

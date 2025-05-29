@@ -74,13 +74,11 @@ void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) con
 
 		// Change gun mesh visibility for other players
 		UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(Player->GetComponentByClass(UWeaponUnlocking::StaticClass()));
-		UE_LOG(LogTemp, Display, TEXT("WeaponUnlocking Component was found on player"));
 		for (const TPair<EWeaponType, AGun*>& WeaponPair: WeaponUnlocking->GetWeaponPool())
 		{
 			AGun* Weapon = WeaponPair.Value;
 			if (Weapon && Weapon->GetMesh())
 			{
-				UE_LOG(LogTemp, Display, TEXT("Weapon Visibility has changed"));
 				Weapon->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
 				Weapon->GetMesh()->SetOwnerNoSee(false);
 			}

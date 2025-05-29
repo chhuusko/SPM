@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "SPM/Systems/Resources.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "SPM/Weapons/UpgradedShotgun.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -172,7 +173,10 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	OnTakeDamage.Broadcast(DamageCauser);
 	ReduceSpeed();
 	OnHealthUpdated.Broadcast(GetHealthPercent());
-
+	
+	// If player is invisible, make player visible.
+	CancelInvisibility();
+	
 	if(IsDead())
 	{
 		ASimpleShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameMode>();
@@ -433,6 +437,23 @@ void AShooterCharacter::InitiateTestModeValues()
 {
 	UResources* Resources = Cast<UResources>(GetComponentByClass(UResources::StaticClass()));
 	Resources->ModifyResourceAmount(20);
+}
+
+void AShooterCharacter::CancelInvisibility()
+{
+	UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(GetComponentByClass(UWeaponUnlocking::StaticClass()));
+	if (WeaponUnlocking)
+	{
+		for (const TPair<EWeaponType, AGun*>& Pair : WeaponUnlocking->GetWeaponPool())
+		{
+			AUpgradedShotgun* UpgradedShotgun = Cast<AUpgradedShotgun>(Pair.Value);
+			if (UpgradedShotgun)
+			{
+				UpgradedShotgun->TurnVisibleAgain();
+				UpgradedShotgun->GetWorldTimerManager().ClearTimer(UpgradedShotgun->AbilityEffectTimerHandle);
+			}
+		}
+	}
 }
 
 

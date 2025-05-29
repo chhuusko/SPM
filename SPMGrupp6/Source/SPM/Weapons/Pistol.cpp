@@ -11,10 +11,15 @@ void APistol::Fire()
 {
 	// Checks if weapon can fire.
 	float CurrentTime = GetWorld()->GetTimeSeconds();
-	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
+	
+	if (bIsReloading || !bIsWeaponEquipped || Player->IsDead()) return;
 	if (CurrentTime - LastFireTime < FireRate) return;
-
+	
 	LastFireTime = CurrentTime;
+	
+	// If player is invisible, make player visible.
+	Player->CancelInvisibility();
 
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
