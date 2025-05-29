@@ -85,7 +85,13 @@ void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) con
 				Weapon->GetMesh()->SetOwnerNoSee(false);
 			}
 		}
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),bShouldBeInvisible ? TurnInvisibleFX : TurnVisibleFX,Player->GetActorLocation());
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), bShouldBeInvisible ? TurnInvisibleSound: TurnVisibleAgainSound, GetActorLocation());
+		if (TurnInvisibleFX && TurnVisibleFX)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),bShouldBeInvisible ? TurnInvisibleFX : TurnVisibleFX,Player->GetActorLocation());
+		}
+		if (TurnInvisibleSound && TurnVisibleAgainSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), bShouldBeInvisible ? TurnInvisibleSound: TurnVisibleAgainSound, GetActorLocation());
+		}
 	}
 }

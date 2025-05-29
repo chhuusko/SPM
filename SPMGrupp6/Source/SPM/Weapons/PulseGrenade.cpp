@@ -6,6 +6,7 @@
 #include "Components/PrimitiveComponent.h"
 #include "CollisionQueryParams.h"
 #include "CollisionShape.h"
+#include "NiagaraFunctionLibrary.h"
 #include "SPM/Weapons/UpgradedShotgun.h"
 #include "Engine/EngineTypes.h"
 #include "Kismet/GameplayStatics.h"
@@ -102,9 +103,9 @@ void APulseGrenade::Explode()
 		}
 	}
 
-	if (ExplosionParticles)
+	if (ExplosionFX)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),ExplosionFX , GetActorLocation());
 	}
 	if (ExplosionSound)
 	{
