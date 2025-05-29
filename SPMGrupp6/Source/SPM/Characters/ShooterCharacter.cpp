@@ -456,5 +456,16 @@ void AShooterCharacter::CancelInvisibility()
 	}
 }
 
+bool AShooterCharacter::GetIsInvisible() const
+{
+	return bIsInvisible;
+}
+
+void AShooterCharacter::SetIsInvisible(const bool bInvisible)
+{
+	bIsInvisible = bInvisible;
+}
+
+
 
 
