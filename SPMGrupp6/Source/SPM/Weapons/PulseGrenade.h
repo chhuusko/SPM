@@ -52,6 +52,4 @@ private:
 	
 	FTimerHandle ExplosionTimer;
 	FTimerHandle BeepSoundTimer;
-
-	
 };

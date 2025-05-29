@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 APulseGrenade::APulseGrenade()
 {
@@ -90,19 +91,17 @@ void APulseGrenade::Explode()
 				if (ExplosionCameraShake && PlayerController)
 				{
 					// Plays camera shake if hit actor is a shooter character.
-						PlayerController->ClientStartCameraShake(ExplosionCameraShake);
-					
-					// Would be nice to get more camera shake the closer you are to explosion
+					PlayerController->ClientStartCameraShake(ExplosionCameraShake);
 				}
 				if (InstigatorGun && InstigatorGun->GetOwner() == HitCharacter)
 				{
-					UE_LOG(LogTemp, Display, TEXT("Turn invisible metoden kallas från pulse grenade"));
+					if (!Cast<AShooterCharacter>(HitCharacter)->GetIsInvisible())
 					InstigatorGun->TurnInvisible();
 				}
 			}
 		}
 	}
-
+	
 	if (ExplosionFX)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),ExplosionFX , GetActorLocation());
@@ -111,13 +110,11 @@ void APulseGrenade::Explode()
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ExplosionSound, GetActorLocation());
 	}
-
 	Destroy();
 }
 
 void APulseGrenade::PlayBeepSound()
 {
-	
 	if (BeepSound && BlinkPoint)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), BeepSound, BlinkPoint->GetComponentLocation());
@@ -131,10 +128,8 @@ void APulseGrenade::PlayBeepSound()
 		FVector::ZeroVector,
 		FRotator::ZeroRotator,
 		EAttachLocation::KeepRelativeOffset,
-		true
-);
+		true);
 	}
-
 	CurrentBeepInterval *= BeepDecayFactor;
 
 	float TimeLeft = GetWorldTimerManager().GetTimerRemaining(ExplosionTimer);

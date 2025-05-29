@@ -6,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
 
-// Metoder kan ändras för att hantera ex. burstfire
 void APistol::Fire()
 {
 	// Checks if weapon can fire.
@@ -91,7 +90,7 @@ void APistol::Fire()
 					}
 					else
 					{
-						// Else deal more damage to NPC's with farming weapon.
+						// Deal more damage to NPC's with farming weapon.
 						ActualDamage *= NPCDamageMultiplier;
 					}
 					FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);

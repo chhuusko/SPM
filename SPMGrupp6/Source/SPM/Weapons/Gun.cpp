@@ -43,23 +43,6 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*if (bIsRecoiling)
-	{
-		APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
-		if (PlayerController)
-		{
-			FRotator CurrentRotation = PlayerController->GetControlRotation();
-			FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RecoilTargetRotation, DeltaTime, RecoilInterpSpeed);
-			PlayerController->SetControlRotation(NewRotation);
-
-			// Stop when traget is close
-			if (NewRotation.Equals(RecoilTargetRotation, 0.001f))
-			{
-				bIsRecoiling = false;
-			}
-		}
-	}*/
 }
 
 void AGun::GetPlayerController()
@@ -252,7 +235,6 @@ void AGun::Reload()
 		GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 		// Can not shoot while reloading.
 		bCanFire = false;
-		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
 		OnReload.Broadcast(ReloadTime);
@@ -260,7 +242,6 @@ void AGun::Reload()
 }
 void AGun::ResetAmmo()
 {
-	UE_LOG(LogTemp, Display, TEXT("Ammo got refilled"));
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
@@ -279,7 +260,6 @@ void AGun::StopReload()
 		GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
 		bIsReloading = false;
 		bCanFire = true;
-		UE_LOG(LogTemp, Display, TEXT("Reload got stopped"));
 	}
 }
 
@@ -340,7 +320,10 @@ void AGun::WeaponAbility()
 }
 void AGun::StopWeaponAbility()
 {
-	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
+	if (bDebugWeapon)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
+	}
 }
 
 void AGun::UpdateWeaponAbilityCooldown()
@@ -418,6 +401,7 @@ void AGun::EnableCanPlayEmptyMagSound()
 
 FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 {
+	// 
 	if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
 	{
 		return "Head";

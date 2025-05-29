@@ -39,10 +39,10 @@ void AShotgun::Fire()
 	bool bShouldPlayEffects = false;
 	AActor* LastHitActor = nullptr;
 
-	//Skjuter flera raycasts
+	//Shoots multiple raycasts.
 	for (int i = 0; i < numberOfPellets; i++)
 	{
-		// Random offset baserat på överskuggad GunTrace
+		// Random offset based on overriden GunTrace
 		bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 		
 		if(bSuccess)
@@ -120,7 +120,7 @@ void AShotgun::Fire()
 
 bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength)
 {
-	//Overshadowed GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
+	//Overriden GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
 	if (!OwnerController) return false;
 

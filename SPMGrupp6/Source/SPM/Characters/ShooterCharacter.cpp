@@ -441,6 +441,7 @@ void AShooterCharacter::InitiateTestModeValues()
 
 void AShooterCharacter::CancelInvisibility()
 {
+	// Find UpgradedShotgun and turn player visible.
 	UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(GetComponentByClass(UWeaponUnlocking::StaticClass()));
 	if (WeaponUnlocking)
 	{

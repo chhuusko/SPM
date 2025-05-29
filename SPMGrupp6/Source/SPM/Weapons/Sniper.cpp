@@ -19,8 +19,6 @@ void ASniper::BeginPlay()
 
 void ASniper::WeaponAbility()
 {
-	// Start weapon to eye animation here
-
 	// Starts timer to zoom in.
 	GetWorld()->GetTimerManager().SetTimer(AimTimerHandle, this, &ASniper::ZoomIn, ScopeToEyeDuration, false);
 }

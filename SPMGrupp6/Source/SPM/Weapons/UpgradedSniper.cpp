@@ -135,7 +135,7 @@ void AUpgradedSniper::Fire()
 
 TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult)
 {
-	//Overshadowed GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
+	//Overriden GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
 	TArray<FHitResult> HitResults;
 	
@@ -217,8 +217,6 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 	
 	// Search for all objects
 	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams::AllObjects;
-
-
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(ShotRadius);
 	
 	GetWorld()->SweepMultiByObjectType(
@@ -230,16 +228,6 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 		Sphere,
 		Params
 	);
-
-	FVector ParticleDirection = (SphereEndLocation - Location).GetSafeNormal();
-	FRotator ParticleRotation = ParticleDirection.Rotation();
-
-	UParticleSystemComponent* Comp = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), SniperBulletParticle, Location, ParticleRotation, true);
-
-	if (Comp)
-	{
-		Comp->SetVectorParameter(FName("Velocity"), ParticleDirection * 4000.0f); // Om du exponerar "Velocity" i Cascade
-	}
 	
 	if (bDebugWeapon)
 	{

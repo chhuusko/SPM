@@ -15,15 +15,7 @@ void AUpgradedAssaultRifle::WeaponAbility()
 	Super::WeaponAbility();
 	if (!AbilityUnlocked) return;
 	if (IsAbilityOnCooldown()) return;
-
-	// bCanUseAbility = false;
-	// GetWorldTimerManager().SetTimer(
-	// 	AbilityCooldownTimerHandle, 
-	// 	this, 
-	// 	&AUpgradedAssaultRifle::ResetAbilityCooldown, 
-	// 	GetAbilityCooldown(), 
-	// 	false
-	// );
+	
 	SetAbilityCooldown(true);
 	
 	AController* OwnerController = GetOwnerController();
@@ -42,6 +34,7 @@ void AUpgradedAssaultRifle::WeaponAbility()
 		return;
 	}
 
+	// Spawn missile and effects.
 	AHomingMissile* Missile = Cast<AHomingMissile>(GetWorld()->SpawnActor<AExplosiveProjectile>(
 		HomingMissileClass,
 		SpawnLocation,
