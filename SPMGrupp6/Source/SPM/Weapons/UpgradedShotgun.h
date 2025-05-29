@@ -7,6 +7,7 @@
 #include "PulseGrenade.h"
 #include "UpgradedShotgun.generated.h"
 
+class UNiagaraSystem;
 /**
  * 
  */
@@ -38,11 +39,17 @@ private:
 	float AbilityEffectTime = 1.f;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* TurnVisibleParticles;
+	UNiagaraSystem* TurnInvisibleFX;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* TurnInvisibleParticles;
+	UNiagaraSystem* TurnVisibleFX;
 
+	UPROPERTY(EditAnywhere)
+	USoundBase* TurnInvisibleSound;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* TurnVisibleAgainSound;
+	
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	TArray<float> AbilityEffectTimePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
