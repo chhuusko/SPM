@@ -24,7 +24,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	static ADroneManager* GetInstance(UWorld World){return Instance;};
+	static ADroneManager* GetInstance(UWorld* World){return Instance;};
 	
 	static TArray<AActor*> GetPlayers(); 
 private:

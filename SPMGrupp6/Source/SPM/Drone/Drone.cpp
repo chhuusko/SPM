@@ -4,6 +4,7 @@
 #include "Drone.h"
 
 #include "DroneHeavyState.h"
+#include "DroneManager.h"
 #include "DroneState.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "DroneSpawn.h"
@@ -18,7 +19,6 @@ ADrone::ADrone()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	
 	BodyMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wings"));
 	RootComponent = BodyMesh;
@@ -36,7 +36,6 @@ ADrone::ADrone()
 	ProjectileSpawn->SetupAttachment(TurretMesh);
 	ProjectileSpawnAlt = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnAltPoint"));
 	ProjectileSpawnAlt->SetupAttachment(TurretMeshAlt);
-
 	
 }
 
@@ -53,10 +52,7 @@ void ADrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if (Players.Num() < 2)
-	{
-		//TODO Tempfix 
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AShooterCharacter::StaticClass(), Players);
-	}
+		Players = ADroneManager::GetInstance(GetWorld())->GetPlayers();
 	if (State)
 	{
 		State->Move();
@@ -82,7 +78,7 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 {
 	Target = Cast<AShooterCharacter>(DamageCauser->GetOwner());
 	Health -= DamageAmount;
-	//ASVOGrid::GetInstance(GetWorld())->GetNearestGridPosition(GetActorLocation());
+	
 	if (Health <= 0)
 	{
 		if (Spawner != nullptr)
@@ -155,12 +151,11 @@ void ADrone::SetTarget(AActor* NewTarget)
 void ADrone::MoveTo(FVector Location)
 {
 	FVector CurrentLocation = GetActorLocation();
-	float Speed = 300.f; // units per second
+	float Speed = 300.f; 
 	float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
 	FVector Direction = (Location - CurrentLocation).GetSafeNormal();
 	FVector TargetLocation = CurrentLocation + Direction * Speed * DeltaTime;
-
-	// Clamp to avoid overshooting
+	
 	if (FVector::Dist(CurrentLocation, Location) < Speed * DeltaTime)
 	{
 		TargetLocation = Location;

@@ -12,6 +12,7 @@ ADroneManager::ADroneManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 	//Create SVOGrid
 }
 
@@ -20,7 +21,7 @@ void ADroneManager::BeginPlay()
 {
 	Instance = this;
 	Super::BeginPlay();
-	GetWorld()->SpawnActor<ASVOGrid>(Grid, GetActorLocation(), GetActorRotation());
+	//GetWorld()->SpawnActor<ASVOGrid>(Grid, GetActorLocation(), GetActorRotation());
 }
 
 // Called every frame
@@ -32,7 +33,14 @@ void ADroneManager::Tick(float DeltaTime)
 
 TArray<AActor*> ADroneManager::GetPlayers()
 {
-	if (Instance->Players.Num() > 1) UGameplayStatics::GetAllActorsOfClass(Instance->GetWorld(), AShooterCharacter::StaticClass(), Instance->Players);
+	if (!Instance) return TArray<AActor*>();
+	
+
+	if (Instance->Players.Num() < 2)
+	{
+		UGameplayStatics::GetAllActorsOfClass(Instance->GetWorld(), AShooterCharacter::StaticClass(), Instance->Players);
+	}
+
 	return Instance->Players;
 	
 }
