@@ -156,6 +156,10 @@ public:
 private:
 	void SetPlayerController();
 	void SetCameraClamp();
+	void InitiateTestModeValues();
+
+	UPROPERTY(EditAnywhere)
+	bool bShouldStartWithResources = false;
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)

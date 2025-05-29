@@ -8,6 +8,7 @@
 #include "ShooterPlayerController.h"
 #include "SPM/Game/SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
+#include "SPM/Systems/Resources.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -68,7 +69,10 @@ void AShooterCharacter::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
 		}
 	}, 0.2f, false);
-
+	if (bShouldStartWithResources)
+	{
+		InitiateTestModeValues();
+	}
 }
 
 
@@ -423,6 +427,12 @@ void AShooterCharacter::ResetMouseRotationSensitivity()
 void AShooterCharacter::SetSensitivitySetting(float NewSensitivity)
 {
 	SensitivitySetting = NewSensitivity;
+}
+
+void AShooterCharacter::InitiateTestModeValues()
+{
+	UResources* Resources = Cast<UResources>(GetComponentByClass(UResources::StaticClass()));
+	Resources->ModifyResourceAmount(20);
 }
 
 
