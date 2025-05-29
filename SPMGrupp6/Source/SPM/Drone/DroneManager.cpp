@@ -3,6 +3,10 @@
 
 #include "DroneManager.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
+
+ADroneManager* ADroneManager::Instance = nullptr;
 // Sets default values
 ADroneManager::ADroneManager()
 {
@@ -14,6 +18,7 @@ ADroneManager::ADroneManager()
 // Called when the game starts or when spawned
 void ADroneManager::BeginPlay()
 {
+	Instance = this;
 	Super::BeginPlay();
 	GetWorld()->SpawnActor<ASVOGrid>(Grid, GetActorLocation(), GetActorRotation());
 }
@@ -23,5 +28,12 @@ void ADroneManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+TArray<AActor*> ADroneManager::GetPlayers()
+{
+	if (Instance->Players.Num() > 1) UGameplayStatics::GetAllActorsOfClass(Instance->GetWorld(), AShooterCharacter::StaticClass(), Instance->Players);
+	return Instance->Players;
+	
 }
 

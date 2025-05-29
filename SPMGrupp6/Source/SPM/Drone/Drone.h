@@ -122,4 +122,6 @@ private:
 	int32 NumberOfHealthDrops = 1;
 	UPROPERTY(EditAnywhere)
 	int32 NumberOfLootDrops = 1;
+
+	TArray<ADroneBullet*> BulletPool;
 };
