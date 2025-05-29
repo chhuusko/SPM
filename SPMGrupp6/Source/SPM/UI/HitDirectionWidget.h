@@ -4,25 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "HitIndicatorWidget.generated.h"
+#include "HitDirectionWidget.generated.h"
 
 class AShooterCharacter;
 /**
  * 
  */
 UCLASS()
-class SPM_API UHitIndicatorWidget : public UUserWidget
+class SPM_API UHitDirectionWidget : public UUserWidget
 {
 	GENERATED_BODY()
 private:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void PlayHitAnimation(AActor* DamageCauser);
-
-	UPROPERTY()
+	void ShowIndicator(AActor* DamageCauser);
+	void HideIndicator();
+	
 	AShooterCharacter* PlayerCharacter;
+	FTimerHandle HideIndicatorTimer;
 
-	UPROPERTY(Meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* HitTrack;
+	UPROPERTY(EditDefaultsOnly)
+	float DisplayTime = 2.f;
+
+	UPROPERTY(meta = (BindWidget))
+	class UImage* DamageIcon;
 };
