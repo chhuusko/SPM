@@ -54,7 +54,7 @@ void AUpgradedShotgun::ResetAbilityCooldown()
 void AUpgradedShotgun::TurnInvisible()
 {
 	ChangePlayerVisibility(true);
-
+	
 	GetWorldTimerManager().SetTimer(AbilityEffectTimerHandle, this, &AUpgradedShotgun::TurnVisibleAgain, AbilityEffectTime, false);
 }
 
@@ -68,19 +68,18 @@ void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) con
 	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
 	if (Player && Player->GetMesh())
 	{
+		Player->SetIsInvisible(bShouldBeInvisible); 
 		// Change player mesh visibility for other players
 		Player->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
 		Player->GetMesh()->SetOwnerNoSee(false);
 
 		// Change gun mesh visibility for other players
 		UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(Player->GetComponentByClass(UWeaponUnlocking::StaticClass()));
-		UE_LOG(LogTemp, Display, TEXT("WeaponUnlocking Component was found on player"));
 		for (const TPair<EWeaponType, AGun*>& WeaponPair: WeaponUnlocking->GetWeaponPool())
 		{
 			AGun* Weapon = WeaponPair.Value;
 			if (Weapon && Weapon->GetMesh())
 			{
-				UE_LOG(LogTemp, Display, TEXT("Weapon Visibility has changed"));
 				Weapon->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
 				Weapon->GetMesh()->SetOwnerNoSee(false);
 			}

@@ -48,15 +48,9 @@ void UHUDWidget::NativeConstruct()
 		CreateUnlockTimeline();
 	}
 
+	// Bind input actions for starting and stopping upgrades.
 	if (AShooterPlayerController* PC = Cast<AShooterPlayerController>(PlayerCharacter->GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
-		{
-			if (WeaponUpgradeMappingContext)
-			{
-				//Subsystem->AddMappingContext(WeaponUpgradeMappingContext, 0);
-			}
-		}
 		if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PC->InputComponent))
 		{
 			Input->BindAction(StartedUpgrade1Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeAutoPistol);
@@ -635,7 +629,6 @@ void UHUDWidget::DashCooldownFinished()
 
 void UHUDWidget::StartUpgradeAutoPistol(const FInputActionInstance& Instance)
 {
-	UE_LOG(LogTemp, Warning, TEXT("StartUpgradeAutoPistol"));
 	StartUnlockTimeline(EWeaponType::Pistol);
 }
 
@@ -679,12 +672,14 @@ void UHUDWidget::StartUnlockTimeline(EWeaponType Weapon)
 	}
 }
 
+// Set value for current unlock bar.
 void UHUDWidget::UpdateUnlockTimeline(float Output)
 {
 	float NormalizedValue = UnlockTimeline->GetPlaybackPosition() / UnlockTimeline->GetTimelineLength();
 	UnlockBar->SetPercent(FMath::Clamp(NormalizedValue, 0.f, 1.f));
 }
 
+// Reset unlock bar value.
 void UHUDWidget::UnlockTimelineFinished()
 {
 	if (UnlockBar)
@@ -692,5 +687,4 @@ void UHUDWidget::UnlockTimelineFinished()
 		UnlockTimeline->Stop();
 		UnlockBar->SetPercent(0.f);
 	}
-	
 }

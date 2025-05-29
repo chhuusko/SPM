@@ -17,7 +17,6 @@ class SPM_API AUpgradedPistol : public APistol
 	GENERATED_BODY()
 public:
 	AUpgradedPistol();
-	virtual void Tick(float DeltaTime) override;
 	int GetExtraLootDrops() const;
 	
 protected:
