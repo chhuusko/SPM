@@ -51,7 +51,7 @@ void FDroneStateAttack::Move()
 
 void FDroneStateAttack::Rotate()
 {
-	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
+	//if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
 	
 	FVector ToTarget = Target->GetActorLocation() - Drone->GetBody()->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
