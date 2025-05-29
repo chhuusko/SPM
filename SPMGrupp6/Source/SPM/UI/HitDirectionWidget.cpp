@@ -19,18 +19,38 @@ void UHitDirectionWidget::NativeConstruct()
 	}
 }
 
-void UHitDirectionWidget::ShowIndicator(AActor* DamageCauser)
+void UHitDirectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
-	if (!DamageCauser || !PlayerCharacter)
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (bShowIndicator)
+	{
+		UpdateIndicator();
+	}
+}
+
+void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
+{
+	if (!NewDamageCauser || !PlayerCharacter)
 	{
 		return;
 	}
-	
+
+	bShowIndicator = true;
+	DamageCauser = NewDamageCauser;
 	DamageIcon->SetVisibility(ESlateVisibility::Visible);
-	
+	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
+}
+
+void UHitDirectionWidget::HideIndicator()
+{
+	bShowIndicator = false;
+	DamageIcon->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UHitDirectionWidget::UpdateIndicator()
+{
 	FVector3d DamageLocation = DamageCauser->GetActorLocation();
 	FVector3d PlayerLocation = PlayerCharacter->GetActorLocation();
-	//FVector3d DamageDirection = DamageLocation - PlayerLocation;
 
 	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(PlayerLocation, DamageLocation);
 	FRotator ControlRotation = PlayerCharacter->GetControlRotation();
@@ -38,11 +58,4 @@ void UHitDirectionWidget::ShowIndicator(AActor* DamageCauser)
 	float Rotation = LookRotation.Yaw - ControlRotation.Yaw;
 
 	DamageIcon->SetRenderTransformAngle(Rotation);
-
-	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
-}
-
-void UHitDirectionWidget::HideIndicator()
-{
-	DamageIcon->SetVisibility(ESlateVisibility::Hidden);
 }
