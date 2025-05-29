@@ -33,7 +33,8 @@ public:
 	TArray<FVector> GetPath(FVector From, FVector To);
 
 	static ASVOGrid* GetInstance(UWorld* World){return GridInstance;};
-	
+	void CreateGrid();
+	void TestDraw(FVector positon, FVector Size, FColor color);
 	virtual void Tick(float DeltaTime) override;
 private:
 	void CreateStandardGrid();
@@ -45,7 +46,7 @@ private:
 	// Declare and initialize all to false
 	TArray<TArray<TArray<FNode*>>> GridArray;
 	FOctNode* RootNode;
-	void CreateGrid();
+	
 	
 	bool HasObjectWithin(FNode* Node);
 	UPROPERTY(EditDefaultsOnly)

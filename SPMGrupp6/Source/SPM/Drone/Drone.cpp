@@ -101,8 +101,9 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	}
 	if (Target != nullptr)
 	{
-		ChangeState(new FDroneStateTest(this, Spawner, Target));
-		//ChangeState(new FDroneStateAttack(this, Spawner, Target));
+		
+		//ChangeState(new FDroneStateTest(this, Spawner, Target));
+		ChangeState(new FDroneStateAttack(this, Spawner, Target));
 	}
 	return NULL;
 }

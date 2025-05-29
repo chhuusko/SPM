@@ -64,6 +64,12 @@ void ASVOGrid::CreateGrid()
 		RootNode->AddChildren();
 	} 
 }
+
+void ASVOGrid::TestDraw(FVector Positon, FVector Size, FColor Color)
+{
+	DrawDebugSolidBox(GetWorld(),Positon,FVector::OneVector*(AreaSize / GridLength),Color,true,5.f,1);
+}
+
 FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 {
 	//use world position to get nearest world grid position
@@ -178,7 +184,7 @@ bool ASVOGrid::HasObjectWithin(FNode* Node)
 	
 	if (bHit)
 	{
-		DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
+		//DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
 	}
 	return bHit;
 }
