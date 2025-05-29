@@ -32,12 +32,12 @@ void UHitDirectionWidget::ShowIndicator(AActor* DamageCauser)
 	FVector3d PlayerLocation = PlayerCharacter->GetActorLocation();
 	//FVector3d DamageDirection = DamageLocation - PlayerLocation;
 
-	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(DamageLocation, PlayerLocation);
+	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(PlayerLocation, DamageLocation);
 	FRotator ControlRotation = PlayerCharacter->GetControlRotation();
 
 	float Rotation = LookRotation.Yaw - ControlRotation.Yaw;
 
-	DamageIcon->SetRenderTransformAngle(360 - Rotation);
+	DamageIcon->SetRenderTransformAngle(Rotation);
 
 	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
 }
