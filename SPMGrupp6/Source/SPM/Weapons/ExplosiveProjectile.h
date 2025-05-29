@@ -7,6 +7,8 @@
 #include "GameFramework/Actor.h"
 #include "ExplosiveProjectile.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS(Abstract)
 class SPM_API AExplosiveProjectile : public AActor
 {
@@ -30,7 +32,7 @@ protected:
 	USphereComponent* Collision;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* ExplosionParticles;
+	UNiagaraSystem* ExplosionFX;
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* ImpactSound;

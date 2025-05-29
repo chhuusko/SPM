@@ -13,31 +13,12 @@ AUpgradedPistol::AUpgradedPistol()
    bShowUpgradeOptions = true;
 }
 
-void AUpgradedPistol::Tick(float DeltaTime)
-{
-   Super::Tick(DeltaTime);
-
-   if (bAbilityIsActive)
-   {
-      
-   }
-   
-}
-
 void AUpgradedPistol::WeaponAbility()
 {
    Super::WeaponAbility();
 	if (!AbilityUnlocked) return;
    if (IsAbilityOnCooldown()) return;
-
-    // bCanUseAbility = false;
-    // GetWorldTimerManager().SetTimer(
-    //    AbilityCooldownTimerHandle, 
-    //    this, 
-    //    &AUpgradedPistol::ResetAbilityCooldown, 
-    //    GetAbilityCooldown(), 
-    //    false
-    // );
+   
    SetAbilityCooldown(true);
 
    // Update the eye parameter of the gun mesh material.
@@ -85,7 +66,6 @@ void AUpgradedPistol::WeaponAbility()
              bAbilityIsActive = true;
              GetWorldTimerManager().SetTimer(AbilityEffectTimerHandle, this, &AUpgradedPistol::ResetRenderCustomDepth, AbilityEffectTime, false);
              UGameplayStatics::PlaySoundAtLocation(GetWorld(), AltFireSound, GetActorLocation());
-             UE_LOG(LogTemp, Display, TEXT("Pulse metod körs"));
           }
        }
     }
@@ -125,7 +105,7 @@ void AUpgradedPistol::SetRenderCustomDepth(bool bRenderCustomDepth)
           CharacterMesh->SetRenderCustomDepth(bRenderCustomDepth);
        }
 
-       // Här kan man hämta karaktärens alla vapnen, hämta deras meshar och ändra custom depth på samtliga
+       // Get all Weapons and Set RenderCustomDepth to true.
        if (UWeaponUnlocking* WeaponUnlocking = Character->FindComponentByClass<UWeaponUnlocking>())
        {
           for (TPair<EWeaponType, AGun*>& Pair: WeaponUnlocking->GetWeaponPool())
@@ -150,9 +130,9 @@ void AUpgradedPistol::SetRenderCustomDepth(bool bRenderCustomDepth)
 
 void AUpgradedPistol::ResetRenderCustomDepth()
 {
-    // Gets called by timer to disable Custom Depth.
-    SetRenderCustomDepth(false);
-    bAbilityIsActive = false;
+   // Gets called by timer to disable Custom Depth.
+   SetRenderCustomDepth(false);
+   bAbilityIsActive = false;
    
    // Update the eye parameter of the gun mesh material.
    if (Mesh)

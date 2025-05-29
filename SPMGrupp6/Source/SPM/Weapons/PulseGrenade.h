@@ -6,6 +6,7 @@
 #include "ExplosiveProjectile.h"
 #include "PulseGrenade.generated.h"
 
+class AUpgradedShotgun;
 class UProjectileMovementComponent;
 
 /**
@@ -32,6 +33,9 @@ protected:
 	USoundBase* BeepSound;
 
 private:
+	UPROPERTY(VisibleAnywhere)
+	AUpgradedShotgun* InstigatorGun;
+	
 	UPROPERTY(EditAnywhere)
 	float Force = 1000;
 
@@ -48,6 +52,4 @@ private:
 	
 	FTimerHandle ExplosionTimer;
 	FTimerHandle BeepSoundTimer;
-
-	
 };

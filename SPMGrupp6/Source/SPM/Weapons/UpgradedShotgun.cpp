@@ -2,8 +2,9 @@
 
 
 #include "UpgradedShotgun.h"
-
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterCharacter.h"
 
 AUpgradedShotgun::AUpgradedShotgun()
 {
@@ -48,4 +49,48 @@ void AUpgradedShotgun::ApplyUpgrade(int NewLevel)
 void AUpgradedShotgun::ResetAbilityCooldown()
 {
 	bCanUseAbility = true;
+}
+
+void AUpgradedShotgun::TurnInvisible()
+{
+	ChangePlayerVisibility(true);
+	
+	GetWorldTimerManager().SetTimer(AbilityEffectTimerHandle, this, &AUpgradedShotgun::TurnVisibleAgain, AbilityEffectTime, false);
+}
+
+void AUpgradedShotgun::TurnVisibleAgain() const
+{
+	ChangePlayerVisibility(false);
+}
+
+void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) const
+{
+	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
+	if (Player && Player->GetMesh())
+	{
+		Player->SetIsInvisible(bShouldBeInvisible); 
+		// Change player mesh visibility for other players
+		Player->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
+		Player->GetMesh()->SetOwnerNoSee(false);
+
+		// Change gun mesh visibility for other players
+		UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(Player->GetComponentByClass(UWeaponUnlocking::StaticClass()));
+		for (const TPair<EWeaponType, AGun*>& WeaponPair: WeaponUnlocking->GetWeaponPool())
+		{
+			AGun* Weapon = WeaponPair.Value;
+			if (Weapon && Weapon->GetMesh())
+			{
+				Weapon->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
+				Weapon->GetMesh()->SetOwnerNoSee(false);
+			}
+		}
+		if (TurnInvisibleFX && TurnVisibleFX)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),bShouldBeInvisible ? TurnInvisibleFX : TurnVisibleFX,Player->GetActorLocation());
+		}
+		if (TurnInvisibleSound && TurnVisibleAgainSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), bShouldBeInvisible ? TurnInvisibleSound: TurnVisibleAgainSound, GetActorLocation());
+		}
+	}
 }

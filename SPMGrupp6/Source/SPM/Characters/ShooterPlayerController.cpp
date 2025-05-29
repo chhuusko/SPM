@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/UI/HitDirectionWidget.h"
 #include "SPM/UI/HitIndicatorWidget.h"
 #include "SPM/UI/SniperScopeWidget.h"
 
@@ -78,6 +79,15 @@ void AShooterPlayerController::RemoveSniperScope()
 	}
 }
 
+int32 AShooterPlayerController::GetPlayerID()
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		return LocalPlayer->GetControllerId();
+	}
+	return -1; 
+}
+
 // Spawn player HUD.
 void AShooterPlayerController::InitializeUI()
 {
@@ -91,6 +101,12 @@ void AShooterPlayerController::InitializeUI()
 	if (HitIndicatorWidget)
 	{
 		HitIndicatorWidget->AddToPlayerScreen();
+	}
+
+	HitDirectionWidget = CreateWidget<UHitDirectionWidget>(this, HitDirectionWidgetClass);
+	if (HitDirectionWidget)
+	{
+		HitDirectionWidget->AddToPlayerScreen();
 	}
 }
 
@@ -132,22 +148,22 @@ void AShooterPlayerController::UpdateAimAssist(float DeltaTime)
 
 AActor* AShooterPlayerController::FindAimAssistTarget()
 {
-	// Get Camera Location
+	// Get Camera Location.
 	FVector CameraLocation;
 	FRotator CameraRotation;
 	GetPlayerViewPoint(CameraLocation, CameraRotation);
 	FVector Direction = CameraRotation.Vector();
 	FVector End = CameraLocation + Direction * MaxAssistRange;
 
-	// Ignore yourself
+	// Ignore yourself.
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetPawn());
 
-	// Only search for this type of object
+	// Only search for this type of object.
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
-	//Create Sphere
+	//Create Sphere.
 	FCollisionShape Sphere = FCollisionShape::MakeSphere(AssistSphereRadius);
     
 	TArray<FHitResult> Hits;
@@ -168,16 +184,16 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
 
 			FQuat CapsuleRot = FRotationMatrix::MakeFromZ(SweepAxis).ToQuat();
 
-			// Draw the whole Sphere as a capsule for debugging
+			// Draw the whole Sphere as a capsule for debugging.
 			DrawDebugCapsule(
-				GetWorld(),
-				SweepCenter,
-				SweepHalfHeight,
-				AssistSphereRadius,
-				CapsuleRot,
-				FColor::Purple,
-				false,
-				1.0f
+			GetWorld(),
+			SweepCenter,
+			SweepHalfHeight,
+			AssistSphereRadius,
+			CapsuleRot,
+			FColor::Purple,
+			false,
+			1.0f
 			);
 		}
 
@@ -215,16 +231,16 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
 				);
 			}
 			
-			// Skip Target if sight is blocked
+			// Skip Target if sight is blocked.
 			if (bBlocked && SightHit.GetActor() != EnemyPawn) continue;
 
-			// Return target if it's a player and not a NPC
+			// Return target if it's a player and not a NPC.
 			if (EnemyPawn->IsA(AShooterCharacter::StaticClass()))
 			{
 				return EnemyPawn;
 			}
 
-			// Calculate dot product to find best target
+			// Calculate dot product to find best target.
 			FVector ToTarget = (EnemyPawn->GetActorLocation() - CameraLocation).GetSafeNormal();
 			float Dot = FVector::DotProduct(CameraRotation.Vector(), ToTarget);
 
@@ -235,25 +251,25 @@ AActor* AShooterPlayerController::FindAimAssistTarget()
 			}
 		}
 	}
-		return BestTarget;
+	return BestTarget;
 }
 
 float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
 {
-	// Declare position
+	// Declare position.
     FVector CameraLocation;
     FRotator CameraRotation;
     GetPlayerViewPoint(CameraLocation, CameraRotation);
 
-	// Get vectors
+	// Get vectors.
     FVector Direction = CameraRotation.Vector();
     FVector TargetLocation = Target->GetActorLocation();
     FVector DirectionToTarget = (TargetLocation - CameraLocation).GetSafeNormal();
 
-	// Calculate dotProduct
+	// Calculate dotProduct.
     DotProduct = FVector::DotProduct(DirectionToTarget, Direction);
 
-	// Calculate distance
+	// Calculate distance.
 	float Distance = FVector::Dist(CameraLocation, TargetLocation);
 	float DistanceFactor = 1.0f - FMath::Clamp(Distance / MaxAssistRange, 0.0f, 1.0f);
 	
@@ -261,7 +277,7 @@ float AShooterPlayerController::CalculateAssistWeight(AActor* Target)
 	float AimAlignment = FMath::Clamp((DotProduct - MinDot) / (1.0f - MinDot), 0.0f, 1.0f);
 
 	
-	// Calculate assist amount based on dotProduct and distance
+	// Calculate assist amount based on dotProduct and distance.
 	if (Target->IsA(AShooterCharacter::StaticClass()))
 	{
 		return (AimAlignment * DotProductMultiplier) * (DistanceFactor * DistanceMultiplier);

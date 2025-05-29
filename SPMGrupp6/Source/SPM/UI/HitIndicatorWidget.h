@@ -18,7 +18,7 @@ private:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void PlayHitAnimation();
+	void PlayHitAnimation(AActor* DamageCauser);
 
 	UPROPERTY()
 	AShooterCharacter* PlayerCharacter;

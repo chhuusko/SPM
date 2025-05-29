@@ -11,22 +11,23 @@ void AShotgun::Fire()
 {
 	// Checks if weapon can fire.
 	float CurrentTime = GetWorld()->GetTimeSeconds();
-	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
+	
+	if (bIsReloading || !bIsWeaponEquipped || Player->IsDead()) return;
 	if (CurrentTime - LastFireTime < FireRate) return;
-
+	
 	LastFireTime = CurrentTime;
+	
+	// If player is invisible, make player visible.
+	if (Player->GetIsInvisible())
+	{
+		Player->CancelInvisibility();
+	}
 	
 	// Reloads automatically if bullets is when you start shooting 0.
 	if (BulletsLeft <= 0)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
-		if (bCanPlayEmptyMagSound)
-		{
-			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
-			bCanPlayEmptyMagSound = false;
-			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
-		}
-		Reload();
+		ReloadAutomatically();
 		return;
 	}
 	
@@ -38,10 +39,10 @@ void AShotgun::Fire()
 	bool bShouldPlayEffects = false;
 	AActor* LastHitActor = nullptr;
 
-	//Skjuter flera raycasts
+	//Shoots multiple raycasts.
 	for (int i = 0; i < numberOfPellets; i++)
 	{
-		// Random offset baserat på överskuggad GunTrace
+		// Random offset based on overriden GunTrace
 		bool bSuccess = GunTrace(Hit, ShotDirection, TraceLength);
 		
 		if(bSuccess)
@@ -111,7 +112,7 @@ void AShotgun::Fire()
 	OnAmmoUpdated.Broadcast(BulletsLeft, MagazineSize);
 	if (BulletsLeft <= 0)
 	{
-		Reload();
+		ReloadAutomatically();
 	}
 	
 	OnFired.Broadcast();
@@ -119,7 +120,7 @@ void AShotgun::Fire()
 
 bool AShotgun::GunTrace(FHitResult& Hit, FVector& ShotDirection, float& TraceLength)
 {
-	//Overshadowed GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
+	//Overriden GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
 	if (!OwnerController) return false;
 

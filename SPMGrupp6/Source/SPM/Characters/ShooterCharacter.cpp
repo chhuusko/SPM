@@ -8,7 +8,9 @@
 #include "ShooterPlayerController.h"
 #include "SPM/Game/SimpleShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
+#include "SPM/Systems/Resources.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "SPM/Weapons/UpgradedShotgun.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter()
@@ -30,6 +32,11 @@ void AShooterCharacter::BeginPlay()
 	if (!PlayerController)
 	{
 		GetWorldTimerManager().SetTimerForNextTick(this, &AShooterCharacter::SetPlayerController);
+	}
+	else
+	{
+		// If controller has been created, set camera clamp.
+		SetCameraClamp();
 	}
 
 	Health = MaxHealth;
@@ -63,7 +70,10 @@ void AShooterCharacter::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("BP_TutorialComponent not found among character's components."));
 		}
 	}, 0.2f, false);
-
+	if (bShouldStartWithResources)
+	{
+		InitiateTestModeValues();
+	}
 }
 
 
@@ -75,7 +85,19 @@ bool AShooterCharacter::IsFirstCharacter()
 void AShooterCharacter::SetPlayerController()
 {
 	PlayerController = Cast<AShooterPlayerController>(GetController());
+	SetCameraClamp();
 }
+
+void AShooterCharacter::SetCameraClamp()
+{
+	// Set clamp on camera to limit vertical rotation.
+	if (PlayerController && PlayerController->PlayerCameraManager)
+	{
+		PlayerController->PlayerCameraManager->ViewPitchMin = MinVerticalRotation;
+		PlayerController->PlayerCameraManager->ViewPitchMax = MaxVerticalRotation;
+	}
+}
+
 
 bool AShooterCharacter::IsDead() const
 {
@@ -148,10 +170,13 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	DamageToApply = FMath::Min(Health, DamageToApply);
 	Health -= DamageToApply;
 	
-	OnTakeDamage.Broadcast();
+	OnTakeDamage.Broadcast(DamageCauser);
 	ReduceSpeed();
 	OnHealthUpdated.Broadcast(GetHealthPercent());
-
+	
+	// If player is invisible, make player visible.
+	CancelInvisibility();
+	
 	if(IsDead())
 	{
 		ASimpleShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<ASimpleShooterGameMode>();
@@ -402,6 +427,46 @@ void AShooterCharacter::ResetMouseRotationSensitivity()
 {
 	MouseRotationRate = MouseDefaultRotationRate;
 }
+
+void AShooterCharacter::SetSensitivitySetting(float NewSensitivity)
+{
+	SensitivitySetting = NewSensitivity;
+}
+
+void AShooterCharacter::InitiateTestModeValues()
+{
+	UResources* Resources = Cast<UResources>(GetComponentByClass(UResources::StaticClass()));
+	Resources->ModifyResourceAmount(20);
+}
+
+void AShooterCharacter::CancelInvisibility()
+{
+	// Find UpgradedShotgun and turn player visible.
+	UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(GetComponentByClass(UWeaponUnlocking::StaticClass()));
+	if (WeaponUnlocking)
+	{
+		for (const TPair<EWeaponType, AGun*>& Pair : WeaponUnlocking->GetWeaponPool())
+		{
+			AUpgradedShotgun* UpgradedShotgun = Cast<AUpgradedShotgun>(Pair.Value);
+			if (UpgradedShotgun)
+			{
+				UpgradedShotgun->TurnVisibleAgain();
+				UpgradedShotgun->GetWorldTimerManager().ClearTimer(UpgradedShotgun->AbilityEffectTimerHandle);
+			}
+		}
+	}
+}
+
+bool AShooterCharacter::GetIsInvisible() const
+{
+	return bIsInvisible;
+}
+
+void AShooterCharacter::SetIsInvisible(const bool bInvisible)
+{
+	bIsInvisible = bInvisible;
+}
+
 
 
 

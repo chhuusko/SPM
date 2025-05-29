@@ -47,9 +47,6 @@ private:
 	TArray<float> AbilityMaxDamagePerLevel;
 	UPROPERTY(EditDefaultsOnly, Category = "Upgrade", meta=(EditCondition = "bShowUpgradeOptions", EditConditionHides))
 	float AbilityMaxDamageDefaultIncreasePerLevel = 1;
-	
-	//UPROPERTY(EditAnywhere)
-	//float AbilityCooldown = 5.0f;
 
 	void ResetAbilityCooldown();
 	

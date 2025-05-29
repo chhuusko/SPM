@@ -13,7 +13,7 @@ class AGun;
 class UTutorialComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSetGun);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTakeDamage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTakeDamage, AActor*, DamageCauser);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdated, float, HealthPercent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUsedJetpack);
 
@@ -99,6 +99,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetMouseRotationSensitivity();
 
+	UFUNCTION(BlueprintCallable)
+	void SetSensitivitySetting(float NewSensitivity);
+	
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;
 
@@ -148,19 +151,41 @@ public:
 	void OnWeaponUpgraded();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsFirstCharacter(); 
+	bool IsFirstCharacter();
+
+	UFUNCTION()
+	void CancelInvisibility();
+
+	UFUNCTION()
+	bool GetIsInvisible() const;
+
+	UFUNCTION()
+	void SetIsInvisible(const bool bInvisible);
 	
 private:
 	void SetPlayerController();
+	void SetCameraClamp();
+	void InitiateTestModeValues();
+
+	UPROPERTY(EditAnywhere)
+	bool bShouldStartWithResources = false;
+	UPROPERTY(VisibleAnywhere)
+	bool bIsInvisible = false;
 	UPROPERTY(VisibleAnywhere)
 	float GamepadRotationRate = 10;
 	UPROPERTY(EditAnywhere)
 	float GamepadDefaultRotationRate = 70;
 	UPROPERTY(EditAnywhere)
 	float MouseDefaultRotationRate = 1;
+	UPROPERTY(EditAnywhere)
+	float MaxVerticalRotation = 60;
+	UPROPERTY(EditAnywhere)
+	float MinVerticalRotation = -60;
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100;
 
+	float SensitivitySetting = 1.0f;
+	
 	UPROPERTY(EditDefaultsOnly)
 	float WalkSpeed = 600;
 	UPROPERTY(EditDefaultsOnly)

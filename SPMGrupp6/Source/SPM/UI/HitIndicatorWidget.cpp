@@ -18,7 +18,7 @@ void UHitIndicatorWidget::NativeConstruct()
 	}
 }
 
-void UHitIndicatorWidget::PlayHitAnimation()
+void UHitIndicatorWidget::PlayHitAnimation(AActor* DamageCauser)
 {
 	PlayAnimation(HitTrack);
 }

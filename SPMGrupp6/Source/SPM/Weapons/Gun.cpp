@@ -43,23 +43,6 @@ void AGun::BeginPlay()
 void AGun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	/*if (bIsRecoiling)
-	{
-		APlayerController* PlayerController = Cast<APlayerController>(GetOwnerController());
-		if (PlayerController)
-		{
-			FRotator CurrentRotation = PlayerController->GetControlRotation();
-			FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RecoilTargetRotation, DeltaTime, RecoilInterpSpeed);
-			PlayerController->SetControlRotation(NewRotation);
-
-			// Stop when traget is close
-			if (NewRotation.Equals(RecoilTargetRotation, 0.001f))
-			{
-				bIsRecoiling = false;
-			}
-		}
-	}*/
 }
 
 void AGun::GetPlayerController()
@@ -90,22 +73,23 @@ void AGun::Fire()
 {
 	// Checks if weapon can fire.
 	float CurrentTime = GetWorld()->GetTimeSeconds();
-	if (bIsReloading || !bIsWeaponEquipped || Cast<AShooterCharacter>(GetOwner())->IsDead()) return;
+	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
+	
+	if (bIsReloading || !bIsWeaponEquipped || Player->IsDead()) return;
 	if (CurrentTime - LastFireTime < FireRate) return;
-
+	
 	LastFireTime = CurrentTime;
 	
-	// Reloads automatically if bullets is when you start shooting 0.
+	// If player is invisible, make player visible.
+	if (Player->GetIsInvisible())
+	{
+		Player->CancelInvisibility();
+	}
+	
+	// Reloads automatically if bullets are 0 when you start shooting.
 	if (BulletsLeft <= 0)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 1"));
-		if (bCanPlayEmptyMagSound)
-		{
-			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
-			bCanPlayEmptyMagSound = false;
-			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
-		}
-		Reload();
+		ReloadAutomatically();
 		return;
 	}
 	
@@ -187,17 +171,8 @@ void AGun::Fire()
 	// Reloads automatically if bullets reach 0.
 	if (BulletsLeft <= 0)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Reloads automatically 2"));
-		if (bCanPlayEmptyMagSound)
-		{
-			UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
-			bCanPlayEmptyMagSound = false;
-			GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
-		}
-		Reload();
-		return;
+		ReloadAutomatically();
 	}
-
 	
 	OnFired.Broadcast();
 }
@@ -260,7 +235,6 @@ void AGun::Reload()
 		GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 		// Can not shoot while reloading.
 		bCanFire = false;
-		UE_LOG(LogTemp, Display, TEXT("Starting Reloading"));
 		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
 		OnReload.Broadcast(ReloadTime);
@@ -268,7 +242,6 @@ void AGun::Reload()
 }
 void AGun::ResetAmmo()
 {
-	UE_LOG(LogTemp, Display, TEXT("Ammo got refilled"));
 	BulletsLeft = MagazineSize;
 	bCanFire = true;
 	bIsReloading = false;
@@ -287,7 +260,6 @@ void AGun::StopReload()
 		GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
 		bIsReloading = false;
 		bCanFire = true;
-		UE_LOG(LogTemp, Display, TEXT("Reload got stopped"));
 	}
 }
 
@@ -332,19 +304,26 @@ AController* AGun::GetOwnerController() const
 
 void AGun::WeaponAbility()
 {
-	//UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed special functionality."))
 	if (!IsAbilityOnCooldown())
 	{
 		RemainingAbilityCooldown = GetAbilityCooldown();
 		if (AbilityUnlocked)
 		{
+			// If player is invisible, make player visible.
+			if (AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner()))
+			{
+				Player->CancelInvisibility();
+			}
 			GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, GetAbilityCooldown() / CooldownUpdateAmount, true);
 		}
 	}
 }
 void AGun::StopWeaponAbility()
 {
-	UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
+	if (bDebugWeapon)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Weapon contains no overshadowed STOP Weapon Ability."))
+	}
 }
 
 void AGun::UpdateWeaponAbilityCooldown()
@@ -422,6 +401,7 @@ void AGun::EnableCanPlayEmptyMagSound()
 
 FString AGun::WhichBodyPartWasHit(FHitResult& HitResult)
 {
+	// 
 	if (HitResult.Component->ComponentHasTag("Head") || HitResult.BoneName == "head")
 	{
 		return "Head";
@@ -487,3 +467,15 @@ int32 AGun::GetBulletsLeft() const
 {
 	return BulletsLeft;
 }
+
+void AGun::ReloadAutomatically()
+{
+	if (bCanPlayEmptyMagSound)
+	{
+		UGameplayStatics::SpawnSoundAttached(EmptyMagSound, RootComponent);
+		bCanPlayEmptyMagSound = false;
+		GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
+	}
+	Reload();
+}
+

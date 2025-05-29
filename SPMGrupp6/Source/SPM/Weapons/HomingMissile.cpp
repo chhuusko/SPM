@@ -4,6 +4,8 @@
 #include "HomingMissile.h"
 
 #include "Gun.h"
+#include "NiagaraEmitterHandle.h"
+#include "NiagaraFunctionLibrary.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -169,9 +171,9 @@ void AHomingMissile::Explode()
 		}
 	}
 
-	if (ExplosionParticles)
+	if (ExplosionFX)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticles, GetActorLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionFX, GetActorLocation());
 	}
 	if (ExplosionSound)
 	{

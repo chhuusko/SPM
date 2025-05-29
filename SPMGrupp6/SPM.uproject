@@ -26,10 +26,6 @@
 		{
 			"Name": "HDRIBackdrop",
 			"Enabled": true
-		},
-		{
-			"Name": "CommonUI",
-			"Enabled": true
 		}
 	]
 }
