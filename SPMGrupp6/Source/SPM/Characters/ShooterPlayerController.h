@@ -48,8 +48,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UHitIndicatorWidget> HitIndicatorWidgetClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UHitDirectionWidget> HitDirectionWidgetClass;
+
 	UPROPERTY()
 	UHitIndicatorWidget* HitIndicatorWidget;
+
+	UPROPERTY()
+	UHitDirectionWidget* HitDirectionWidget;
 	
 	UPROPERTY()
 	USniperScopeWidget* ScopeWidget;

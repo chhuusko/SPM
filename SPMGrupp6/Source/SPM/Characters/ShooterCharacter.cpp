@@ -165,7 +165,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	DamageToApply = FMath::Min(Health, DamageToApply);
 	Health -= DamageToApply;
 	
-	OnTakeDamage.Broadcast();
+	OnTakeDamage.Broadcast(DamageCauser);
 	ReduceSpeed();
 	OnHealthUpdated.Broadcast(GetHealthPercent());
 

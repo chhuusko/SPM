@@ -11,6 +11,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/UI/HitDirectionWidget.h"
 #include "SPM/UI/HitIndicatorWidget.h"
 #include "SPM/UI/SniperScopeWidget.h"
 
@@ -100,6 +101,12 @@ void AShooterPlayerController::InitializeUI()
 	if (HitIndicatorWidget)
 	{
 		HitIndicatorWidget->AddToPlayerScreen();
+	}
+
+	HitDirectionWidget = CreateWidget<UHitDirectionWidget>(this, HitDirectionWidgetClass);
+	if (HitDirectionWidget)
+	{
+		HitDirectionWidget->AddToPlayerScreen();
 	}
 }
 
