@@ -34,7 +34,7 @@ void UHUDWidget::NativeConstruct()
 	GetWeaponUnlocking();
 	GetGun();
 
-	GetGameInstance();
+	GetShooterGameInstance();
 
 	// Create timelines if they don't exist.
 	if (!ReloadTimeline)
@@ -182,12 +182,16 @@ void UHUDWidget::GetGun()
 
 void UHUDWidget::GetShooterGameInstance()
 {
-	GameInstance = Cast<UShooterGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance = Cast<UShooterGameInstance>(GetOwningPlayer()->GetGameInstance());
 	if (GameInstance)
 	{
 		if (UOptionsMenuWidget* OptionsMenu = GameInstance->GetOptionsMenuWidget())
 		{
 			OptionsMenu->OnUpdateCrosshairColor.AddDynamic(this, &UHUDWidget::UpdateCrosshairColor);
+		}
+		else
+		{
+			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetShooterGameInstance);
 		}
 	}
 	else
