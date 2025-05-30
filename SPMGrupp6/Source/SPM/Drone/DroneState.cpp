@@ -108,9 +108,7 @@ void FDroneStateTest::Move()
 	//ASVOGrid::GetInstance(Drone->GetWorld())->ConvertToWorldSpace(ASVOGrid::GetInstance(Drone->GetWorld())->ConvertToGrid(Drone->GetActorLocation()));
 	if (Drone->GetPathList().IsEmpty())
 	{
-		Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(
-			ASVOGrid::GetInstance(Drone->GetWorld())->ConvertToWorldSpace(ASVOGrid::GetInstance(Drone->GetWorld())->ConvertToGrid(Drone->GetActorLocation())),
-			ASVOGrid::GetInstance(Target->GetWorld())->ConvertToWorldSpace(ASVOGrid::GetInstance(Target->GetWorld())->ConvertToGrid(Target->GetActorLocation()))));
+		Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
 	} else
 	{
 		//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
