@@ -239,6 +239,10 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 			{
 				UpgradeCostText->SetColorAndOpacity(FSlateColor(FColor::Green));
 			}
+			else if (WeaponUnlocking->GetUpgradeCost(WeaponType) == MAX_int32)
+			{
+				UpgradeCostText->SetVisibility(ESlateVisibility::Hidden);
+			}
 			else
 			{
 				UpgradeCostText->SetColorAndOpacity(CantAffordColor);
