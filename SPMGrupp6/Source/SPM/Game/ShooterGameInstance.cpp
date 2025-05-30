@@ -7,6 +7,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Minimap/CombinedMinimap.h"
+#include "SPM/UI/OptionsMenuWidget.h"
 #include "SPM/Weapons/Gun.h"
 
 int32 UShooterGameInstance::GetIncrementedRound()
