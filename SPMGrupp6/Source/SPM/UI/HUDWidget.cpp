@@ -3,6 +3,7 @@
 
 #include "HUDWidget.h"
 #include "EnhancedInputComponent.h"
+#include "OptionsMenuWidget.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Border.h"
@@ -11,6 +12,7 @@
 #include "Components/RadialSlider.h"
 #include "Components/TextBlock.h"
 #include "SPM/Characters/ShooterPlayerController.h"
+#include "SPM/Game/ShooterGameInstance.h"
 #include "SPM/Weapons/Gun.h"
 
 void UHUDWidget::NativeConstruct()
@@ -31,6 +33,8 @@ void UHUDWidget::NativeConstruct()
 	// Get the components and bind to their delegates.
 	GetWeaponUnlocking();
 	GetGun();
+
+	GetGameInstance();
 
 	// Create timelines if they don't exist.
 	if (!ReloadTimeline)
@@ -175,6 +179,23 @@ void UHUDWidget::GetGun()
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetGun);
 	}
 }
+
+void UHUDWidget::GetShooterGameInstance()
+{
+	GameInstance = Cast<UShooterGameInstance>(GetWorld()->GetGameInstance());
+	if (GameInstance)
+	{
+		if (UOptionsMenuWidget* OptionsMenu = GameInstance->GetOptionsMenuWidget())
+		{
+			OptionsMenu->OnUpdateCrosshairColor.AddDynamic(this, &UHUDWidget::UpdateCrosshairColor);
+		}
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UHUDWidget::GetShooterGameInstance);
+	}
+}
+
 
 // Updates the ammo text in the HUD.
 void UHUDWidget::UpdateAmmoText(int32 BulletsLeft, int32 MagazineSize)
@@ -533,6 +554,11 @@ void UHUDWidget::UpdateCrosshairVisibility(EWeaponType Weapon)
 	{
 		Crosshair->SetVisibility(ESlateVisibility::Visible);
 	}
+}
+
+void UHUDWidget::UpdateCrosshairColor(FLinearColor Color)
+{
+	Crosshair->SetColorAndOpacity(Color);
 }
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)

@@ -225,6 +225,9 @@ private:
 	void GetPlayerCharacter();
 
 	UFUNCTION()
+	void GetShooterGameInstance();
+
+	UFUNCTION()
 	UProgressBar* GetAbilityBar(EWeaponType Weapon) const;
 
 	UFUNCTION()
@@ -238,6 +241,9 @@ private:
 
 	UFUNCTION()
 	void UpdateCrosshairVisibility(EWeaponType Weapon);
+
+	UFUNCTION()
+	void UpdateCrosshairColor(FLinearColor Color);
 
 	UFUNCTION()
 	void StartReloadCooldown(float Cooldown);
@@ -272,6 +278,9 @@ private:
 
 	UPROPERTY()
 	AGun* Gun;
+
+	UPROPERTY()
+	UShooterGameInstance* GameInstance;
 
 	UPROPERTY()
 	class ASniper* Sniper;
