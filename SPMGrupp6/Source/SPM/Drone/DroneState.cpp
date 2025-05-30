@@ -113,7 +113,7 @@ void FDroneStateTest::Move()
 			ASVOGrid::GetInstance(Target->GetWorld())->ConvertToWorldSpace(ASVOGrid::GetInstance(Target->GetWorld())->ConvertToGrid(Target->GetActorLocation()))));
 	} else
 	{
-		UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
+		//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
 		Drone->FollowPath();	
 	}
 	
