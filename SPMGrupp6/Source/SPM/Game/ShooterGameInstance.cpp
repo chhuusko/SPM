@@ -233,6 +233,16 @@ UMaterialInterface* UShooterGameInstance::GetP2WeaponSkin(const TSubclassOf<AGun
 	return nullptr;
 }
 
+UOptionsMenuWidget* UShooterGameInstance::GetOptionsMenuWidget()
+{
+	return OptionsMenuWidget;
+}
+
+void UShooterGameInstance::SetOptionsMenuWidget(UOptionsMenuWidget* NewOptionsMenu)
+{
+	OptionsMenuWidget = NewOptionsMenu;
+}
+
 
 bool UShooterGameInstance::HasMatchEnded()
 {
