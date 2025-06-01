@@ -67,7 +67,8 @@ void ASVOGrid::CreateGrid()
 
 void ASVOGrid::TestDraw(FVector Positon, FVector Size, FColor Color)
 {
-	DrawDebugSolidBox(GetWorld(),Positon,FVector::OneVector*(AreaSize / GridLength),Color,true,5.f,1);
+	if (DebugShowGrid)
+		DrawDebugSolidBox(GetWorld(),Positon,FVector::OneVector*(AreaSize / GridLength),Color,true,5.f,1);
 }
 
 FVector ASVOGrid::GetNearestGridPosition(FVector Position)
@@ -82,6 +83,7 @@ FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions if clear and not visited
+	GridArray[Position.X][Position.Y][Position.Z]->IsVisited=true;
 	UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
 	if (Position.X > GridArray.Num()) return TArray<FVector>();
 	if (Position.Y > GridArray.Num()) return TArray<FVector>();
@@ -95,23 +97,16 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 	
 	if (GridArray[Position.X][Position.Y][Position.Z+1]->IsClearAndNotVisited()) Directions.Add(GridArray[Position.X][Position.Y][Position.Z+1]->Position);
 	if (GridArray[Position.X][Position.Y][Position.Z-1]->IsClearAndNotVisited()) Directions.Add(GridArray[Position.X][Position.Y][Position.Z-1]->Position);
-	/*
-	for (int x = -1*GridLength; x <= GridLength; x += 2) {
-		for (int y = -1*GridLength; y <= GridLength; y += 2) {
-			for (int z = -1*GridLength; z <= GridLength; z += 2) {
-				FNode* Cube = GridArray[(x+(1*GridLength))/2][(y+(1*GridLength))/2][(z+(1*GridLength))/2];
-				if (!Cube->IsClear)
-				{
-					DrawDebugBox(GetWorld(), Cube->Position, Cube->Size, FColor::Green, true, 5.f, 0, 10);
-				}
-			}
-		}
-	}
-	*/
-	for (FVector Direction : Directions)
+	
+	if (DebugShowVisited)
 	{
-		DrawDebugBox(GetWorld(), Direction, AreaSize / GridLength, FColor::Green, true, 5.f, 0, 10);
+		for (FVector Direction : Directions)
+        {
+        	
+        	DrawDebugBox(GetWorld(), Direction, AreaSize / GridLength, FColor::Green, true, 5.f, 0, 10);
+        }
 	}
+	
 	return Directions;
 	// if all no avalable and all visited go back
 	
@@ -121,7 +116,7 @@ FVector ASVOGrid::ConvertToGrid(FVector WorldPos)
 	//Takes Wrold
 	
 	UE_LOG(LogTemp, Warning, TEXT("WorldLocation: %s"), *WorldPos.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("NearGridLocation: %s"), *GetNearestGridPosition(WorldPos).ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("NearGridLocation: %s"), *GetNearestGridPosition(WorldPos).ToString());
 	WorldPos = GetNearestGridPosition(WorldPos);
 	WorldPos = (WorldPos/(Quarter/2))+GridLength;
 	WorldPos = WorldPos/2;
@@ -162,31 +157,22 @@ FVector ASVOGrid::GetLowestHPosition(TArray<FVector> Positions, FVector Desinati
 
 TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 {
-	//int maxAttempts = 5;
-	//int attempts = 0;
+	int maxAttempts = 50;
+	int attempts = 0;
+	bool PathFound = false;
+	
 	TArray<FVector> Path;
-	//bool PathFound = false;
 	FVector PathNode = ConvertToGrid(From);
-	//FVector ToNode = ConvertToGrid(To);
-	//DrawDebugSolidBox(GetWorld(), To, AreaSize/GridLength/2, FColor::Yellow, true, 5.f, 0);
-	GetPossibleDirections(PathNode);
-	Path.Add(To);
-	//while (!PathFound || attempts > maxAttempts)
-	//{
-	//Path.Add(ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)));
-	//	UE_LOG(LogTemp, Warning, TEXT("GrodPath Found: %s"), *PathNode.ToString());
-	//	if (PathNode == ConvertToGrid(ToNode)) PathFound = true;
-	//	attempts++;
-	//}
-	//for (FVector Position : Path)
-	//{
-	//	Position = ConvertToWorldSpace(Position);
-	//	UE_LOG(LogTemp, Warning, TEXT("Path Found: %s"), *Position.ToString());
-	//}
-	//Path.Add(ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)));
-	//DrawDebugSolidBox(GetWorld(), ConvertToWorldSpace(GetLowestHPosition(GetPossibleDirections(PathNode), ToNode)), AreaSize/GridLength/2, FColor::Blue, true, 5.f, 0);
-	//ToNode = ConvertToWorldSpace(Path.Last());
-	//UE_LOG(LogTemp, Error, TEXT("TruePath %s"), *ToNode.ToString());
+	
+	Path.Add((GetLowestHPosition(GetPossibleDirections(PathNode), To)));
+	while (!PathFound && attempts < maxAttempts)
+	{
+		Path.Add((GetLowestHPosition(GetPossibleDirections(ConvertToGrid(Path.Last())), To)));
+		UE_LOG(LogTemp, Warning, TEXT("NearGridLocation: %d"), FVector::Dist(Path.Last(), To) < 100.f);
+		if (FVector::Dist(Path.Last(), To) < 1000.f) PathFound = true;
+		attempts++;
+	}
+	
 	return Path;
 }
 
@@ -199,7 +185,7 @@ bool ASVOGrid::HasObjectWithin(FNode* Node)
 	FCollisionShape::MakeBox(Node->Size)
 	);
 	
-	if (bHit)
+	if (bHit && DebugShowGrid)
 	{
 		DrawDebugBox(GetWorld(), Node->Position, Node->Size, FColor::Red, true, 5.f, 0, 10);
 	}

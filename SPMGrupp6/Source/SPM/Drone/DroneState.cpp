@@ -109,6 +109,11 @@ void FDroneStateTest::Move()
 	if (Drone->GetPathList().IsEmpty())
 	{
 		Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
+		for (FVector vector : Drone->GetPathList())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *vector.ToString() );
+		}
+		UE_LOG(LogTemp, Warning, TEXT("PathNum : %d"), Drone->GetPathList().Num());
 	} else
 	{
 		//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());

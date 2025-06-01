@@ -39,14 +39,16 @@ public:
 private:
 	void CreateStandardGrid();
 	// Temp Grid
-	const int GridLength = 32;
+	
 	static ASVOGrid* GridInstance;
 	float Quarter;
 	
 	// Declare and initialize all to false
 	TArray<TArray<TArray<FNode*>>> GridArray;
+	TArray<FVector> VisitedNodesArray;
 	FOctNode* RootNode;
-	
+	UPROPERTY(EditDefaultsOnly)
+	int GridLength = 32;
 	
 	bool HasObjectWithin(FNode* Node);
 	UPROPERTY(EditDefaultsOnly)
@@ -55,6 +57,9 @@ private:
 	FVector AreaSize;
 	UPROPERTY(EditDefaultsOnly)
 	int MaxDepth;
-	
+	UPROPERTY(EditDefaultsOnly)
+	bool DebugShowGrid;
+	UPROPERTY(EditDefaultsOnly)
+	bool DebugShowVisited;
 };
 
