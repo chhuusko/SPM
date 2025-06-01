@@ -78,6 +78,11 @@ public:
 	void SetP2WeaponSkin(const TSubclassOf<AGun>& WeaponClass, UMaterialInterface* NewSkin);
 	UMaterialInterface* GetP2WeaponSkin(const TSubclassOf<AGun>& WeaponClass);
 	
+	UFUNCTION(BlueprintCallable)
+	UOptionsMenuWidget* GetOptionsMenuWidget();
+	UFUNCTION(BlueprintCallable)
+	void SetOptionsMenuWidget(UOptionsMenuWidget* NewOptionsMenu);
+	
 private:
 	int32 Round = 0;
 	int32 BlueScore = 0;
@@ -106,4 +111,6 @@ private:
 	TMap<TSubclassOf<AGun>, UMaterialInterface*> P1WeaponSkins;
 	UPROPERTY(EditAnywhere, Category = "WeaponSkins")
 	TMap<TSubclassOf<AGun>, UMaterialInterface*> P2WeaponSkins;
+
+	UOptionsMenuWidget* OptionsMenuWidget;
 };

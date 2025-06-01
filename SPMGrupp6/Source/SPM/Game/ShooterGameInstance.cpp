@@ -7,6 +7,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Minimap/CombinedMinimap.h"
+#include "SPM/UI/OptionsMenuWidget.h"
 #include "SPM/Weapons/Gun.h"
 
 int32 UShooterGameInstance::GetIncrementedRound()
@@ -231,6 +232,16 @@ UMaterialInterface* UShooterGameInstance::GetP2WeaponSkin(const TSubclassOf<AGun
 
 	if (Debug) UE_LOG(LogTemp, Warning, TEXT("[ShooterGameInstance/WeaponSkin] GetP2WeaponSkin: No material found for weapon class %s"), *WeaponClass->GetName());
 	return nullptr;
+}
+
+UOptionsMenuWidget* UShooterGameInstance::GetOptionsMenuWidget()
+{
+	return OptionsMenuWidget;
+}
+
+void UShooterGameInstance::SetOptionsMenuWidget(UOptionsMenuWidget* NewOptionsMenu)
+{
+	OptionsMenuWidget = NewOptionsMenu;
 }
 
 
