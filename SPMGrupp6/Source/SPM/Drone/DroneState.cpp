@@ -2,6 +2,8 @@
 
 #include "DroneState.h"
 
+#include "SVOGrid.h"
+
 FDroneState::FDroneState(ADrone* Drone, AActor* Spawner)
 {
 	this->Drone = Drone;
@@ -36,20 +38,35 @@ void FDroneStateAttack::Move()
 	if (!Drone->SeeTarget())
 	{
 		Drone->StartAggroTimeHandler();
+		if (Drone->GetPathList().IsEmpty())
+		{
+			Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
+			for (FVector vector : Drone->GetPathList())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *vector.ToString() );
+			}
+			UE_LOG(LogTemp, Warning, TEXT("PathNum : %d"), Drone->GetPathList().Num());
+		} else
+		{
+			//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
+			Drone->FollowPath();	
+		}
 	}else
 	{
+		if (!Drone->GetPathList().IsEmpty())
+			Drone->SetPathList(TArray<FVector>());
 		Drone->CancellAggroTimeHandler();
 		if (FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) < MaxSpawnDistance)
 		{
-			NewLocation = Target->GetActorLocation();
-			Drone->SetActorLocation(FMath::VInterpTo(Drone->GetActorLocation(), NewLocation + DesiredElevation, UGameplayStatics::GetWorldDeltaSeconds(Drone), 1.f), true);
+			Drone->MoveTo(Target->GetActorLocation() + DesiredElevation);
+			
 		}
 	}
 }
 
 void FDroneStateAttack::Rotate()
 {
-	if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
+	//if (Target->GetActorLocation().Z > Drone->GetTurret()->GetComponentLocation().Z-0.2f) return;
 	
 	FVector ToTarget = Target->GetActorLocation() - Drone->GetBody()->GetComponentLocation();
 	FRotator LookAtRotation = FRotator(-ToTarget.Rotation().Pitch, ToTarget.Rotation().Yaw+180, 0);
@@ -100,5 +117,24 @@ void FDroneStateReturn::Exit()
 	{
 		Drone->ChangeState(new FDroneStateIdle(Drone, Spawner));
 	}
+}
+void FDroneStateTest::Move()
+{
+	//ASVOGrid::GetInstance(Drone->GetWorld())->ConvertToWorldSpace(ASVOGrid::GetInstance(Drone->GetWorld())->ConvertToGrid(Drone->GetActorLocation()));
+	if (Drone->GetPathList().IsEmpty())
+	{
+		Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
+		for (FVector vector : Drone->GetPathList())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *vector.ToString() );
+		}
+		UE_LOG(LogTemp, Warning, TEXT("PathNum : %d"), Drone->GetPathList().Num());
+	} else
+	{
+		//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
+		Drone->FollowPath();	
+	}
+	
+	
 }
 

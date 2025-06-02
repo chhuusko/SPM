@@ -27,7 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void LostPlayer();
 	
-	//State
+	//State // needed for heavy drone state
 	TArray<AActor*> Players;
 	AActor* Target;
 	ADroneSpawn* Spawner;
@@ -57,11 +57,13 @@ public:
 	
 	//State Functions
 	void MoveTo(FVector TargetLocation);
+	void FollowPath();
 	void Shoot();
 	
 	//Set
 	void ChangeState(FDroneState* newState);
 	virtual void SetSpawner(ADroneSpawn* Spawn);
+	void SetPathList(TArray<FVector> PathList){Path = PathList;};
 	void SetTarget(AActor* Target);
 	
 	//Get
@@ -73,7 +75,7 @@ public:
 	USceneComponent* GetProjectileSpawnAlt() {return ProjectileSpawnAlt;}
 	TSubclassOf<class ADroneBullet> GetBulletClass() {return ProjectileClass;}
 	UAudioComponent* GetAudioComp() {return AudioComp;};
-	TArray<FVector>* GetPathList() {return Path;};
+	TArray<FVector> GetPathList() {return Path;};
 	float GetAggroDistance() const {return AggroDistance;}
 	TArray<AActor*> GetPlayers() {return Players;}
 
@@ -105,7 +107,7 @@ private:
 
 	//Grid and Path
 	ASVOGrid* Grid;
-	TArray<FVector>* Path;
+	TArray<FVector> Path;
 	
 	//Properties
 	UPROPERTY(EditAnywhere)
@@ -120,4 +122,6 @@ private:
 	int32 NumberOfHealthDrops = 1;
 	UPROPERTY(EditAnywhere)
 	int32 NumberOfLootDrops = 1;
+
+	TArray<ADroneBullet*> BulletPool;
 };

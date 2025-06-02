@@ -27,24 +27,28 @@ public:
 	// Called every frame
 	FVector GetNearestGridPosition(FVector Position);
 	FVector ConvertToGrid(FVector Position);
+	FVector ConvertToWorldSpace(FVector Position);
 	TArray<FVector>GetPossibleDirections(FVector Position);
 	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);
 
 	static ASVOGrid* GetInstance(UWorld* World){return GridInstance;};
-	
+	void CreateGrid();
+	void TestDraw(FVector positon, FVector Size, FColor color);
 	virtual void Tick(float DeltaTime) override;
 private:
 	void CreateStandardGrid();
 	// Temp Grid
-	static const int GridLength = 32;
+	
 	static ASVOGrid* GridInstance;
+	float Quarter;
 	
 	// Declare and initialize all to false
 	TArray<TArray<TArray<FNode*>>> GridArray;
-	TArray<FVector> Path;
+	TArray<FVector> VisitedNodesArray;
 	FOctNode* RootNode;
-	void CreateGrid();
+	UPROPERTY(EditDefaultsOnly)
+	int GridLength = 32;
 	
 	bool HasObjectWithin(FNode* Node);
 	UPROPERTY(EditDefaultsOnly)
@@ -53,6 +57,9 @@ private:
 	FVector AreaSize;
 	UPROPERTY(EditDefaultsOnly)
 	int MaxDepth;
-	
+	UPROPERTY(EditDefaultsOnly)
+	bool DebugShowGrid;
+	UPROPERTY(EditDefaultsOnly)
+	bool DebugShowVisited;
 };
 
