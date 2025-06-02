@@ -38,8 +38,23 @@ void FDroneStateAttack::Move()
 	if (!Drone->SeeTarget())
 	{
 		Drone->StartAggroTimeHandler();
+		if (Drone->GetPathList().IsEmpty())
+		{
+			Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
+			for (FVector vector : Drone->GetPathList())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *vector.ToString() );
+			}
+			UE_LOG(LogTemp, Warning, TEXT("PathNum : %d"), Drone->GetPathList().Num());
+		} else
+		{
+			//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
+			Drone->FollowPath();	
+		}
 	}else
 	{
+		if (!Drone->GetPathList().IsEmpty())
+			Drone->SetPathList(TArray<FVector>());
 		Drone->CancellAggroTimeHandler();
 		if (FVector::Dist(Drone->GetActorLocation(), Spawner->GetActorLocation()) < MaxSpawnDistance)
 		{

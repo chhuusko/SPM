@@ -98,14 +98,8 @@ float ADrone::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	if (Target != nullptr)
 	{
 
-		if (ASVOGrid::GetInstance(GetWorld()) != nullptr)
-		{
-			ChangeState(new FDroneStateTest(this, Spawner, Target));
-		}
-		else
-		{
-			ChangeState(new FDroneStateAttack(this, Spawner, Target));
-		}
+		ChangeState(new FDroneStateAttack(this, Spawner, Target));
+		
 	}
 	return NULL;
 }

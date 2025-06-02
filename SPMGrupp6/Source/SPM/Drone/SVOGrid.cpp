@@ -88,6 +88,7 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 	if (Position.X > GridArray.Num()) return TArray<FVector>();
 	if (Position.Y > GridArray.Num()) return TArray<FVector>();
 	if (Position.Z> GridArray.Num()) return TArray<FVector>();
+	
 	TArray<FVector> Directions;
 	if (GridArray[Position.X+1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(GridArray[Position.X+1][Position.Y][Position.Z]->Position);
 	if (GridArray[Position.X-1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(GridArray[Position.X-1][Position.Y][Position.Z]->Position);
@@ -168,7 +169,6 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 	while (!PathFound && attempts < maxAttempts)
 	{
 		Path.Add((GetLowestHPosition(GetPossibleDirections(ConvertToGrid(Path.Last())), To)));
-		UE_LOG(LogTemp, Warning, TEXT("NearGridLocation: %d"), FVector::Dist(Path.Last(), To) < 100.f);
 		if (FVector::Dist(Path.Last(), To) < 1000.f) PathFound = true;
 		attempts++;
 	}
