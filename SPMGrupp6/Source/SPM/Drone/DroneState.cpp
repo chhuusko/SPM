@@ -40,12 +40,8 @@ void FDroneStateAttack::Move()
 		Drone->StartAggroTimeHandler();
 		if (Drone->GetPathList().IsEmpty())
 		{
-			Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
-			for (FVector vector : Drone->GetPathList())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Path : %s"), *vector.ToString() );
-			}
-			UE_LOG(LogTemp, Warning, TEXT("PathNum : %d"), Drone->GetPathList().Num());
+			if (ASVOGrid::GetInstance != nullptr)
+				Drone->SetPathList(ASVOGrid::GetInstance(Drone->GetWorld())->GetPath(Drone->GetActorLocation(), Target->GetActorLocation()));
 		} else
 		{
 			//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
