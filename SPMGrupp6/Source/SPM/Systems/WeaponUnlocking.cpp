@@ -23,7 +23,11 @@ UWeaponUnlocking::UWeaponUnlocking()
 
 void UWeaponUnlocking::EquipWeapon(EWeaponType WeaponType)
 {
-	if (!CharacterOwner) return;
+	if (!CharacterOwner)
+	{
+		if(Debug) UE_LOG(LogTemp, Warning, TEXT("[WeaponUnlocking] Owner not found!"));
+		return;
+	}
 
 	if (!IsWeaponUnlocked(WeaponType))
 	{
@@ -436,15 +440,15 @@ void UWeaponUnlocking::InitializeWeaponUnlockingSystem()
 	{
 		if (CombinationMappingContext)
 		{
-			Subsystem->AddMappingContext(CombinationMappingContext, 1);
+			Subsystem->AddMappingContext(CombinationMappingContext, 12);
 		}
 		if (WeaponUpgradeMappingContext)
 		{
-			Subsystem->AddMappingContext(WeaponUpgradeMappingContext, 1);
+			Subsystem->AddMappingContext(WeaponUpgradeMappingContext, 11);
 		}
 		if (WeaponEquipMappingContext)
 		{
-			Subsystem->AddMappingContext(WeaponEquipMappingContext, 0);
+			Subsystem->AddMappingContext(WeaponEquipMappingContext, 10);
 		}
 	}
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PC->InputComponent))
