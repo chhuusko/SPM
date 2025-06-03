@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
+class UNiagaraSystem;
 class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
@@ -59,8 +60,11 @@ protected:
 	FVector MuzzleLocation;
 	FRotator MuzzleRotation;
 
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* MuzzleFlash;
+	UPROPERTY(EditAnywhere, Category="Effects")
+	UNiagaraSystem* UpgradedMuzzleFlash;
+
+	UPROPERTY(EditAnywhere, Category="Effects")
+	UParticleSystem* NormalMuzzleFlash;
 
 	UPROPERTY(EditAnywhere, Category="Sounds")
 	USoundBase* MuzzleSound;
@@ -77,11 +81,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Sounds")
 	USoundBase* EmptyMagSound;
 	
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* ImpactParticles;
+	UPROPERTY(EditAnywhere, Category="Effects")
+	UNiagaraSystem* UpgradedImpactEffect;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Effects")
+	UParticleSystem* NormalImpactEffect;
+
+	UPROPERTY(EditAnywhere, Category="Sounds")
 	USoundBase* ImpactSound;
+	
+	UPROPERTY(EditAnywhere, Category="Effects")
+	bool bHasUpgradedEffects = false;
 	
 	UPROPERTY(EditAnywhere)
 	float MaxRange = 1000;
@@ -253,6 +263,7 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float LegsHitMultiplier = 0.75;
+
 
 	void StartAutomaticFireSequence();
 public:	

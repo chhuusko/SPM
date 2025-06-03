@@ -38,4 +38,6 @@ private:
 	UWidgetAnimation* FadeOut;
 
 	UShooterGameInstance* GameInstance;
+
+	static TSet<class AActor*> DamageCausers;
 };

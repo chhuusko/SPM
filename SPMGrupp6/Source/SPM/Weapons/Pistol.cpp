@@ -2,6 +2,8 @@
 
 
 #include "Pistol.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
@@ -30,7 +32,30 @@ void APistol::Fire()
 		return;
 	}
 	
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
+	if (bHasUpgradedEffects)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(
+			UpgradedMuzzleFlash,
+			MuzzlePosition,
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::SnapToTarget,
+			true,  
+			true
+		);
+	}
+	else
+	{
+		UGameplayStatics::SpawnEmitterAttached(
+			NormalMuzzleFlash,
+			MuzzlePosition,
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::SnapToTarget,true
+		);
+	}
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	
 		FHitResult Hit;
@@ -44,12 +69,29 @@ void APistol::Fire()
 			{
 				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 			}
-			UGameplayStatics::SpawnEmitterAtLocation(
-				GetWorld(), 
-				ImpactParticles,
-				Hit.Location,
-				ShotDirection.Rotation()			
-			);
+			
+			if (bHasUpgradedEffects)
+			{
+				UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+					GetWorld(),
+					UpgradedImpactEffect,
+					Hit.Location,
+					ShotDirection.Rotation(),
+					FVector::OneVector,
+					true,
+					true,
+					ENCPoolMethod::None
+				);
+			}
+			else
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(
+					GetWorld(),
+					NormalImpactEffect,
+					Hit.Location,
+					ShotDirection.Rotation()
+				);
+			}
 
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
 

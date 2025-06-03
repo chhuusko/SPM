@@ -9,6 +9,8 @@
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Game/ShooterGameInstance.h"
 
+TSet<class AActor*> UHitDirectionWidget::DamageCausers = TSet<class AActor*>();
+
 void UHitDirectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -36,8 +38,13 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 	}
 	
 	DamageCauser = NewDamageCauser;
-	// if (!DamageCauser)
-	// 	return;
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *DamageCauser->GetName());
+	
+	if (DamageCausers.Contains(DamageCauser))
+	{
+		return;
+	}
+	DamageCausers.Add(DamageCauser);
 
 	bShowIndicator = true;
 	DamageIcon->SetVisibility(ESlateVisibility::Visible);
@@ -49,7 +56,10 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 void UHitDirectionWidget::HideIndicator()
 {
 	bShowIndicator = false;
-	DamageIcon->SetVisibility(ESlateVisibility::Hidden);
+	DamageCausers.Remove(DamageCauser);
+
+	// Remove widget from player screen.
+	this->RemoveFromParent();
 }
 
 // Updates the rotation of the indicator to show the damage causer's location.
