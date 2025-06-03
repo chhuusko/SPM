@@ -90,10 +90,12 @@ void UShooterGameInstance::Init()
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UShooterGameInstance::OnPostLoadMap);
 	
 	// Handle the initial map load manually
-	if (UWorld* CurrentWorld = GetWorld())
+	FTimerHandle DummyHandle;
+	GetWorld()->GetTimerManager().SetTimer(DummyHandle, [this]()
 	{
-		OnPostLoadMap(CurrentWorld);
-	}
+		OnPostLoadMap(GetWorld());
+	}, 0.01f, false);
+
 }
 
 void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
@@ -101,7 +103,7 @@ void UShooterGameInstance::OnPostLoadMap(UWorld* LoadedWorld)
 	FString CleanMapName = UGameplayStatics::GetCurrentLevelName(this, true);
 	UE_LOG(LogTemp, Log, TEXT("[ShooterGameInstance] Starting OnPostLoadMap on [%s]"),
 										*CleanMapName);
-	if (CombinedRadarEnabled && !CleanMapName.Contains(TEXT("MainMenu")))
+	if (CombinedRadarEnabled && !CleanMapName.Contains(TEXT("Menu"), ESearchCase::IgnoreCase))
 	{
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UShooterGameInstance::LoadCombinedMinimap);
 	}
