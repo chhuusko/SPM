@@ -38,7 +38,7 @@ void AUpgradedSniper::Fire()
 	}
 	
 	UNiagaraFunctionLibrary::SpawnSystemAttached(
-		MuzzleFlash,
+		UpgradedMuzzleFlash,
 		MuzzlePosition,
 		NAME_None,
 		FVector::ZeroVector,
@@ -74,7 +74,7 @@ void AUpgradedSniper::Fire()
 			// Spawn particles
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				GetWorld(),
-				ImpactEffect,
+				UpgradedImpactEffect,
 				Hit.Location,
 				ShotDirection.Rotation(),
 				FVector::OneVector,
