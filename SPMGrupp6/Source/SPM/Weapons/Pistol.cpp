@@ -2,6 +2,8 @@
 
 
 #include "Pistol.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
@@ -30,8 +32,16 @@ void APistol::Fire()
 		return;
 	}
 	
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
-	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
+	UNiagaraFunctionLibrary::SpawnSystemAttached(
+		MuzzleFlash,
+		MuzzlePosition,
+		NAME_None,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		EAttachLocation::SnapToTarget,
+		true,  // bAutoDestroy
+		true   // bAutoActivate
+	);	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	
 		FHitResult Hit;
 		FVector ShotDirection;
@@ -44,11 +54,16 @@ void APistol::Fire()
 			{
 				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 			}
-			UGameplayStatics::SpawnEmitterAtLocation(
-				GetWorld(), 
-				ImpactParticles,
+			
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				ImpactEffect,
 				Hit.Location,
-				ShotDirection.Rotation()			
+				ShotDirection.Rotation(),
+				FVector::OneVector,
+				true,  // AutoDestroy
+				true,  // AutoActivate
+				ENCPoolMethod::None
 			);
 
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);

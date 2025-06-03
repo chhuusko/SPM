@@ -2,6 +2,8 @@
 
 
 #include "Shotgun.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
@@ -31,7 +33,16 @@ void AShotgun::Fire()
 		return;
 	}
 	
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(
+		MuzzleFlash,
+		MuzzlePosition,
+		NAME_None,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		EAttachLocation::SnapToTarget,
+		true,
+		true 
+	);	
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	FHitResult Hit;
 	FVector ShotDirection;
@@ -82,12 +93,15 @@ void AShotgun::Fire()
 				}
 			}
 			// Play effects on every pellet hit
-			bShouldPlayEffects = true;
-			UGameplayStatics::SpawnEmitterAtLocation(
-				GetWorld(), 
-				ImpactParticles,
-				Hit.Location,
-				ShotDirection.Rotation()			
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			ImpactEffect,
+			Hit.Location,
+			ShotDirection.Rotation(),
+			FVector::OneVector,
+			true,  // AutoDestroy
+			true,  // AutoActivate
+			ENCPoolMethod::None
 			);
 		}
 	}

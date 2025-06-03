@@ -3,6 +3,7 @@
 
 #include "UpgradedSniper.h"
 #include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "SPM/Characters/ShooterCharacter.h"
@@ -36,7 +37,16 @@ void AUpgradedSniper::Fire()
 		return;
 	}
 	
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(
+		MuzzleFlash,
+		MuzzlePosition,
+		NAME_None,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		EAttachLocation::SnapToTarget,
+		true,
+		true
+	);
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	
 	
@@ -62,11 +72,15 @@ void AUpgradedSniper::Fire()
 			}
 
 			// Spawn particles
-			UGameplayStatics::SpawnEmitterAtLocation(
-				GetWorld(), 
-				ImpactParticles,
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				ImpactEffect,
 				Hit.Location,
-				ShotDirection.Rotation()			
+				ShotDirection.Rotation(),
+				FVector::OneVector,
+				true,  // AutoDestroy
+				true,  // AutoActivate
+				ENCPoolMethod::None
 			);
 			
 			HitActor = Hit.GetActor();
@@ -228,6 +242,24 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 		Sphere,
 		Params
 	);
+
+	
+
+	UNiagaraComponent* Laser = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+	GetWorld(),
+	SniperBulletEffect,
+	MuzzlePosition->GetComponentLocation(),
+	FRotator::ZeroRotator,
+	FVector::OneVector,
+	true,
+	true,
+	ENCPoolMethod::None
+);
+
+	if (Laser)
+	{
+		Laser->SetVectorParameter(FName("Hit"), SphereEndLocation);
+	}
 	
 	if (bDebugWeapon)
 	{
