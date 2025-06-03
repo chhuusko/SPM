@@ -171,6 +171,9 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	Health -= DamageToApply;
 	
 	OnTakeDamage.Broadcast(DamageCauser);
+
+	PlayerController->AddHitDirectionIndicator(DamageCauser);
+	
 	ReduceSpeed();
 	OnHealthUpdated.Broadcast(GetHealthPercent());
 	

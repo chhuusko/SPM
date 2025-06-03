@@ -9,15 +9,13 @@
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Game/ShooterGameInstance.h"
 
+TSet<class AActor*> UHitDirectionWidget::DamageCausers = TSet<class AActor*>();
+
 void UHitDirectionWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->OnTakeDamage.AddDynamic(this, &UHitDirectionWidget::ShowIndicator);
-	}
 
 	GameInstance = Cast<UShooterGameInstance>(GetOwningPlayer()->GetGameInstance());
 }
@@ -38,18 +36,30 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 	{
 		return;
 	}
+	
+	DamageCauser = NewDamageCauser;
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *DamageCauser->GetName());
+	
+	if (DamageCausers.Contains(DamageCauser))
+	{
+		return;
+	}
+	DamageCausers.Add(DamageCauser);
 
 	bShowIndicator = true;
-	DamageCauser = NewDamageCauser;
 	DamageIcon->SetVisibility(ESlateVisibility::Visible);
 	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
+	PlayAnimation(FadeOut);
 }
 
 // Hides indicator from view.
 void UHitDirectionWidget::HideIndicator()
 {
 	bShowIndicator = false;
-	DamageIcon->SetVisibility(ESlateVisibility::Hidden);
+	DamageCausers.Remove(DamageCauser);
+
+	// Remove widget from player screen.
+	this->RemoveFromParent();
 }
 
 // Updates the rotation of the indicator to show the damage causer's location.

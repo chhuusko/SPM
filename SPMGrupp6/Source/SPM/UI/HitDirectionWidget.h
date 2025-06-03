@@ -15,12 +15,11 @@ UCLASS()
 class SPM_API UHitDirectionWidget : public UUserWidget
 {
 	GENERATED_BODY()
+public:
+	void ShowIndicator(AActor* NewDamageCauser);
 private:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
-	UFUNCTION()
-	void ShowIndicator(AActor* NewDamageCauser);
 	void HideIndicator();
 	void UpdateIndicator();
 	
@@ -35,5 +34,10 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* DamageIcon;
 
+	UPROPERTY(Meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* FadeOut;
+
 	UShooterGameInstance* GameInstance;
+
+	static TSet<class AActor*> DamageCausers;
 };

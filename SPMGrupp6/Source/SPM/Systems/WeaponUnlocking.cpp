@@ -362,6 +362,11 @@ int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 	return Gun ? Gun->GetUpgradeCost(NextLevel) : -1;
 }
 
+AGun* UWeaponUnlocking::GetCorrespondingGun(EWeaponType WeaponType)
+{
+	return *WeaponPool.Find(WeaponType);
+}
+
 void UWeaponUnlocking::OnCurrencyPickup()
 {
 	OnPickup.Broadcast(ResourceComponent->GetResourceAmount());
@@ -386,6 +391,11 @@ bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
 	return State && State->bUnlocked;
 }
 
+int32 UWeaponUnlocking::GetWeaponLevel(EWeaponType WeaponType) const
+{
+	const FWeaponState* State = WeaponStates.Find(WeaponType);
+	return State ? State->Level : 0;
+}
 
 // Called when the game starts
 void UWeaponUnlocking::BeginPlay()

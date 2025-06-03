@@ -26,6 +26,7 @@ public:
 	void AddSniperScope();
 	void RemoveSniperScope();
 	int32 GetPlayerID();
+	void AddHitDirectionIndicator(AActor* DamageCauser);
 
 protected:
 	virtual void BeginPlay() override;

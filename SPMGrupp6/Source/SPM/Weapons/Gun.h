@@ -30,6 +30,9 @@ public:
 	UFUNCTION()
 	float GetCooldownPercentage() const;
 	
+	UFUNCTION(BlueprintCallable)
+	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
+	
 	UPROPERTY(BlueprintAssignable, Category = "Fire")
 	FOnFired OnFired;
 
@@ -38,7 +41,6 @@ public:
 	FOnReload OnReload;
 	FOnAmmoUpdated OnAmmoUpdated;
 	
-	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

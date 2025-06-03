@@ -102,12 +102,6 @@ void AShooterPlayerController::InitializeUI()
 	{
 		HitIndicatorWidget->AddToPlayerScreen();
 	}
-
-	HitDirectionWidget = CreateWidget<UHitDirectionWidget>(this, HitDirectionWidgetClass);
-	if (HitDirectionWidget)
-	{
-		HitDirectionWidget->AddToPlayerScreen();
-	}
 }
 
 void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
@@ -314,8 +308,23 @@ void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target
     PlayerCameraManager->GetCameraLocation() + TargetVector * 300.f, FColor::Green, false, 0.1f, 0, 1.5f);
 }
 
+void AShooterPlayerController::AddHitDirectionIndicator(AActor* DamageCauser)
+{
+	UE_LOG(LogTemp, Warning, TEXT("AShooterPlayerController::AddHitDirectionIndicator"));
+	HitDirectionWidget = CreateWidget<UHitDirectionWidget>(this, HitDirectionWidgetClass);
+	if (HitDirectionWidget)
+	{
+		HitDirectionWidget->AddToPlayerScreen();
+		HitDirectionWidget->ShowIndicator(DamageCauser);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No HitDirectionWidget"));
+	}
+}
+
 void AShooterPlayerController::TakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatorController, AActor* DamageCauser)
+                                             AController* InstigatorController, AActor* DamageCauser)
 {
 	//HUDWidget->UpdateHealth(Cast<AShooterCharacter>(GetPawn())->GetHealthPercent());
 }
