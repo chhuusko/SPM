@@ -14,10 +14,6 @@ void UHitDirectionWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	PlayerCharacter = Cast<AShooterCharacter>(GetOwningPlayer()->GetCharacter());
-	if (PlayerCharacter)
-	{
-		PlayerCharacter->OnTakeDamage.AddDynamic(this, &UHitDirectionWidget::ShowIndicator);
-	}
 
 	GameInstance = Cast<UShooterGameInstance>(GetOwningPlayer()->GetGameInstance());
 }
@@ -38,11 +34,15 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 	{
 		return;
 	}
+	
+	DamageCauser = NewDamageCauser;
+	// if (!DamageCauser)
+	// 	return;
 
 	bShowIndicator = true;
-	DamageCauser = NewDamageCauser;
 	DamageIcon->SetVisibility(ESlateVisibility::Visible);
 	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
+	PlayAnimation(FadeOut);
 }
 
 // Hides indicator from view.
