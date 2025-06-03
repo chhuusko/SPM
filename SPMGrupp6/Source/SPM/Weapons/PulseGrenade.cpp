@@ -73,7 +73,7 @@ void APulseGrenade::Explode()
 			if (PrimComp && PrimComp->IsSimulatingPhysics())
 			{
 				PrimComp->AddRadialImpulse(
-					GetActorLocation(),
+					BlinkPoint->GetComponentLocation(),
 					MaxRange,
 					Force, 
 					ERadialImpulseFalloff::RIF_Linear,
