@@ -60,7 +60,10 @@ public:
 	
 	void EquipWeapon(EWeaponType WeaponType);
 	void TryUnlockOrUpgradeWeapon(EWeaponType WeaponType);
+	UFUNCTION(BlueprintCallable)
 	bool IsWeaponUnlocked(EWeaponType WeaponType) const;
+	UFUNCTION(BlueprintCallable)
+	int32 GetWeaponLevel(EWeaponType WeaponType) const;
 	FOnWeaponSwap OnWeaponSwap;
 	FOnUpgrade OnUpgrade;
 	FOnPickup OnPickup;
