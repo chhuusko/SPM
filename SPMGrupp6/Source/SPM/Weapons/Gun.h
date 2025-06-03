@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
+class UNiagaraSystem;
 class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
@@ -58,7 +59,7 @@ protected:
 	FRotator MuzzleRotation;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* MuzzleFlash;
+	UNiagaraSystem* MuzzleFlash;
 
 	UPROPERTY(EditAnywhere, Category="Sounds")
 	USoundBase* MuzzleSound;
@@ -76,7 +77,7 @@ protected:
 	USoundBase* EmptyMagSound;
 	
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* ImpactParticles;
+	UNiagaraSystem* ImpactEffect;
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* ImpactSound;
