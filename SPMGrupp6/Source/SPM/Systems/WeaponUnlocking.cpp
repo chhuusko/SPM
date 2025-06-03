@@ -362,6 +362,11 @@ int32 UWeaponUnlocking::GetUpgradeCost(EWeaponType WeaponType)
 	return Gun ? Gun->GetUpgradeCost(NextLevel) : -1;
 }
 
+AGun* UWeaponUnlocking::GetCorrespondingGun(EWeaponType WeaponType)
+{
+	return *WeaponPool.Find(WeaponType);
+}
+
 void UWeaponUnlocking::OnCurrencyPickup()
 {
 	OnPickup.Broadcast(ResourceComponent->GetResourceAmount());

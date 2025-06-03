@@ -2,6 +2,8 @@
 
 
 #include "Gun.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "SPM/UI/HUDWidget.h"
 #include "SPM/Characters/ShooterPlayerController.h"
 #include "Engine/DamageEvents.h"
@@ -93,7 +95,16 @@ void AGun::Fire()
 		return;
 	}
 	
-	UGameplayStatics::SpawnEmitterAttached(MuzzleFlash,MuzzlePosition,NAME_None,FVector::ZeroVector,FRotator::ZeroRotator,EAttachLocation::SnapToTarget,true);
+	UNiagaraFunctionLibrary::SpawnSystemAttached(
+		MuzzleFlash,
+		MuzzlePosition,
+		NAME_None,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		EAttachLocation::SnapToTarget,
+		true,  
+		true  
+	);
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	
 	FHitResult Hit;
@@ -108,11 +119,15 @@ void AGun::Fire()
 			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 		}
 		
-		UGameplayStatics::SpawnEmitterAtLocation(
-			GetWorld(), 
-			ImpactParticles,
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			ImpactEffect,
 			Hit.Location,
-			ShotDirection.Rotation()			
+			ShotDirection.Rotation(),
+			FVector::OneVector,
+			true,  // AutoDestroy
+			true,  // AutoActivate
+			ENCPoolMethod::None
 		);
 
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);

@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Gun.generated.h"
 
+class UNiagaraSystem;
 class AShooterPlayerController;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFired);
@@ -29,6 +30,9 @@ public:
 	UFUNCTION()
 	float GetCooldownPercentage() const;
 	
+	UFUNCTION(BlueprintCallable)
+	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
+	
 	UPROPERTY(BlueprintAssignable, Category = "Fire")
 	FOnFired OnFired;
 
@@ -37,7 +41,6 @@ public:
 	FOnReload OnReload;
 	FOnAmmoUpdated OnAmmoUpdated;
 	
-	bool IsAbilityUnlocked() const { return AbilityUnlocked; }
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,7 +61,7 @@ protected:
 	FRotator MuzzleRotation;
 
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* MuzzleFlash;
+	UNiagaraSystem* MuzzleFlash;
 
 	UPROPERTY(EditAnywhere, Category="Sounds")
 	USoundBase* MuzzleSound;
@@ -76,7 +79,7 @@ protected:
 	USoundBase* EmptyMagSound;
 	
 	UPROPERTY(EditAnywhere)
-	UParticleSystem* ImpactParticles;
+	UNiagaraSystem* ImpactEffect;
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* ImpactSound;
