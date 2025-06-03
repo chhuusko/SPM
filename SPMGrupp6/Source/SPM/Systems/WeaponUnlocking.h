@@ -57,24 +57,37 @@ class SPM_API UWeaponUnlocking : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UWeaponUnlocking();
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 	void EquipWeapon(EWeaponType WeaponType);
 	void TryUnlockOrUpgradeWeapon(EWeaponType WeaponType);
+	
 	UFUNCTION(BlueprintCallable)
 	bool IsWeaponUnlocked(EWeaponType WeaponType) const;
 	UFUNCTION(BlueprintCallable)
 	int32 GetWeaponLevel(EWeaponType WeaponType) const;
+	UFUNCTION(BlueprintCallable)
+	bool CanAffordUpgrade(EWeaponType WeaponType);
+	UFUNCTION(BlueprintCallable)
+	int32 GetUpgradeCost(EWeaponType WeaponType);
+	UFUNCTION(BlueprintCallable)
+	AGun* GetCorrespondingGun(EWeaponType WeaponType);
+	
+	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnWeaponSwap OnWeaponSwap;
+	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnUpgrade OnUpgrade;
+	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnPickup OnPickup;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	EWeaponType CurrentWeapon = EWeaponType::Pistol;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	EWeaponType LastWeapon = EWeaponType::Pistol;
+	
 	TMap<EWeaponType, AGun*> GetWeaponPool() { return WeaponPool; }
-	UFUNCTION()
-	bool CanAffordUpgrade(EWeaponType WeaponType);
-
-	UFUNCTION()
-	int32 GetUpgradeCost(EWeaponType WeaponType);
-
+	
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -96,10 +109,6 @@ protected:
 	void SwapForward(const FInputActionInstance& Instance);
 	void SwapBackward(const FInputActionInstance& Instance);
 	void HotSwap(const FInputActionInstance& Instance);
-	
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
 	UPROPERTY()
@@ -188,7 +197,4 @@ private:
 	UInputAction* IA_SwapForward;
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* IA_SwapBackward;
-	
-	EWeaponType CurrentWeapon = EWeaponType::Pistol;
-	EWeaponType LastWeapon = EWeaponType::Pistol;
 };
