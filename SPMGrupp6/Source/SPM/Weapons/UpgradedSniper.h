@@ -30,6 +30,6 @@ private:
 	
 	float ShotRadius = 16;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Effects")
 	UNiagaraSystem* SniperBulletEffect;
 };

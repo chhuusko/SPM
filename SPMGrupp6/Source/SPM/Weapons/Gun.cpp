@@ -94,17 +94,32 @@ void AGun::Fire()
 		ReloadAutomatically();
 		return;
 	}
-	
-	UNiagaraFunctionLibrary::SpawnSystemAttached(
-		MuzzleFlash,
-		MuzzlePosition,
-		NAME_None,
-		FVector::ZeroVector,
-		FRotator::ZeroRotator,
-		EAttachLocation::SnapToTarget,
-		true,  
-		true  
-	);
+
+	if (bHasUpgradedEffects)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(
+			UpgradedMuzzleFlash,
+			MuzzlePosition,
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::SnapToTarget,
+			true,  
+			true
+		);
+	}
+	else
+	{
+		UGameplayStatics::SpawnEmitterAttached(
+			NormalMuzzleFlash,
+			MuzzlePosition,
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::SnapToTarget,
+			true
+		);
+	}
 	UGameplayStatics::SpawnSoundAttached(MuzzleSound, MuzzlePosition, TEXT("MuzzlePosition"));
 	
 	FHitResult Hit;
@@ -118,17 +133,29 @@ void AGun::Fire()
 		{
 			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
 		}
-		
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			ImpactEffect,
-			Hit.Location,
-			ShotDirection.Rotation(),
-			FVector::OneVector,
-			true,  // AutoDestroy
-			true,  // AutoActivate
-			ENCPoolMethod::None
-		);
+
+		if (bHasUpgradedEffects)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				UpgradedImpactEffect,
+				Hit.Location,
+				ShotDirection.Rotation(),
+				FVector::OneVector,
+				true,
+				true,
+				ENCPoolMethod::None
+			);
+		}
+		else
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(
+				GetWorld(),
+				NormalImpactEffect,
+				Hit.Location,
+				ShotDirection.Rotation()
+			);
+		}
 
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
 
