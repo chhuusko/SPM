@@ -51,9 +51,9 @@ private:
 	int GridLength = 32;
 	
 	bool HasObjectWithin(FNode* Node);
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FVector AreaPosition;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 	FVector AreaSize;
 	UPROPERTY(EditDefaultsOnly)
 	int MaxDepth;

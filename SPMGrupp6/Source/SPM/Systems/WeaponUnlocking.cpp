@@ -386,6 +386,11 @@ bool UWeaponUnlocking::IsWeaponUnlocked(EWeaponType WeaponType) const
 	return State && State->bUnlocked;
 }
 
+int32 UWeaponUnlocking::GetWeaponLevel(EWeaponType WeaponType) const
+{
+	const FWeaponState* State = WeaponStates.Find(WeaponType);
+	return State ? State->Level : 0;
+}
 
 // Called when the game starts
 void UWeaponUnlocking::BeginPlay()
