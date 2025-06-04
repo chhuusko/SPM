@@ -20,11 +20,20 @@ ASVOGrid::ASVOGrid()
 // Called when the game starts or when spawned
 void ASVOGrid::BeginPlay()
 {
-	//if (!GridInstance)
-	//{
-	GridInstance = this;
-	//}
-	CreateStandardGrid();
+	if (GridInstance)
+	{
+		if (GridInstance->GetSize() != this->GetSize()){
+			GridInstance = this;
+			CreateStandardGrid();
+			UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Destroyed %s : %s"), *GridInstance->GetSize().ToString(), *this->GetSize().ToString());
+		}
+	}
+	if (!GridInstance)
+	{
+		GridInstance = this;
+		CreateStandardGrid();
+	}
+	
 	Super::BeginPlay();
 }
 
@@ -36,7 +45,7 @@ void ASVOGrid::Tick(float DeltaTime)
 
 void ASVOGrid::CreateStandardGrid()
 {
-#if WITH_EDITOR
+	
 	Quarter = AreaSize.X / GridLength;
 	GridArray.SetNum(GridLength+1);
 	for (int x = -1*GridLength; x <= GridLength; x += 2) {
@@ -51,7 +60,6 @@ void ASVOGrid::CreateStandardGrid()
 			}
 		}
 	}
-#endif
 }
 
 void ASVOGrid::CreateGrid()
