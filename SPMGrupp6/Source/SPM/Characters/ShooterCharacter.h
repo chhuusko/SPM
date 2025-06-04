@@ -236,5 +236,6 @@ private:
 	float SlideDuration = 0.3;
 	FTimerHandle StopSlideTimerHandle;
 
-
+	UPROPERTY(EditDefaultsOnly)
+	UForceFeedbackEffect* ForceFeedbackEffect;
 };

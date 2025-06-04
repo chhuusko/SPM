@@ -190,6 +190,8 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 		DetachFromControllerPendingDestroy();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	PlayerController->ClientPlayForceFeedback(ForceFeedbackEffect);
 	
 	return DamageToApply;
 }
