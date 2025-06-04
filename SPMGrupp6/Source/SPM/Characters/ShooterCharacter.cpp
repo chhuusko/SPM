@@ -234,12 +234,6 @@ void AShooterCharacter::UseJetpack()
 		JetpackCharge = 0;
 	}
 	
-	//Now set in Tick of moving on ground
-	//GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
-
-    
-    //GetWorld()->GetTimerManager().SetTimer(JetpackStopShowingVFXHandle, this, &AShooterCharacter::StopShowingJetpackVFX, 0.0f, false);
-
 	//UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 	
 }
@@ -262,21 +256,24 @@ void AShooterCharacter::SetCrouch(bool value)
 	if (!MovementComponent->IsMovingOnGround()) return;
 	
 	bCrouching = value;
-	/*if (bCrouching)
+	if (bCrouching)
 	{
-		UCapsuleComponent* Capsule = GetCapsuleComponent();
-		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
 		MovementComponent->MaxWalkSpeed = CrouchSpeed;
+		/*UCapsuleComponent* Capsule = GetCapsuleComponent();
+		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
+		
 		
 		if (bSprinting)
 		{
 			StartSlide();
-		}
+		}*/
 	}
 	else
 	{
+		/*
 		UCapsuleComponent* Capsule = GetCapsuleComponent();
 		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+		*/
 
 		if (bSprinting)
 		{
@@ -287,8 +284,8 @@ void AShooterCharacter::SetCrouch(bool value)
 			MovementComponent->MaxWalkSpeed = WalkSpeed;
 		}
 		
-		//Check for obstacles immeditaely above player so they don't get stuck 
-	}*/
+		//Check for obstacles immediately above player so they don't get stuck 
+	}
 }
 
 void AShooterCharacter::StartSlide()
@@ -312,8 +309,7 @@ void AShooterCharacter::StopSlideKeepCrouching()
 {
 	bCanMove = true;
 	bSliding = false;
-
-	//Maybe store PrevSpeed or something?
+	
 	if (bSprinting)
 	{
 		MovementComponent->MaxWalkSpeed = SprintSpeed;
