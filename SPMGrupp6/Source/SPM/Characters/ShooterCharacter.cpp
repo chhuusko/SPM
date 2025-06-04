@@ -140,10 +140,10 @@ void AShooterCharacter::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
 	}
 
-	if (bSliding)
+	/*if (bSliding)
 	{
 		AddMovementInput(GetActorForwardVector() * 1);
-	}
+	}*/
 }
 
 // Called to bind functionality to input
@@ -262,7 +262,7 @@ void AShooterCharacter::SetCrouch(bool value)
 	if (!MovementComponent->IsMovingOnGround()) return;
 	
 	bCrouching = value;
-	if (bCrouching)
+	/*if (bCrouching)
 	{
 		UCapsuleComponent* Capsule = GetCapsuleComponent();
 		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
@@ -288,7 +288,7 @@ void AShooterCharacter::SetCrouch(bool value)
 		}
 		
 		//Check for obstacles immeditaely above player so they don't get stuck 
-	}
+	}*/
 }
 
 void AShooterCharacter::StartSlide()
