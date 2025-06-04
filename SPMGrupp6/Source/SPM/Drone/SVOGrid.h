@@ -37,6 +37,7 @@ public:
 	void TestDraw(FVector positon, FVector Size, FColor color);
 	virtual void Tick(float DeltaTime) override;
 private:
+	UFUNCTION(CallInEditor, Category = "CreateGrid")
 	void CreateStandardGrid();
 	// Temp Grid
 	
