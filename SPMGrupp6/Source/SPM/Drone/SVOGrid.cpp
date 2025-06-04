@@ -36,6 +36,7 @@ void ASVOGrid::Tick(float DeltaTime)
 
 void ASVOGrid::CreateStandardGrid()
 {
+#if WITH_EDITOR
 	Quarter = AreaSize.X / GridLength;
 	GridArray.SetNum(GridLength+1);
 	for (int x = -1*GridLength; x <= GridLength; x += 2) {
@@ -50,7 +51,7 @@ void ASVOGrid::CreateStandardGrid()
 			}
 		}
 	}
-	
+#endif
 }
 
 void ASVOGrid::CreateGrid()

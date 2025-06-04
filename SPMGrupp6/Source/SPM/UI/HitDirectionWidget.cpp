@@ -65,6 +65,7 @@ void UHitDirectionWidget::HideIndicator()
 // Updates the rotation of the indicator to show the damage causer's location.
 void UHitDirectionWidget::UpdateIndicator()
 {
+	if (DamageCauser == nullptr) return; 
 	if (GameInstance && GameInstance->HasMatchEnded())
 	{
 		bShowIndicator = false;
