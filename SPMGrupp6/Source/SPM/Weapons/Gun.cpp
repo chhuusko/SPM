@@ -78,7 +78,7 @@ void AGun::Fire()
 	AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner());
 	
 	if (bIsReloading || !bIsWeaponEquipped || Player->IsDead()) return;
-	if (CurrentTime - LastFireTime < FireRate) return;
+	if (CurrentTime - LastFireTime < FireRate-0.1) return;
 	
 	LastFireTime = CurrentTime;
 	
@@ -277,6 +277,7 @@ void AGun::Reload()
 		GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 		// Can not shoot while reloading.
 		bCanFire = false;
+		StopAutoFire();
 		UGameplayStatics::SpawnSoundAttached(ReloadSound, RootComponent);
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ResetAmmo, ReloadTime, false);
 		OnReload.Broadcast(ReloadTime);
@@ -292,7 +293,13 @@ void AGun::ResetAmmo()
 	// Continue shooting after reload if the player is still holding trigger.
 	if (bIsTriggerHeld && bIsAutomatic)
 	{
-		StartAutomaticFireSequence();
+		GetWorld()->GetTimerManager().SetTimer(
+			FireRateTimer,
+			this,
+			&AGun::StartAutomaticFireSequence,
+			0.05f,
+			false
+		);
 	}
 }
 void AGun::StopReload()
@@ -429,6 +436,7 @@ void AGun::StopPendingActions()
 	StopReload();
 	ReleaseTrigger();
 	StopWeaponAbility();
+	GetWorld()->GetTimerManager().ClearTimer(FireRateTimer);
 	bIsWeaponEquipped = false;
 }
 void AGun::SetWeaponEquipped(const bool bIsEquipped)
