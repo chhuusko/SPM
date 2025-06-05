@@ -130,7 +130,7 @@ private:
 	void UnlockingWeapon(EWeaponType WeaponType, FWeaponState& State);
 	void UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponState& State, int32 UnlockCost);
 	void SpawnAndAttachWeapon(const TSubclassOf<AGun>& WeaponClass);
-	void UnlockingWeaponFailed(const AGun* Gun) const;
+	void UnlockingWeaponFailed(const AGun* Gun, EWeaponType State);
 	
 	void UpgradingWeapon(EWeaponType WeaponType, FWeaponState& State);
 	void UpgradingWeaponSuccess(EWeaponType WeaponType, AGun* Gun, FWeaponState& State, int32 UpgradeCost);

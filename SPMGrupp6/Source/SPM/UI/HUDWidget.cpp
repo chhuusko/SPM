@@ -6,7 +6,6 @@
 #include "OptionsMenuWidget.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
-#include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"

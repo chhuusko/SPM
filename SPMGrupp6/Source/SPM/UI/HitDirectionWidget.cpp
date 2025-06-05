@@ -38,7 +38,6 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 	}
 	
 	DamageCauser = NewDamageCauser;
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *DamageCauser->GetName());
 	
 	if (DamageCausers.Contains(DamageCauser))
 	{
