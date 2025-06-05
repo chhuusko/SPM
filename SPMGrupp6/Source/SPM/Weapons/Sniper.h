@@ -50,4 +50,5 @@ private:
 	void SetCameraFOV(float amount);
 	void ApplyZoomInSensitivity();
 	void DisableZoomInSensitivity();
+	void ResetAbilityCooldown();
 };

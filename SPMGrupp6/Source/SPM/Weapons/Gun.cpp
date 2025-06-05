@@ -355,9 +355,11 @@ void AGun::WeaponAbility()
 {
 	if (!IsAbilityOnCooldown())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Ability not on cooldown"));
 		RemainingAbilityCooldown = GetAbilityCooldown();
 		if (AbilityUnlocked)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("AbilityUnlocked"));
 			// If player is invisible, make player visible.
 			if (AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner()))
 			{

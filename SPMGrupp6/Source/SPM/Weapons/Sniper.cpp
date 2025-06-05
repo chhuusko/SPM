@@ -10,6 +10,8 @@ void ASniper::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetAbilityCooldown(ScopeToEyeDuration);
+
 	// Save the DefaultFOV of the camera.
 	if (PlayerController && PlayerController->PlayerCameraManager)
 	{
@@ -19,8 +21,10 @@ void ASniper::BeginPlay()
 
 void ASniper::WeaponAbility()
 {
+	Super::WeaponAbility();
 	// Starts timer to zoom in.
 	GetWorld()->GetTimerManager().SetTimer(AimTimerHandle, this, &ASniper::ZoomIn, ScopeToEyeDuration, false);
+	SetAbilityCooldown(true);
 }
 
 void ASniper::StopWeaponAbility()
