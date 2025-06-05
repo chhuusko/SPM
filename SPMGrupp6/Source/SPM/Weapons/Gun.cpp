@@ -39,6 +39,8 @@ void AGun::BeginPlay()
 	
 	MuzzleLocation = MuzzlePosition->GetComponentLocation();
 	MuzzleRotation = MuzzlePosition->GetComponentRotation();
+
+	SaveGunMaterials();
 }
 
 // Called every frame
@@ -529,5 +531,23 @@ void AGun::ReloadAutomatically()
 		GetWorld()->GetTimerManager().SetTimer(EnableEmptyMagTimer, this, &AGun::EnableCanPlayEmptyMagSound, FireRate, false);
 	}
 	Reload();
+}
+
+void AGun::SaveGunMaterials()
+{
+	for (int i=0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		OriginalMaterials.Add(GetMesh()->GetMaterial(i));
+	}
+}
+void AGun::ToggleInvisibility(bool bShouldBeInvisible)
+{
+	if (USkeletalMeshComponent* GunMesh = GetMesh())
+	{
+		for (int i=0; i < GetMesh()->GetNumMaterials(); i++)
+		{
+			bShouldBeInvisible ? GunMesh->SetMaterial(i, InvisibilityMaterial) : GunMesh->SetMaterial(i, OriginalMaterials[i]) ;
+		}
+	}
 }
 

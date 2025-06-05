@@ -4,6 +4,7 @@
 #include "HUDWidget.h"
 #include "EnhancedInputComponent.h"
 #include "OptionsMenuWidget.h"
+#include "Components/HorizontalBox.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "Components/Image.h"
@@ -17,6 +18,8 @@
 void UHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
+
+	InitializeWeaponBoxMap();
 
 	// First weapon equipped on start is the auto pistol.
 	EquippedWeaponBar = AutoPistolUnlockBar;
@@ -82,6 +85,14 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		UpdateWeaponBars(InDeltaTime);
 	}
+}
+
+void UHUDWidget::InitializeWeaponBoxMap()
+{
+	WeaponBoxMap.Add(EWeaponType::Pistol, AutoPistolLevels);
+	WeaponBoxMap.Add(EWeaponType::Shotgun, ShotgunLevels);
+	WeaponBoxMap.Add(EWeaponType::AssaultRifle, AssaultRifleLevels);
+	WeaponBoxMap.Add(EWeaponType::SniperRifle, SniperRifleLevels);
 }
 
 void UHUDWidget::CreateReloadTimeline()
@@ -525,6 +536,7 @@ void UHUDWidget::RemoveAbilityUnlockedPrompt()
 void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool bAbilityUnlocked)
 {
 	GetGun();
+	UpdateWeaponLevels(Weapon);
 	UpdateCurrencyText(NewCurrencyValue);
 	UpdateWeaponUpgradeUI();
 
@@ -536,6 +548,25 @@ void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool
 		if (Weapon != EWeaponType::SniperRifle)
 		{
 			ShowAbilityUnlockedPrompt();
+		}
+	}
+}
+
+UHorizontalBox* UHUDWidget::GetWeaponLevels(EWeaponType Weapon)
+{
+	return WeaponBoxMap.FindRef(Weapon);
+}
+
+// Update color of images displaying level reached.
+void UHUDWidget::UpdateWeaponLevels(EWeaponType Weapon)
+{
+	if (UHorizontalBox* Box = GetWeaponLevels(Weapon))
+	{
+		int32 Level = WeaponUnlocking->GetWeaponLevel(Weapon);
+
+		if (UImage* Image = Cast<UImage>(Box->GetChildAt(Level - 1)))
+		{
+			Image->SetColorAndOpacity(WeaponLevelReachedColor);
 		}
 	}
 }
