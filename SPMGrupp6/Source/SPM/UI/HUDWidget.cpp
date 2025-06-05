@@ -568,13 +568,6 @@ void UHUDWidget::UpdateWeaponLevels(EWeaponType Weapon)
 		{
 			Image->SetColorAndOpacity(WeaponLevelReachedColor);
 		}
-		// for (int i = 0; i < Level; i++)
-		// {
-		// 	if (UImage* Image = Cast<UImage>(Box->GetChildAt(i)))
-		// 	{
-		// 		Image->SetColorAndOpacity(WeaponLevelReachedColor);
-		// 	}
-		// }
 	}
 }
 
