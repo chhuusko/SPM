@@ -51,7 +51,13 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
+	void ToggleInvisibilityEffect(bool bShouldBeInvisible);
 	
+	UPROPERTY()
+	TArray<UMaterialInterface*> OriginalMaterials;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* InvisibilityMaterial;
 	
 	void Heal(int HealAmount);
 	// Called every frame
@@ -163,14 +169,6 @@ public:
 
 	UFUNCTION()
 	void SetIsInvisible(const bool bInvisible);
-
-	UFUNCTION(BlueprintCallable)
-	bool GetTryingToUncrouch();
-
-	UPROPERTY(EditDefaultsOnly)
-	float UnCrouchCheckAboveheadHeight;
-	UPROPERTY(EditDefaultsOnly)
-	float UnCrouchCheckAboveheadWidth;
 	
 private:
 	void SetPlayerController();
@@ -243,13 +241,12 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchSpeed = 300;
-	void UnCrouch();
-	bool bTryingToUncrouch = false;
-
-	
 	float SlideDuration = 0.3;
 	FTimerHandle StopSlideTimerHandle;
 
 	UPROPERTY(EditDefaultsOnly)
 	UForceFeedbackEffect* ForceFeedbackEffect;
+
+	void SaveCharacterMaterials();
+
 };

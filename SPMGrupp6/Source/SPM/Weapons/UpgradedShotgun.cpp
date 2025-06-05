@@ -72,6 +72,7 @@ void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) con
 		// Change player mesh visibility for other players
 		Player->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
 		Player->GetMesh()->SetOwnerNoSee(false);
+		Player->ToggleInvisibilityEffect(bShouldBeInvisible);
 
 		// Change gun mesh visibility for other players
 		UWeaponUnlocking* WeaponUnlocking = Cast<UWeaponUnlocking>(Player->GetComponentByClass(UWeaponUnlocking::StaticClass()));
@@ -82,6 +83,7 @@ void AUpgradedShotgun::ChangePlayerVisibility(const bool bShouldBeInvisible) con
 			{
 				Weapon->GetMesh()->SetOnlyOwnerSee(bShouldBeInvisible);
 				Weapon->GetMesh()->SetOwnerNoSee(false);
+				Weapon->ToggleInvisibilityEffect(bShouldBeInvisible);
 			}
 		}
 		if (TurnInvisibleFX && TurnVisibleFX)
