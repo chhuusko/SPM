@@ -51,7 +51,7 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
-	void ToggleInvisibility(bool bShouldBeInvisible);
+	void ToggleInvisibilityEffect(bool bShouldBeInvisible);
 	
 	UPROPERTY()
 	TArray<UMaterialInterface*> OriginalMaterials;

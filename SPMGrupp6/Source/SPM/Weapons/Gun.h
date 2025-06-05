@@ -41,7 +41,7 @@ public:
 	FOnReload OnReload;
 	FOnAmmoUpdated OnAmmoUpdated;
 
-	void ToggleInvisibility(bool bShouldBeInvisible);
+	void ToggleInvisibilityEffect(bool bShouldBeInvisible);
 	
 	UPROPERTY()
 	TArray<UMaterialInterface*> OriginalMaterials;

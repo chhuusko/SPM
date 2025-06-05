@@ -180,7 +180,10 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 	OnHealthUpdated.Broadcast(GetHealthPercent());
 	
 	// If player is invisible, make player visible.
-	CancelInvisibility();
+	if (GetIsInvisible())
+	{
+		CancelInvisibility();
+	}
 	
 	if(IsDead())
 	{
@@ -486,7 +489,7 @@ void AShooterCharacter::SaveCharacterMaterials()
 		OriginalMaterials.Add(GetMesh()->GetMaterial(i));
 	}
 }
-void AShooterCharacter::ToggleInvisibility(bool bShouldBeInvisible)
+void AShooterCharacter::ToggleInvisibilityEffect(bool bShouldBeInvisible)
 {
 	if (USkeletalMeshComponent* PlayerMesh = GetMesh())
 	{

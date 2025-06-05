@@ -365,7 +365,10 @@ void AGun::WeaponAbility()
 			// If player is invisible, make player visible.
 			if (AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner()))
 			{
-				Player->CancelInvisibility();
+				if (Player->GetIsInvisible())
+				{
+					Player->CancelInvisibility();
+				}
 			}
 			GetWorldTimerManager().SetTimer(AbilityCooldownTimerHandle, this, &AGun::UpdateWeaponAbilityCooldown, GetAbilityCooldown() / CooldownUpdateAmount, true);
 		}
@@ -540,7 +543,7 @@ void AGun::SaveGunMaterials()
 		OriginalMaterials.Add(GetMesh()->GetMaterial(i));
 	}
 }
-void AGun::ToggleInvisibility(bool bShouldBeInvisible)
+void AGun::ToggleInvisibilityEffect(bool bShouldBeInvisible)
 {
 	if (USkeletalMeshComponent* GunMesh = GetMesh())
 	{
