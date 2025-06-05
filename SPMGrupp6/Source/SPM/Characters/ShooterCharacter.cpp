@@ -140,10 +140,10 @@ void AShooterCharacter::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
 	}
 
-	if (bSliding)
+	/*if (bSliding)
 	{
 		AddMovementInput(GetActorForwardVector() * 1);
-	}
+	}*/
 }
 
 // Called to bind functionality to input
@@ -190,6 +190,8 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Dama
 		DetachFromControllerPendingDestroy();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
+	PlayerController->ClientPlayForceFeedback(ForceFeedbackEffect);
 	
 	return DamageToApply;
 }
@@ -234,12 +236,6 @@ void AShooterCharacter::UseJetpack()
 		JetpackCharge = 0;
 	}
 	
-	//Now set in Tick of moving on ground
-	//GetWorld()->GetTimerManager().SetTimer(JetpackRechargeAfterSecondsTimerHandle, this, &AShooterCharacter::SetCanRechargeJetpack, JetpackDelayUntilRecharge, false);
-
-    
-    //GetWorld()->GetTimerManager().SetTimer(JetpackStopShowingVFXHandle, this, &AShooterCharacter::StopShowingJetpackVFX, 0.0f, false);
-
 	//UE_LOG(LogTemp, Warning, TEXT("Jetpack charge: %f"), JetpackCharge);
 	
 }
@@ -264,19 +260,22 @@ void AShooterCharacter::SetCrouch(bool value)
 	bCrouching = value;
 	if (bCrouching)
 	{
-		UCapsuleComponent* Capsule = GetCapsuleComponent();
-		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
 		MovementComponent->MaxWalkSpeed = CrouchSpeed;
+		/*UCapsuleComponent* Capsule = GetCapsuleComponent();
+		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.7f));
+		
 		
 		if (bSprinting)
 		{
 			StartSlide();
-		}
+		}*/
 	}
 	else
 	{
+		/*
 		UCapsuleComponent* Capsule = GetCapsuleComponent();
 		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+		*/
 
 		if (bSprinting)
 		{
@@ -287,7 +286,7 @@ void AShooterCharacter::SetCrouch(bool value)
 			MovementComponent->MaxWalkSpeed = WalkSpeed;
 		}
 		
-		//Check for obstacles immeditaely above player so they don't get stuck 
+		//Check for obstacles immediately above player so they don't get stuck 
 	}
 }
 
@@ -312,8 +311,7 @@ void AShooterCharacter::StopSlideKeepCrouching()
 {
 	bCanMove = true;
 	bSliding = false;
-
-	//Maybe store PrevSpeed or something?
+	
 	if (bSprinting)
 	{
 		MovementComponent->MaxWalkSpeed = SprintSpeed;
