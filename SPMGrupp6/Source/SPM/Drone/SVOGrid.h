@@ -32,7 +32,7 @@ public:
 	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);
 	FVector GetSize() const{return AreaSize;}
-	TArray<TArray<TArray<FNode*>>> GridArray;
+	
 	static ASVOGrid* GetInstance(UWorld* World){return GridInstance;};
 	void CreateGrid();
 	void TestDraw(FVector positon, FVector Size, FColor color);
@@ -46,7 +46,7 @@ private:
 	float Quarter;
 	
 	// Declare and initialize all to false
-	
+	TArray<TArray<TArray<FNode*>>> GridArray;
 	TArray<FVector> VisitedNodesArray;
 	FOctNode* RootNode;
 	UPROPERTY(EditDefaultsOnly)

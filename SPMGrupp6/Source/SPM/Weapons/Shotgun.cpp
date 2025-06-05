@@ -136,14 +136,14 @@ void AShotgun::Fire()
 	if (bShouldPlayEffects)
 	{
 		UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, Hit.Location);
-	}
 
-	if (LastHitActor)
-	{
-		OnHit.Broadcast(LastHitActor);
-		if (Cast<APawn>(LastHitActor))
+		if (LastHitActor)
 		{
-			UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			OnHit.Broadcast(LastHitActor);
+			if (Cast<APawn>(LastHitActor))
+			{
+				UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			}
 		}
 	}
 	

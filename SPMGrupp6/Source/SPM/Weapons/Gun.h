@@ -40,14 +40,6 @@ public:
 	FOnCooldownUpdated OnCooldownUpdated;
 	FOnReload OnReload;
 	FOnAmmoUpdated OnAmmoUpdated;
-
-	void ToggleInvisibility(bool bShouldBeInvisible);
-	
-	UPROPERTY()
-	TArray<UMaterialInterface*> OriginalMaterials;
-
-	UPROPERTY(EditDefaultsOnly)
-	UMaterialInterface* InvisibilityMaterial;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -61,7 +53,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* Mesh;
-	
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USceneComponent* MuzzlePosition;
@@ -275,7 +266,6 @@ private:
 
 
 	void StartAutomaticFireSequence();
-	void SaveGunMaterials();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -298,6 +288,5 @@ public:
 	void EnableCanPlayEmptyMagSound();
 	void HandleNextAutoFire();
 	void StopAutoFire();
-	int32 GetBulletsLeft() const;
-	
+	int32 GetBulletsLeft() const; 
 };

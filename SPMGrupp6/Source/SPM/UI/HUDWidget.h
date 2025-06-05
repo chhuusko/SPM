@@ -92,18 +92,6 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* SniperRifleAbilityCooldown;
-	
-	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* AutoPistolLevels;
-
-	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* ShotgunLevels;
-	
-	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* AssaultRifleLevels;
-
-	UPROPERTY(meta = (BindWidget))
-	class UHorizontalBox* SniperRifleLevels;
 
 	UPROPERTY(meta = (BindWidget))
 	class UImage* HitMarker;
@@ -139,8 +127,6 @@ public:
 
 private:
 	virtual void NativeConstruct() override;
-
-	void InitializeWeaponBoxMap();
 
 	UFUNCTION()
 	void SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor);
@@ -205,10 +191,6 @@ private:
 	
 	UFUNCTION()
 	void UpdateWeaponUpgradeUI();
-
-	void UpdateWeaponLevels(EWeaponType Weapon);
-
-	UHorizontalBox* GetWeaponLevels(EWeaponType Weapon);
 
 	UFUNCTION()
 	void UpdateCooldownBarColor(EWeaponType Weapon);
@@ -287,9 +269,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	FLinearColor CantAffordColor;
-
-	UPROPERTY(EditDefaultsOnly)
-	FLinearColor WeaponLevelReachedColor;
 
 	UPROPERTY()
 	AShooterCharacter* PlayerCharacter;
@@ -374,7 +353,4 @@ private:
 	UInputMappingContext* WeaponUpgradeMappingContext;
 
 	TSet<class UProgressBar*> BarsCurrentlyUpgrading;
-
-	UPROPERTY()
-	TMap<EWeaponType, UHorizontalBox*> WeaponBoxMap;
 };
