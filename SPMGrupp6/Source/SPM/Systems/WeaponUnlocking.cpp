@@ -387,6 +387,7 @@ void UWeaponUnlocking::GetResourceComponent()
 	ResourceComponent = CharacterOwner->FindComponentByClass<UResources>();
 	if (ResourceComponent)
 	{
+		ResourceComponent->ResourceModified.Clear();
 		ResourceComponent->ResourceModified.AddDynamic(this, &UWeaponUnlocking::OnCurrencyPickup);
 	}
 	else
