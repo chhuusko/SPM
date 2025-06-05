@@ -73,6 +73,7 @@ void AShotgun::Fire()
 		
 		if(bSuccess)
 		{
+			bShouldPlayEffects = true;
 			if (bDebugWeapon)
 			{
 				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
