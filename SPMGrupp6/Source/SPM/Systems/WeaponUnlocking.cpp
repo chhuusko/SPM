@@ -147,8 +147,18 @@ void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponSta
 	State.bUnlocked = true;
 	State.Level = 1;
 	EquipWeapon(WeaponType);
-	OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
 
+	// Broadcast the on upgrade delegate.
+	// Sniper rifle has its ability (scoping) unlocked immediately.
+	if (WeaponType == EWeaponType::SniperRifle)
+	{
+		OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), true);
+	}
+	else
+	{
+		OnUpgrade.Broadcast(WeaponType, ResourceComponent->GetResourceAmount(), false);
+	}
+	
 	if (CharacterOwner)
 	{
 		CharacterOwner->OnWeaponUnlocked(WeaponType);
