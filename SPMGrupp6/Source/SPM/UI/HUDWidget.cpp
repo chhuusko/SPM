@@ -59,12 +59,14 @@ void UHUDWidget::NativeConstruct()
 			Input->BindAction(StartedUpgrade2Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeShotgun);
 			Input->BindAction(StartedUpgrade3Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeAssaultRifle);
 			Input->BindAction(StartedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::StartUpgradeSniperRifle);
-			Input->BindAction(StoppedUpgrade1Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
-			Input->BindAction(StoppedUpgrade2Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
-			Input->BindAction(StoppedUpgrade3Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
-			Input->BindAction(StoppedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::UnlockTimelineFinished);
+			Input->BindAction(StoppedUpgrade1Action, ETriggerEvent::Triggered, this, &UHUDWidget::StopUpgradeAutoPistol);
+			Input->BindAction(StoppedUpgrade2Action, ETriggerEvent::Triggered, this, &UHUDWidget::StopUpgradeShotgun);
+			Input->BindAction(StoppedUpgrade3Action, ETriggerEvent::Triggered, this, &UHUDWidget::StopUpgradeAssaultRifle);
+			Input->BindAction(StoppedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::StopUpgradeSniperRifle);
 		}
 	}
+
+	BarsCurrentlyUpgrading = TSet<UProgressBar*>();
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -75,6 +77,11 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (!bJetpackFuelFull)
 	{
 		UpdateJetpackCooldown();
+	}
+
+	if (!BarsCurrentlyUpgrading.IsEmpty())
+	{
+		UpdateWeaponBars(InDeltaTime);
 	}
 }
 
@@ -525,7 +532,12 @@ void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool
 	if (bAbilityUnlocked)
 	{
 		UpdateCooldownBarColor(Weapon);
-		ShowAbilityUnlockedPrompt();
+
+		// Sniper doesn't have an ability.
+		if (Weapon != EWeaponType::SniperRifle)
+		{
+			ShowAbilityUnlockedPrompt();
+		}
 	}
 }
 
@@ -661,22 +673,38 @@ void UHUDWidget::DashCooldownFinished()
 
 void UHUDWidget::StartUpgradeAutoPistol(const FInputActionInstance& Instance)
 {
-	StartUnlockTimeline(EWeaponType::Pistol);
+	// StartUnlockTimeline(EWeaponType::Pistol);
+	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::Pistol));
+	StartUpgrade(EWeaponType::Pistol);
 }
 
 void UHUDWidget::StartUpgradeShotgun(const FInputActionInstance& Instance)
 {
-	StartUnlockTimeline(EWeaponType::Shotgun);
+	// StartUnlockTimeline(EWeaponType::Shotgun);
+	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::Shotgun));
+	StartUpgrade(EWeaponType::Shotgun);
 }
 
 void UHUDWidget::StartUpgradeAssaultRifle(const FInputActionInstance& Instance)
 {
-	StartUnlockTimeline(EWeaponType::AssaultRifle);
+	// StartUnlockTimeline(EWeaponType::AssaultRifle);
+	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::AssaultRifle));
+	StartUpgrade(EWeaponType::AssaultRifle);
 }
 
 void UHUDWidget::StartUpgradeSniperRifle(const FInputActionInstance& Instance)
 {
-	StartUnlockTimeline(EWeaponType::SniperRifle);
+	// StartUnlockTimeline(EWeaponType::SniperRifle);
+	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::SniperRifle));
+	StartUpgrade(EWeaponType::SniperRifle);
+}
+
+void UHUDWidget::StartUpgrade(EWeaponType Weapon)
+{
+	if (WeaponUnlocking->CanAffordUpgrade(Weapon))
+	{
+		BarsCurrentlyUpgrading.Add(GetUnlockBar(Weapon));
+	}
 }
 
 void UHUDWidget::StartUnlockTimeline(EWeaponType Weapon)
@@ -720,3 +748,62 @@ void UHUDWidget::UnlockTimelineFinished()
 		UnlockBar->SetPercent(0.f);
 	}
 }
+
+void UHUDWidget::UpdateWeaponBars(float InDeltaTime)
+{
+	for (UProgressBar* Bar : BarsCurrentlyUpgrading)
+	{
+		Bar->SetPercent(FMath::Clamp(Bar->GetPercent() + InDeltaTime / .5f, 0.f, 1.f));
+
+		if (Bar->GetPercent() >= 1.f)
+		{
+			// Bar->SetPercent(0.f);
+			// BarsCurrentlyUpgrading.Remove(Bar);
+
+			// Remove the bar next tick to avoid stuttering issues.
+			GetWorld()->GetTimerManager().SetTimerForNextTick([this, Bar]()
+			{
+				StopUpgrade(Bar);
+			});
+		}
+	}
+}
+
+void UHUDWidget::StopUpgradeAutoPistol()
+{
+	UProgressBar* Bar = GetUnlockBar(EWeaponType::Pistol);
+	// Bar->SetPercent(0.f);
+	// BarsCurrentlyUpgrading.Remove(Bar);
+	StopUpgrade(Bar);
+}
+
+void UHUDWidget::StopUpgradeShotgun()
+{
+	UProgressBar* Bar = GetUnlockBar(EWeaponType::Shotgun);
+	// Bar->SetPercent(0.f);
+	// BarsCurrentlyUpgrading.Remove(Bar);
+	StopUpgrade(Bar);
+}
+
+void UHUDWidget::StopUpgradeAssaultRifle()
+{
+	UProgressBar* Bar = GetUnlockBar(EWeaponType::AssaultRifle);
+	// Bar->SetPercent(0.f);
+	// BarsCurrentlyUpgrading.Remove(Bar);
+	StopUpgrade(Bar);
+}
+
+void UHUDWidget::StopUpgradeSniperRifle()
+{
+	UProgressBar* Bar = GetUnlockBar(EWeaponType::SniperRifle);
+	// Bar->SetPercent(0.f);
+	// BarsCurrentlyUpgrading.Remove(Bar);
+	StopUpgrade(Bar);
+}
+
+void UHUDWidget::StopUpgrade(UProgressBar* Bar)
+{
+	Bar->SetPercent(0.f);
+	BarsCurrentlyUpgrading.Remove(Bar);
+}
+
