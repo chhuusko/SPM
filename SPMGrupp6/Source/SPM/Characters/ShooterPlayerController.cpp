@@ -310,7 +310,6 @@ void AShooterPlayerController::ApplyAimAssist(float AssistWeight, AActor* Target
 
 void AShooterPlayerController::AddHitDirectionIndicator(AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("AShooterPlayerController::AddHitDirectionIndicator"));
 	HitDirectionWidget = CreateWidget<UHitDirectionWidget>(this, HitDirectionWidgetClass);
 	if (HitDirectionWidget)
 	{
