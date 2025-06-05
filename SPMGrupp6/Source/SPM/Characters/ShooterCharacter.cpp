@@ -74,6 +74,8 @@ void AShooterCharacter::BeginPlay()
 	{
 		InitiateTestModeValues();
 	}
+	SaveCharacterMaterials();
+
 }
 
 
@@ -472,6 +474,25 @@ void AShooterCharacter::SetIsInvisible(const bool bInvisible)
 {
 	bIsInvisible = bInvisible;
 }
+
+void AShooterCharacter::SaveCharacterMaterials()
+{
+	for (int i=0; i < GetMesh()->GetNumMaterials(); i++)
+	{
+		OriginalMaterials.Add(GetMesh()->GetMaterial(i));
+	}
+}
+void AShooterCharacter::ToggleInvisibility(bool bShouldBeInvisible)
+{
+	if (USkeletalMeshComponent* PlayerMesh = GetMesh())
+	{
+		for (int i=0; i < GetMesh()->GetNumMaterials(); i++)
+		{
+			bShouldBeInvisible ? PlayerMesh->SetMaterial(i, InvisibilityMaterial) : PlayerMesh->SetMaterial(i, OriginalMaterials[i]) ;
+		}
+	}
+}
+
 
 
 

@@ -51,7 +51,13 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetHealthPercent() const;
 
+	void ToggleInvisibility(bool bShouldBeInvisible);
 	
+	UPROPERTY()
+	TArray<UMaterialInterface*> OriginalMaterials;
+
+	UPROPERTY(EditDefaultsOnly)
+	UMaterialInterface* InvisibilityMaterial;
 	
 	void Heal(int HealAmount);
 	// Called every frame
@@ -238,4 +244,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	UForceFeedbackEffect* ForceFeedbackEffect;
+
+	void SaveCharacterMaterials();
+
 };
