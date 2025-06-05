@@ -163,6 +163,14 @@ public:
 
 	UFUNCTION()
 	void SetIsInvisible(const bool bInvisible);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetTryingToUncrouch();
+
+	UPROPERTY(EditDefaultsOnly)
+	float UnCrouchCheckAboveheadHeight;
+	UPROPERTY(EditDefaultsOnly)
+	float UnCrouchCheckAboveheadWidth;
 	
 private:
 	void SetPlayerController();
@@ -235,6 +243,10 @@ private:
 	
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchSpeed = 300;
+	void UnCrouch();
+	bool bTryingToUncrouch = false;
+
+	
 	float SlideDuration = 0.3;
 	FTimerHandle StopSlideTimerHandle;
 

@@ -140,6 +140,37 @@ void AShooterCharacter::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Warning, TEXT("Recharge Jetpack: %f"), JetpackCharge);
 	}
 
+	//If trying to uncrouch, check if anything is above player, if not, uncrouch
+	if (bTryingToUncrouch)
+	{
+		FVector Start = GetActorLocation();
+
+		//Probably not efficient to create a capture every time or even do a Capsule Sweep every tick (while trying to uncrouch and something is blocking). Tried to move at least the creation of the UnCrouchSweepCapsule to BegiunPlay, but it somehow stopped working.
+		//For now it doesn't seem to affect the performance even slightly from what I can tell, so will look into it given there extra time
+		float CapsuleRadius = GetCapsuleComponent()->GetScaledCapsuleRadius();
+		float CapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
+		FCollisionShape UnCrouchSweepCapsule = FCollisionShape::MakeCapsule(CapsuleRadius, CapsuleHalfHeight);
+		
+		FHitResult HitResult;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		bool bHit = GetWorld()->SweepSingleByChannel(HitResult, Start, Start + FVector(0, 0, UnCrouchCheckAboveheadHeight), FQuat::Identity, ECC_Visibility, UnCrouchSweepCapsule, Params);
+
+		/*bool bHit1 = GetWorld()->LineTraceSingleByChannel(HitResult, Start, Start + FVector(UnCrouchCheckAboveheadWidth, 0, UnCrouchCheckAboveheadHeight), ECC_Visibility, Params);
+		bool bHit2 = GetWorld()->LineTraceSingleByChannel(HitResult, Start, Start + FVector(-UnCrouchCheckAboveheadWidth, 0, UnCrouchCheckAboveheadHeight), ECC_Visibility, Params);
+		bool bHit3 = GetWorld()->LineTraceSingleByChannel(HitResult, Start, Start + FVector(0, UnCrouchCheckAboveheadWidth, UnCrouchCheckAboveheadHeight), ECC_Visibility, Params);
+		bool bHit4 = GetWorld()->LineTraceSingleByChannel(HitResult, Start, Start + FVector(0, -UnCrouchCheckAboveheadWidth, UnCrouchCheckAboveheadHeight), ECC_Visibility, Params);*/
+
+		if (!bHit)
+		//if (!(bHit1 || bHit2 || bHit3 || bHit4))
+		{
+			UnCrouch();
+			SetCrouch(false);
+			bTryingToUncrouch = false;
+		}
+	}
+
 	/*if (bSliding)
 	{
 		AddMovementInput(GetActorForwardVector() * 1);
@@ -258,7 +289,7 @@ void AShooterCharacter::SetCrouch(bool value)
 	if (!MovementComponent->IsMovingOnGround()) return;
 	
 	bCrouching = value;
-	if (bCrouching)
+	if (value)
 	{
 		MovementComponent->MaxWalkSpeed = CrouchSpeed;
 		UCapsuleComponent* Capsule = GetCapsuleComponent();
@@ -272,26 +303,30 @@ void AShooterCharacter::SetCrouch(bool value)
 		{
 			StartSlide();
 		}*/
+
+		bTryingToUncrouch = false;
 	}
 	else
 	{
-		
-		UCapsuleComponent* Capsule = GetCapsuleComponent();
-		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-		USkeletalMeshComponent* MeshComp = GetMesh();
-		MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+		bTryingToUncrouch = true;
+	}
+}
+
+void AShooterCharacter::UnCrouch()
+{
+	UCapsuleComponent* Capsule = GetCapsuleComponent();
+	Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+	USkeletalMeshComponent* MeshComp = GetMesh();
+	MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 		
 
-		if (bSprinting)
-		{
-			MovementComponent->MaxWalkSpeed = SprintSpeed;
-		}
-		else
-		{
-			MovementComponent->MaxWalkSpeed = WalkSpeed;
-		}
-		
-		//Check for obstacles immediately above player so they don't get stuck 
+	if (bSprinting)
+	{
+		MovementComponent->MaxWalkSpeed = SprintSpeed;
+	}
+	else
+	{
+		MovementComponent->MaxWalkSpeed = WalkSpeed;
 	}
 }
 
@@ -475,6 +510,11 @@ bool AShooterCharacter::GetIsInvisible() const
 void AShooterCharacter::SetIsInvisible(const bool bInvisible)
 {
 	bIsInvisible = bInvisible;
+}
+
+bool AShooterCharacter::GetTryingToUncrouch()
+{
+	return bTryingToUncrouch;
 }
 
 
