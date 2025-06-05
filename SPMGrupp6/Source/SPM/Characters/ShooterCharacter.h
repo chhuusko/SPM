@@ -107,6 +107,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetSensitivitySetting(float NewSensitivity);
+	UFUNCTION(BlueprintCallable)
+	float GetSensitivitySetting();
 	
 	UPROPERTY(BlueprintReadWrite)
 	bool bSprinting;

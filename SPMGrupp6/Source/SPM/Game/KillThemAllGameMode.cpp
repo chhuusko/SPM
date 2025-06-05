@@ -8,6 +8,7 @@
 #include "SPM/Characters/ShooterCharacter.h"
 #include "ShooterGameInstance.h"
 #include "Kismet/GameplayStatics.h"
+#include "SPM/Characters/ShooterPlayerController.h"
 
 void AKillThemAllGameMode::PawnKilled(APawn* PawnKilled)
 {
@@ -53,9 +54,21 @@ void AKillThemAllGameMode::CheckGameWon()
 	if(!GI) return;
 
 	UE_LOG(LogTemp, Warning, TEXT("[KillThemAllGameMode] RedScore %d : BlueScore %d"), GI->GetRedScore(), GI->GetBlueScore());
+
+	// Remove sniper scope for players currently scoped in when game ends.
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Player Controller Iterator"));
+		if (AShooterPlayerController* PC = Cast<AShooterPlayerController>(It->Get()))
+		{
+			PC->RemoveSniperScope();
+		}
+	}
+	
 	if(GI->HasMatchEnded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("[KillThemAllGameMode] Match Ended!"));
+		
 		GI->ResetScore();
 		GetWorld()->GetTimerManager().SetTimer(EndTimer, this, &AKillThemAllGameMode::LoadMainMenu, EndDelay, false);
 	}
