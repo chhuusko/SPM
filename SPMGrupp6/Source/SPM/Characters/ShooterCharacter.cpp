@@ -369,12 +369,12 @@ void AShooterCharacter::MoveRight(float AxisValue)
 
 void AShooterCharacter::LookUpRate(float AxisValue)
 {
-	AddControllerPitchInput(AxisValue * GamepadRotationRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(AxisValue * GamepadRotationRate * SensitivitySetting * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterCharacter::LookRightRate(float AxisValue)
 {
-	AddControllerYawInput(AxisValue * GamepadRotationRate * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(AxisValue * GamepadRotationRate * SensitivitySetting * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterCharacter::Shoot()
@@ -437,6 +437,10 @@ void AShooterCharacter::ResetMouseRotationSensitivity()
 void AShooterCharacter::SetSensitivitySetting(float NewSensitivity)
 {
 	SensitivitySetting = NewSensitivity;
+}
+
+float AShooterCharacter::GetSensitivitySetting() {
+	return SensitivitySetting;
 }
 
 void AShooterCharacter::InitiateTestModeValues()
