@@ -138,7 +138,7 @@ void UWeaponUnlocking::UnlockingWeapon(EWeaponType WeaponType, FWeaponState& Sta
 	}
 	else
 	{
-		UnlockingWeaponFailed(Gun);
+		UnlockingWeaponFailed(Gun, WeaponType);
 	}
 }
 void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponState& State, int32 UnlockCost)
@@ -175,7 +175,7 @@ void UWeaponUnlocking::UnlockingWeaponSuccess(EWeaponType WeaponType, FWeaponSta
 	}
 	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Weapon %d was unlocked!"), (int32)WeaponType);
 }
-void UWeaponUnlocking::UnlockingWeaponFailed(const AGun* Gun) const
+void UWeaponUnlocking::UnlockingWeaponFailed(const AGun* Gun, EWeaponType State)
 {
 	if (FailedUnlockSound)
 	{
@@ -186,6 +186,7 @@ void UWeaponUnlocking::UnlockingWeaponFailed(const AGun* Gun) const
 			SoundVolume, 
 			RandomPitch);
 	}
+	WeaponStates.Remove(State);
 	if(Debug) UE_LOG(LogTemp, Log, TEXT("[WeaponUnlocking] Not enough resources to unlock %s"),
 							*Gun->GetName());
 }
