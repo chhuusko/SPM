@@ -532,7 +532,12 @@ void UHUDWidget::UpgradeApplied(EWeaponType Weapon, int32 NewCurrencyValue, bool
 	if (bAbilityUnlocked)
 	{
 		UpdateCooldownBarColor(Weapon);
-		ShowAbilityUnlockedPrompt();
+
+		// Sniper doesn't have an ability.
+		if (Weapon != EWeaponType::SniperRifle)
+		{
+			ShowAbilityUnlockedPrompt();
+		}
 	}
 }
 
@@ -701,7 +706,6 @@ void UHUDWidget::StartUpgrade(EWeaponType Weapon)
 		BarsCurrentlyUpgrading.Add(GetUnlockBar(Weapon));
 	}
 }
-
 
 void UHUDWidget::StartUnlockTimeline(EWeaponType Weapon)
 {
