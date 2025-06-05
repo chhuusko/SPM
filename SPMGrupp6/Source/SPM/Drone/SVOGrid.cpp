@@ -20,20 +20,29 @@ ASVOGrid::ASVOGrid()
 // Called when the game starts or when spawned
 void ASVOGrid::BeginPlay()
 {
+	/*
 	if (GridInstance)
 	{
-		if (GridInstance->GetSize() != this->GetSize()){
+		UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Instance %s"), *GridInstance->GetSize().ToString())
+		if (GridInstance->GetSize() != this->GetSize() && GridInstance->GetSize() == FVector::ZeroVector){
+			
+			UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Destroyed %s : %s"), *GridInstance->GetSize().ToString(), *this->GetSize().ToString());
 			GridInstance = this;
 			CreateStandardGrid();
-			UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Destroyed %s : %s"), *GridInstance->GetSize().ToString(), *this->GetSize().ToString());
 		}
 	}
+	
 	if (!GridInstance)
 	{
 		GridInstance = this;
-		CreateStandardGrid();
+        CreateStandardGrid();
+	} else
+	{
+		Destroy();
 	}
-	
+	*/
+	GridInstance = this;
+	CreateStandardGrid();
 	Super::BeginPlay();
 }
 
@@ -93,7 +102,7 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions if clear and not visited
 	GridArray[Position.X][Position.Y][Position.Z]->IsVisited=true;
-	UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
 	if (Position.X > GridArray.Num()) return TArray<FVector>();
 	if (Position.Y > GridArray.Num()) return TArray<FVector>();
 	if (Position.Z> GridArray.Num()) return TArray<FVector>();
@@ -125,7 +134,7 @@ FVector ASVOGrid::ConvertToGrid(FVector WorldPos)
 {
 	//Takes Wrold
 	
-	UE_LOG(LogTemp, Warning, TEXT("WorldLocation: %s"), *WorldPos.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("WorldLocation: %s"), *WorldPos.ToString());
 	//UE_LOG(LogTemp, Warning, TEXT("NearGridLocation: %s"), *GetNearestGridPosition(WorldPos).ToString());
 	WorldPos = GetNearestGridPosition(WorldPos);
 	WorldPos = (WorldPos/(Quarter/2))+GridLength;
