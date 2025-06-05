@@ -9,6 +9,7 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "Logging/LogMacros.h"
+#include "SPM/Weapons/Sniper.h"
 #include "SPM/Characters/ShooterCharacter.h"
 
 // Sets default values
@@ -365,7 +366,7 @@ void AGun::WeaponAbility()
 			// If player is invisible, make player visible.
 			if (AShooterCharacter* Player = Cast<AShooterCharacter>(GetOwner()))
 			{
-				if (Player->GetIsInvisible())
+				if (Player->GetIsInvisible() && !this->IsA(ASniper::StaticClass()))
 				{
 					Player->CancelInvisibility();
 				}
