@@ -39,18 +39,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* AbilityUnlockedPrompt;
 
-	// UPROPERTY(meta = (BindWidget))
-	// class UBorder* AutoPistolBorder;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// class UBorder* ShotgunBorder;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// class UBorder* AssaultRifleBorder;
-	//
-	// UPROPERTY(meta = (BindWidget))
-	// class UBorder* SniperRifleBorder;
-
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* AutoPistolUnlockBar;
 
@@ -176,6 +164,13 @@ private:
 	UFUNCTION()
 	void StartUpgradeSniperRifle(const FInputActionInstance& Instance);
 
+	void StartUpgrade(EWeaponType Weapon);
+	void StopUpgradeAutoPistol();
+	void StopUpgradeShotgun();
+	void StopUpgradeAssaultRifle();
+	void StopUpgradeSniperRifle();
+	void StopUpgrade(UProgressBar* Bar);
+
 	UFUNCTION()
 	void UpdateUnlockTimeline(float Output);
 
@@ -257,6 +252,8 @@ private:
 	void CreateReloadTimeline();
 	void CreateDashTimeline();
 	void CreateUnlockTimeline();
+
+	void UpdateWeaponBars(float InDeltaTime);
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -354,4 +351,6 @@ private:
 	UInputAction* StoppedUpgrade4Action;
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* WeaponUpgradeMappingContext;
+
+	TSet<class UProgressBar*> BarsCurrentlyUpgrading;
 };
