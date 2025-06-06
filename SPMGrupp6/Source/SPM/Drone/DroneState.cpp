@@ -2,6 +2,7 @@
 
 #include "DroneState.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "SVOGrid.h"
 
 FDroneState::FDroneState(ADrone* Drone, AActor* Spawner)
@@ -91,9 +92,29 @@ void FDroneStateAttack::Shoot()
 		if (ShootWithRight)
 		{
 			Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawn()->GetComponentLocation(), Drone->GetProjectileSpawn()->GetComponentRotation());
+			UNiagaraFunctionLibrary::SpawnSystemAttached(
+			Drone->GetShotMuzzle(),
+			Drone->GetProjectileSpawn(),
+			NAME_None,
+			FVector::ZeroVector,
+			Drone->GetProjectileSpawn()->GetComponentRotation(),
+			EAttachLocation::SnapToTarget,
+			true,  
+			true
+			);
 		} else
 		{
 			Bullet = Drone->GetWorld()->SpawnActor<ADroneBullet>(Drone->GetBulletClass(), Drone->GetProjectileSpawnAlt()->GetComponentLocation(), Drone->GetProjectileSpawnAlt()->GetComponentRotation());
+			UNiagaraFunctionLibrary::SpawnSystemAttached(
+			Drone->GetShotMuzzle(),
+			Drone->GetProjectileSpawnAlt(),
+			NAME_None,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator,
+			EAttachLocation::SnapToTarget,
+			true,  
+			true
+			);
 		}
 		Bullet->SetOwner(Drone);
 		ShootWithRight = !ShootWithRight;
