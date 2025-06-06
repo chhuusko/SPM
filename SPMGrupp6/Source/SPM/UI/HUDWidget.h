@@ -262,6 +262,7 @@ private:
 	void CreateDashTimeline();
 
 	void UpdateWeaponBars(float InDeltaTime);
+	void UpdateSliders();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -361,6 +362,7 @@ private:
 	UInputMappingContext* WeaponUpgradeMappingContext;
 
 	TSet<class UProgressBar*> BarsCurrentlyUpgrading;
+	TSet<class URadialSlider*> SlidersToUpdate;
 
 	UPROPERTY()
 	TMap<EWeaponType, UHorizontalBox*> WeaponBoxMap;
