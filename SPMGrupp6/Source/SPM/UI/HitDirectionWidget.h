@@ -20,12 +20,14 @@ public:
 private:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+	virtual void NativeDestruct() override;
 	void HideIndicator();
 	void UpdateIndicator();
 	
 	AShooterCharacter* PlayerCharacter;
 	FTimerHandle HideIndicatorTimer;
 	bool bShowIndicator = false;
+	bool bWidgetDestroyed = false;
 	AActor* DamageCauser;
 
 	UPROPERTY(EditDefaultsOnly)
