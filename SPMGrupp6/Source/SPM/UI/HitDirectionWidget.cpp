@@ -42,7 +42,7 @@ void UHitDirectionWidget::NativeDestruct()
 // Sets the indicator as visible.
 void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 {
-	if (!NewDamageCauser || !PlayerCharacter)
+	if (!NewDamageCauser || !IsValid(PlayerCharacter))
 	{
 		return;
 	}
@@ -56,7 +56,12 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 	DamageCausers.Add(DamageCauser);
 
 	bShowIndicator = true;
-	DamageIcon->SetVisibility(ESlateVisibility::Visible);
+	
+	if (DamageIcon)
+	{
+		DamageIcon->SetVisibility(ESlateVisibility::Visible);
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(HideIndicatorTimer, this, &UHitDirectionWidget::HideIndicator, DisplayTime);
 	PlayAnimation(FadeOut);
 }
@@ -81,9 +86,14 @@ void UHitDirectionWidget::HideIndicator()
 void UHitDirectionWidget::UpdateIndicator()
 {
 	if (DamageCauser == nullptr) return; 
-	if (GameInstance && GameInstance->HasMatchEnded())
+	if (!GameInstance || GameInstance->HasMatchEnded())
 	{
 		bShowIndicator = false;
+		return;
+	}
+
+	if (!DamageCauser || !PlayerCharacter)
+	{
 		return;
 	}
 	
@@ -95,6 +105,9 @@ void UHitDirectionWidget::UpdateIndicator()
 
 	float Rotation = LookRotation.Yaw - ControlRotation.Yaw;
 
-	// Set the rotation.
-	DamageIcon->SetRenderTransformAngle(Rotation);
+	if (DamageIcon)
+	{
+		// Set the rotation.
+		DamageIcon->SetRenderTransformAngle(Rotation);
+	}
 }
