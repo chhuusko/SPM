@@ -4,6 +4,7 @@
 #include "HomingMissile.h"
 
 #include "Gun.h"
+#include "NiagaraComponent.h"
 #include "NiagaraEmitterHandle.h"
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -23,15 +24,13 @@ AHomingMissile::AHomingMissile()
 	ProjectileMovement->bShouldBounce = false;
 	ProjectileMovement->ProjectileGravityScale = 0;
 
-	SmokeTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("SmokeTrail"));
+	SmokeTrail = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SmokeTrail"));
 	SmokeTrail->SetupAttachment(RootComponent);
 	SmokeTrail->bAutoActivate = true;
 
-	GlowingParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("GlowingParticle"));
-	GlowingParticle->SetupAttachment(RootComponent);
-	GlowingParticle->bAutoActivate = true;
-
-
+	GlowingEffect = CreateDefaultSubobject<UNiagaraComponent>(TEXT("GlowingEffect"));
+	GlowingEffect->SetupAttachment(RootComponent);
+	GlowingEffect->bAutoActivate = true;
 }
 
 void AHomingMissile::BeginPlay()
@@ -40,13 +39,15 @@ void AHomingMissile::BeginPlay()
 	Collision->OnComponentHit.AddDynamic(this, &AHomingMissile::OnHit);
 	GetWorldTimerManager().SetTimer(ExplosionTimer, this, &AHomingMissile::Explode, SecondsUntilExplosion, false);
 
-	if (SmokeParticles)
+	if (SmokeNiagaraSystem)
 	{
-		SmokeTrail->SetTemplate(SmokeParticles);
+		SmokeTrail->SetAsset(SmokeNiagaraSystem);
+		SmokeTrail->Activate();
 	}
-	if (GlowingParticle)
+	if (GlowingNiagaraSystem)
 	{
-		GlowingParticle->SetTemplate(GlowingParticles);
+		GlowingEffect->SetAsset(GlowingNiagaraSystem);
+		GlowingEffect->Activate();
 	}
 	Controller = Cast<APlayerController>(GetInstigatorController());
 }

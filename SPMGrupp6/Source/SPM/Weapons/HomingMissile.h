@@ -6,6 +6,7 @@
 #include "ExplosiveProjectile.h"
 #include "HomingMissile.generated.h"
 
+class UNiagaraComponent;
 class UProjectileMovementComponent;
 
 /**
@@ -50,17 +51,17 @@ private:
 	
 	FTimerHandle ExplosionTimer;
 
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* SmokeParticles;
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UNiagaraSystem* SmokeNiagaraSystem;
 
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* GlowingParticles;
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	UNiagaraSystem* GlowingNiagaraSystem;
 
-	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* SmokeTrail;
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	UNiagaraComponent* SmokeTrail;
 
-	UPROPERTY(VisibleAnywhere)
-	UParticleSystemComponent* GlowingParticle;
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	UNiagaraComponent* GlowingEffect;
 
 	bool bDebugExplosionDamage = true;
 	bool bHasExploded = false;
