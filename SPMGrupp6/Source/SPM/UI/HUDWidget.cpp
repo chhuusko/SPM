@@ -63,8 +63,6 @@ void UHUDWidget::NativeConstruct()
 			Input->BindAction(StoppedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::StopUpgradeSniperRifle);
 		}
 	}
-
-	BarsCurrentlyUpgrading = TSet<UProgressBar*>();
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -83,6 +81,7 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	}
 }
 
+// Add the key-value-pairs for weapon unlock bars.
 void UHUDWidget::InitializeWeaponBoxMap()
 {
 	WeaponBoxMap.Add(EWeaponType::Pistol, AutoPistolLevels);
@@ -680,9 +679,9 @@ void UHUDWidget::UpdateDashCooldownTimer(float Output)
 	}
 }
 
+// Reset indicator.
 void UHUDWidget::DashCooldownFinished()
 {
-	// Reset indicator.
 	DashCooldown->SetValue(0.f);
 }
 
@@ -706,18 +705,22 @@ void UHUDWidget::StartUpgradeSniperRifle(const FInputActionInstance& Instance)
 	StartUpgrade(EWeaponType::SniperRifle);
 }
 
+// Start updating progress bar value for the corresponding weapon.
 void UHUDWidget::StartUpgrade(EWeaponType Weapon)
 {
 	if (WeaponUnlocking->CanAffordUpgrade(Weapon))
 	{
+		// Start updating progress bar value each tick.
 		BarsCurrentlyUpgrading.Add(GetUnlockBar(Weapon));
 	}
 }
 
+// Update all progress bars for weapons currently being upgraded.
 void UHUDWidget::UpdateWeaponBars(float InDeltaTime)
 {
 	for (UProgressBar* Bar : BarsCurrentlyUpgrading)
 	{
+		// Update progress bar value.
 		Bar->SetPercent(FMath::Clamp(Bar->GetPercent() + InDeltaTime / .5f, 0.f, 1.f));
 
 		if (Bar->GetPercent() >= 1.f)
@@ -755,6 +758,7 @@ void UHUDWidget::StopUpgradeSniperRifle()
 	StopUpgrade(Bar);
 }
 
+// Reset progress bar percent to zero and stop updating it in tick.
 void UHUDWidget::StopUpgrade(UProgressBar* Bar)
 {
 	Bar->SetPercent(0.f);
