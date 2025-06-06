@@ -22,11 +22,21 @@ void UHitDirectionWidget::NativeConstruct()
 
 void UHitDirectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
+	if (bWidgetDestroyed)
+	{
+		return;
+	}
+	
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (bShowIndicator)
+	if (IsValid(this) && bShowIndicator)
 	{
 		UpdateIndicator();
 	}
+}
+
+void UHitDirectionWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
 }
 
 // Sets the indicator as visible.
@@ -55,7 +65,13 @@ void UHitDirectionWidget::ShowIndicator(AActor* NewDamageCauser)
 void UHitDirectionWidget::HideIndicator()
 {
 	bShowIndicator = false;
+	bWidgetDestroyed = true;
 	DamageCausers.Remove(DamageCauser);
+
+	if (GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(HideIndicatorTimer);
+	}
 
 	// Remove widget from player screen.
 	this->RemoveFromParent();

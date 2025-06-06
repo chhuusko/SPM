@@ -4,10 +4,9 @@
 #include "SVOGrid.h"
 #include "OctNode.h"
 #include "Node.h"
-#include "Tasks/AITask.h"
 
-
-ASVOGrid* ASVOGrid::GridInstance = nullptr;
+TArray<TArray<TArray<FNode*>>> ASVOGrid::GridArray;
+ASVOGrid* ASVOGrid::GridInstance;
 // Sets default values
 ASVOGrid::ASVOGrid()
 {
@@ -20,29 +19,20 @@ ASVOGrid::ASVOGrid()
 // Called when the game starts or when spawned
 void ASVOGrid::BeginPlay()
 {
-	/*
 	if (GridInstance)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Instance %s"), *GridInstance->GetSize().ToString())
-		if (GridInstance->GetSize() != this->GetSize() && GridInstance->GetSize() == FVector::ZeroVector){
-			
-			UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Destroyed %s : %s"), *GridInstance->GetSize().ToString(), *this->GetSize().ToString());
+		if (GridInstance->GetSize() != this->GetSize()){
 			GridInstance = this;
 			CreateStandardGrid();
+			UE_LOG(LogTemp, Warning, TEXT("ASVOGrid::Destroyed %s : %s"), *GridInstance->GetSize().ToString(), *this->GetSize().ToString());
 		}
 	}
-	
 	if (!GridInstance)
 	{
 		GridInstance = this;
-        CreateStandardGrid();
-	} else
-	{
-		Destroy();
+		CreateStandardGrid();
 	}
-	*/
-	GridInstance = this;
-	CreateStandardGrid();
+	
 	Super::BeginPlay();
 }
 
@@ -102,6 +92,7 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions if clear and not visited
 	GridArray[Position.X][Position.Y][Position.Z]->IsVisited=true;
+	VisitedNodesArray.Add(Position);
 	//UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
 	if (Position.X > GridArray.Num()) return TArray<FVector>();
 	if (Position.Y > GridArray.Num()) return TArray<FVector>();
@@ -190,6 +181,12 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 		if (FVector::Dist(Path.Last(), To) < 1000.f) PathFound = true;
 		attempts++;
 	}
+	
+	for (FVector Position : VisitedNodesArray)
+	{
+		GridArray[Position.X][Position.Y][Position.Z]->IsVisited = false;
+	}
+	VisitedNodesArray.Empty();
 	
 	return Path;
 }
