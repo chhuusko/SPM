@@ -297,10 +297,10 @@ void AShooterCharacter::SetCrouch(bool value)
 	if (value)
 	{
 		MovementComponent->MaxWalkSpeed = CrouchSpeed;
-		/*UCapsuleComponent* Capsule = GetCapsuleComponent();
+		UCapsuleComponent* Capsule = GetCapsuleComponent();
 		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.5f));
 		USkeletalMeshComponent* MeshComp = GetMesh();
-		MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));*/
+		MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 
 		
 		/*
@@ -319,10 +319,10 @@ void AShooterCharacter::SetCrouch(bool value)
 
 void AShooterCharacter::UnCrouch()
 {
-	/*UCapsuleComponent* Capsule = GetCapsuleComponent();
+	UCapsuleComponent* Capsule = GetCapsuleComponent();
 	Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 	USkeletalMeshComponent* MeshComp = GetMesh();
-	MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));*/
+	MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
 		
 
 	if (bSprinting)
