@@ -92,6 +92,7 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
 	// get all 6 directions if clear and not visited
 	GridArray[Position.X][Position.Y][Position.Z]->IsVisited=true;
+	VisitedNodesArray.Add(Position);
 	//UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
 	if (Position.X > GridArray.Num()) return TArray<FVector>();
 	if (Position.Y > GridArray.Num()) return TArray<FVector>();
@@ -180,6 +181,12 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 		if (FVector::Dist(Path.Last(), To) < 1000.f) PathFound = true;
 		attempts++;
 	}
+	
+	for (FVector Position : VisitedNodesArray)
+	{
+		GridArray[Position.X][Position.Y][Position.Z]->IsVisited = false;
+	}
+	VisitedNodesArray.Empty();
 	
 	return Path;
 }
