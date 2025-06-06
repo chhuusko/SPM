@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "UpgradedSniper.h"
+#define ECC_HitDetectionTrace ECC_GameTraceChannel3
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
@@ -52,9 +52,9 @@ void AUpgradedSniper::Fire()
 	
 	FVector ShotDirection;
 	float TraceLength;
-	FHitResult FirstPlayerHit;
+	FHitResult LineHitResult;
 
-	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength, FirstPlayerHit);
+	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength, LineHitResult);
 	TSet<AActor*> AlreadyHitActors;
 
 	for (FHitResult Hit: Hits)
@@ -102,16 +102,9 @@ void AUpgradedSniper::Fire()
 			else
 			{
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
-				if (FirstPlayerHit.GetActor() == HitActor)
+				if (LineHitResult.GetActor() == HitActor)
 				{
-					ActualDamage = CalculateDamageHitLocation(FirstPlayerHit, ActualDamage);
-
-					if (bDebugHitBoxHits)
-					{
-						UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(FirstPlayerHit));
-						FName HitBone = FirstPlayerHit.BoneName;
-						UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());
-					}
+					ActualDamage = CalculateDamageHitLocation(LineHitResult, ActualDamage);
 				}
 				FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
 				AController* OwnerController = GetOwnerController();
@@ -146,7 +139,7 @@ void AUpgradedSniper::Fire()
 }
 
 
-TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& FirstPlayerHit)
+TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult)
 {
 	//Overriden GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
@@ -177,12 +170,15 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
-	
+
+	FCollisionObjectQueryParams ObjectParams;
+	ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
 
 	int ObjectsPassedThrough = 0;
 	FHitResult FinalHit;
 	FVector SphereEndLocation = RayEnd;
-	bool bLineHit = GetWorld()->LineTraceMultiByChannel(LineHits, Location, RayEnd, ECC_Visibility, Params);
+	bool bLineHit = GetWorld()->LineTraceMultiByObjectType(LineHits, Location, RayEnd, ObjectParams, Params);
 	if (bLineHit)
 	{
 		// Sort the list of actors by distance to make sure the right objects gets counted for.
@@ -206,9 +202,9 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 				UE_LOG(LogTemp, Display, TEXT("Hit the actor: %s"), *HitActor->GetName());
 			}
 
-			if (!FirstPlayerHit.bBlockingHit && HitActor->IsA(AShooterCharacter::StaticClass()))
+			if (!LineHitResult.bBlockingHit && HitActor->IsA(AShooterCharacter::StaticClass()))
 			{
-				FirstPlayerHit = Hit;
+				LineHitResult = Hit;
 			}
 
 			if (ObjectsPassedThrough == ObjectsToGoThrough)
@@ -263,5 +259,58 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 	}
 	
 	return HitResults;
+}
+
+float AUpgradedSniper::CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage){
+
+	FVector TraceStart, TraceEnd;
+	AController* OwnerController = GetOwnerController();
+	if (!OwnerController) return OriginalDamage;
+
+	FRotator ViewRot;
+	OwnerController->GetPlayerViewPoint(TraceStart, ViewRot);
+	TraceEnd = TraceStart + ViewRot.Vector() * MaxRange;
+	
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	Params.AddIgnoredActor(GetOwner());
+	
+	TArray<FHitResult> Hits;
+	bool bDidHit = GetWorld()->LineTraceMultiByChannel(
+		Hits,
+		TraceStart,
+		TraceEnd,
+		ECC_HitDetectionTrace,
+		Params
+	);
+	if (bDidHit)
+	{
+		for (FHitResult Hit : Hits)
+		{
+			if (Hit.GetActor() != HitResult.GetActor()) continue;
+
+			if (!Hit.Component.IsValid()) continue;
+
+			if (Hit.Component->ComponentHasTag("Head") || Hit.BoneName == "head")
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Headshot!"));
+				return OriginalDamage * HeadShotMultiplier;
+			}
+			if (Hit.Component->ComponentHasTag("Body"))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Body hit!"));
+				return OriginalDamage;
+			}
+			if (Hit.Component->ComponentHasTag("Legs") || Hit.BoneName == "foot_l" || Hit.BoneName == "foot_r")
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Leg hit!"));
+				return OriginalDamage * LegsHitMultiplier;
+			}
+		}
+	}
+        
+	// If leg hitbox or foot bones was hit reduce damage.
+	UE_LOG(LogTemp, Display, TEXT("No multiplier applied, since just a part of shot was hit."));
+	return OriginalDamage;
 }
 

@@ -21,6 +21,7 @@ public:
 	
 protected:
 	virtual void Fire() override;
+	virtual float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage) override;
 	
 private:
 	TArray <FHitResult> GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& FirstPlayerHit);

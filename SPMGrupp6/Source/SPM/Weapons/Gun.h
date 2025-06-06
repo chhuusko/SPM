@@ -252,8 +252,14 @@ protected:
 	bool IsAbilityOnCooldown() const { return bIsAbilityOnCooldown; }
 	void SetAbilityCooldown(bool Cooldown) { bIsAbilityOnCooldown = Cooldown; }
 	FString WhichBodyPartWasHit(FHitResult& HitResult);
-	float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
+	virtual float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
 	void ReloadAutomatically();
+	
+	UPROPERTY(EditAnywhere)
+	float HeadShotMultiplier = 1.25; 
+	
+	UPROPERTY(EditAnywhere)
+	float LegsHitMultiplier = 0.75;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -267,11 +273,6 @@ private:
 	bool bIsAbilityOnCooldown = false;
 	FTimerHandle AbilityCooldownTimerHandle;
 	
-	UPROPERTY(EditAnywhere)
-	float HeadShotMultiplier = 1.25; 
-	
-	UPROPERTY(EditAnywhere)
-	float LegsHitMultiplier = 0.75;
 
 
 	void StartAutomaticFireSequence();
