@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "DroneBullet.h"
-#include "DroneMissile.h"
 #include "SPM/Pickup/HealthPickUp.h"
 #include "SPM/Pickup/ResourcePickUp.h"
 #include "GameFramework/Pawn.h"
@@ -98,8 +97,6 @@ private:
 	//Projectiles
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
-	UPROPERTY(EditDefaultsOnly, Category="Combat")
-	TSubclassOf<class ADroneMissile> MissileClass;
 	
 	//Timehandler
 	FTimerHandle FireRateTimerHandle;
