@@ -81,7 +81,10 @@ void AShotgun::Fire()
 			AActor* HitActor = Hit.GetActor();
 			if(HitActor)
 			{
-				LastHitActor = HitActor;
+				if (Cast<APawn>(HitActor))
+				{
+					LastHitActor = HitActor;
+				}
 				float ActualDamage = CalculateDamageFalloff(TraceLength);
 
 				FPointDamageEvent DamageEvent(Damage, Hit, ShotDirection, nullptr);
