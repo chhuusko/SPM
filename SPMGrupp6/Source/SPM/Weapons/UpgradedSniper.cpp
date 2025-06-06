@@ -52,9 +52,9 @@ void AUpgradedSniper::Fire()
 	
 	FVector ShotDirection;
 	float TraceLength;
-	FHitResult LineHitResult;
+	FHitResult FirstPlayerHit;
 
-	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength, LineHitResult);
+	TArray <FHitResult> Hits = GunTraceWallBang(ShotDirection, TraceLength, FirstPlayerHit);
 	TSet<AActor*> AlreadyHitActors;
 
 	for (FHitResult Hit: Hits)
@@ -65,65 +65,64 @@ void AUpgradedSniper::Fire()
 		if (AlreadyHitActors.Contains(HitActor)) continue;
 		AlreadyHitActors.Add(HitActor);
 
-			// Debugs for seeing hits and testing hit results.
-			if (bDebugWeapon)
-			{
-				DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
-			}
+		// Debugs for seeing hits and testing hit results.
+		if (bDebugWeapon)
+		{
+			DrawDebugSphere(GetWorld(), Hit.Location, 4.f, 12, FColor::Red, false, 1.0f);
+		}
 
-			// Spawn particles
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(),
-				UpgradedImpactEffect,
-				Hit.Location,
-				ShotDirection.Rotation(),
-				FVector::OneVector,
-				true,  // AutoDestroy
-				true,  // AutoActivate
-				ENCPoolMethod::None
-			);
+		// Spawn particles
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			UpgradedImpactEffect,
+			Hit.Location,
+			ShotDirection.Rotation(),
+			FVector::OneVector,
+			true,
+			true,
+			ENCPoolMethod::None
+		);
 			
-			HitActor = Hit.GetActor();
-			if(HitActor)
+		HitActor = Hit.GetActor();
+		if(HitActor)
+		{
+			OnHit.Broadcast(HitActor);
+			if (Cast<APawn>(HitActor))
 			{
-				OnHit.Broadcast(HitActor);
-				if (Cast<APawn>(HitActor))
+				UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
+			}
+			if (HitActor->ActorHasTag("Button"))
+			{
+				// Call the ActivateButton event in the Blueprint
+				if (HitActor->FindFunction(FName("ActivateButton")))
 				{
-					UGameplayStatics::PlaySound2D(this, HitMarkerSound, 2);
-				}
-				if (HitActor->ActorHasTag("Button"))
-				{
-					// Call the ActivateButton event in the Blueprint
-					if (HitActor->FindFunction(FName("ActivateButton")))
-					{
-						HitActor->ProcessEvent(HitActor->FindFunction(FName("ActivateButton")), nullptr);
-					}
-				}
-				else
-				{
-					float ActualDamage = CalculateDamageFalloff(TraceLength);
-					
-					if (LineHitResult.GetActor() == HitActor)
-					{
-						ActualDamage = CalculateDamageHitLocation(LineHitResult, ActualDamage);
-
-						if (bDebugHitBoxHits)
-						{
-							UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(LineHitResult));
-							FName HitBone = LineHitResult.BoneName;
-							UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());
-						}
-					}
-					FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
-					AController* OwnerController = GetOwnerController();
-					HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
-
-					if (bDebugDamageFalloff)
-					{
-						UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
-					}
+					HitActor->ProcessEvent(HitActor->FindFunction(FName("ActivateButton")), nullptr);
 				}
 			}
+			else
+			{
+				float ActualDamage = CalculateDamageFalloff(TraceLength);
+				if (FirstPlayerHit.GetActor() == HitActor)
+				{
+					ActualDamage = CalculateDamageHitLocation(FirstPlayerHit, ActualDamage);
+
+					if (bDebugHitBoxHits)
+					{
+						UE_LOG(LogTemp, Display, TEXT("Body part that was hit: %s"), *WhichBodyPartWasHit(FirstPlayerHit));
+						FName HitBone = FirstPlayerHit.BoneName;
+						UE_LOG(LogTemp, Display, TEXT("Hit BoneName is: %s"), *HitBone.ToString());
+					}
+				}
+				FPointDamageEvent DamageEvent(ActualDamage, Hit, ShotDirection, nullptr);
+				AController* OwnerController = GetOwnerController();
+				HitActor->TakeDamage(ActualDamage, DamageEvent, OwnerController, this);
+
+				if (bDebugDamageFalloff)
+				{
+					UE_LOG(LogTemp, Display, TEXT("Calculated Damage är: %f"), ActualDamage);
+				}
+			}
+		}
 	}
 
 	// Only play sound from the first hit.
@@ -147,7 +146,7 @@ void AUpgradedSniper::Fire()
 }
 
 
-TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult)
+TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& FirstPlayerHit)
 {
 	//Overriden GunTrace that shoots a ray from the players direction with a random offset based on a cone radius.
 	AController* OwnerController = GetOwnerController();
@@ -178,15 +177,12 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(this);
 	Params.AddIgnoredActor(GetOwner());
-
-	FCollisionObjectQueryParams ObjectParams;
-	ObjectParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	ObjectParams.AddObjectTypesToQuery(ECC_Pawn);
+	
 
 	int ObjectsPassedThrough = 0;
 	FHitResult FinalHit;
 	FVector SphereEndLocation = RayEnd;
-	bool bLineHit = GetWorld()->LineTraceMultiByObjectType(LineHits, Location, RayEnd, ObjectParams, Params);
+	bool bLineHit = GetWorld()->LineTraceMultiByChannel(LineHits, Location, RayEnd, ECC_Visibility, Params);
 	if (bLineHit)
 	{
 		// Sort the list of actors by distance to make sure the right objects gets counted for.
@@ -210,9 +206,9 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 				UE_LOG(LogTemp, Display, TEXT("Hit the actor: %s"), *HitActor->GetName());
 			}
 
-			if (!LineHitResult.bBlockingHit && HitActor->IsA(AShooterCharacter::StaticClass()))
+			if (!FirstPlayerHit.bBlockingHit && HitActor->IsA(AShooterCharacter::StaticClass()))
 			{
-				LineHitResult = Hit;
+				FirstPlayerHit = Hit;
 			}
 
 			if (ObjectsPassedThrough == ObjectsToGoThrough)
@@ -242,8 +238,6 @@ TArray <FHitResult> AUpgradedSniper::GunTraceWallBang(FVector& ShotDirection, fl
 		Sphere,
 		Params
 	);
-
-	
 
 	UNiagaraComponent* Laser = UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 	GetWorld(),
