@@ -23,7 +23,7 @@ void UHitDirectionWidget::NativeConstruct()
 void UHitDirectionWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (bShowIndicator)
+	if (IsValid(this) && bShowIndicator)
 	{
 		UpdateIndicator();
 	}
