@@ -32,7 +32,7 @@ public:
 	FVector GetLowestHPosition(TArray<FVector> Positions, FVector Desination);
 	TArray<FVector> GetPath(FVector From, FVector To);
 	FVector GetSize() const{return AreaSize;}
-	TArray<TArray<TArray<FNode*>>> GridArray;
+	static TArray<TArray<TArray<FNode*>>> GridArray;
 	static ASVOGrid* GetInstance(UWorld* World){return GridInstance;};
 	void CreateGrid();
 	void TestDraw(FVector positon, FVector Size, FColor color);
