@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "UpgradedSniper.h"
-#define ECC_HitDetectionTrace ECC_GameTraceChannel1
+#define ECC_HitDetectionTrace ECC_GameTraceChannel3
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/DamageEvents.h"
@@ -287,15 +287,9 @@ float AUpgradedSniper::CalculateDamageHitLocation(FHitResult& HitResult, float O
 	{
 		for (FHitResult Hit : Hits)
 		{
-			if (Hit.GetActor() != HitResult.GetActor())
-				continue;
+			if (Hit.GetActor() != HitResult.GetActor()) continue;
 
-			if (!Hit.Component.IsValid())
-				continue;
-
-			UE_LOG(LogTemp, Warning, TEXT("Component: %s | Bone: %s"), 
-				*Hit.Component->GetName(), 
-				*Hit.BoneName.ToString());
+			if (!Hit.Component.IsValid()) continue;
 
 			if (Hit.Component->ComponentHasTag("Head") || Hit.BoneName == "head")
 			{
@@ -316,7 +310,7 @@ float AUpgradedSniper::CalculateDamageHitLocation(FHitResult& HitResult, float O
 	}
         
 	// If leg hitbox or foot bones was hit reduce damage.
-	UE_LOG(LogTemp, Display, TEXT("Legs multiplier applied, since legs or just a part of shot was hit."));
-	return OriginalDamage * LegsHitMultiplier;
+	UE_LOG(LogTemp, Display, TEXT("No multiplier applied, since just a part of shot was hit."));
+	return OriginalDamage;
 }
 
