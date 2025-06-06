@@ -23,7 +23,7 @@ protected:
 	virtual void Fire() override;
 	
 private:
-	TArray <FHitResult> GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& LineHitResult);
+	TArray <FHitResult> GunTraceWallBang(FVector& ShotDirection, float& TraceLength, FHitResult& FirstPlayerHit);
 
 	UPROPERTY(EditAnywhere)
 	int ObjectsToGoThrough = 1;
