@@ -9,6 +9,7 @@
 #include "GameFramework/Pawn.h"
 #include "Drone.generated.h"
 
+class UNiagaraSystem;
 class ASVOGrid;
 class FDroneState;
 class ADroneSpawn;
@@ -64,8 +65,11 @@ public:
 	virtual void SetSpawner(ADroneSpawn* Spawn);
 	void SetPathList(TArray<FVector> PathList){Path = PathList;};
 	void SetTarget(AActor* Target);
+
 	
 	//Get
+	UNiagaraSystem* GetShotMuzzle(){return MuzzleEffect;};
+	
 	USoundBase* GetShootSound() const {return ShootSound;}
 	UStaticMeshComponent* GetBody() {return BodyMesh;}
 	UStaticMeshComponent* GetTurret() {return TurretMesh;}
@@ -98,6 +102,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category="Combat")
 	TSubclassOf<class ADroneBullet> ProjectileClass;
 	
+	UPROPERTY(EditDefaultsOnly, Category="Effect")
+	UNiagaraSystem* MuzzleEffect;
 	//Timehandler
 	FTimerHandle FireRateTimerHandle;
 	FTimerHandle AggroTimerHandle;

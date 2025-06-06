@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "DroneHeavyState.h"
+
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 void FDroneHeavyStateIdle::Exit()
@@ -79,6 +81,16 @@ void FDroneHeavyStateAttack::Shoot()
 		Bullet->SetOwner(Drone);
 		//Missile->SetOwner(this);
 		UGameplayStatics::PlaySoundAtLocation(Drone->GetWorld(), Drone->GetShootSound(), Drone->GetActorLocation());
+		UNiagaraFunctionLibrary::SpawnSystemAttached(
+		Drone->GetShotMuzzle(),
+		Drone->GetProjectileSpawn(),
+		NAME_None,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator,
+		EAttachLocation::SnapToTarget,
+		true,  
+		true
+		);
 	}
 }
 
