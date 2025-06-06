@@ -167,7 +167,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 		if (!bHit)
 		//if (!(bHit1 || bHit2 || bHit3 || bHit4))
 		{
-			UnCrouch();
+			SetUnCrouch();
 			SetCrouch(false);
 			bTryingToUncrouch = false;
 		}
@@ -297,11 +297,12 @@ void AShooterCharacter::SetCrouch(bool value)
 	if (value)
 	{
 		MovementComponent->MaxWalkSpeed = CrouchSpeed;
-		UCapsuleComponent* Capsule = GetCapsuleComponent();
-		Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.5f));
-		USkeletalMeshComponent* MeshComp = GetMesh();
-		MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+		//UCapsuleComponent* Capsule = GetCapsuleComponent();
+		//Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 0.5f));
+		//USkeletalMeshComponent* MeshComp = GetMesh();
+		//MeshComp->SetRelativeScale3D(FVector(1.0f, 1.0f, 2.0f));
 
+		Crouch();
 		
 		/*
 		if (bSprinting)
@@ -317,13 +318,14 @@ void AShooterCharacter::SetCrouch(bool value)
 	}
 }
 
-void AShooterCharacter::UnCrouch()
+void AShooterCharacter::SetUnCrouch()
 {
-	UCapsuleComponent* Capsule = GetCapsuleComponent();
-	Capsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-	USkeletalMeshComponent* MeshComp = GetMesh();
-	MeshComp->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
-		
+	//UCapsuleComponent* Capsule = GetCapsuleComponent();
+	//apsule->SetWorldScale3D(FVector(1.0f, 1.0f, 1.0f));
+	//USkeletalMeshComponent* MeshComp = GetMesh();
+	//MeshComp->SetRelativeScale3D(FVector(1.0f, 1.0f, 1.0f));
+
+	UnCrouch();
 
 	if (bSprinting)
 	{

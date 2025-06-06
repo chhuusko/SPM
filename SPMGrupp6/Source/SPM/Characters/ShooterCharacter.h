@@ -250,7 +250,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float CrouchSpeed = 300;
 
-	void UnCrouch();
+	void SetUnCrouch();
 	bool bTryingToUncrouch = false;
 	
 	float SlideDuration = 0.3;
