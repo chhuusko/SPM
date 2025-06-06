@@ -167,9 +167,6 @@ private:
 	void DashCooldownFinished();
 
 	UFUNCTION()
-	void StartUnlockTimeline(EWeaponType Weapon);
-
-	UFUNCTION()
 	void StartUpgradeAutoPistol(const FInputActionInstance& Instance);
 	UFUNCTION()
 	void StartUpgradeShotgun(const FInputActionInstance& Instance);
@@ -184,12 +181,6 @@ private:
 	void StopUpgradeAssaultRifle();
 	void StopUpgradeSniperRifle();
 	void StopUpgrade(UProgressBar* Bar);
-
-	UFUNCTION()
-	void UpdateUnlockTimeline(float Output);
-
-	UFUNCTION()
-	void UnlockTimelineFinished();
 	
 	UFUNCTION()
 	void OnPickup(int32 NewCurrencyAmount);
@@ -269,9 +260,9 @@ private:
 
 	void CreateReloadTimeline();
 	void CreateDashTimeline();
-	void CreateUnlockTimeline();
 
 	void UpdateWeaponBars(float InDeltaTime);
+	void UpdateSliders();
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -317,9 +308,6 @@ private:
 
 	UProgressBar* EquippedWeaponBar;
 	UImage* EquippedWeaponImage;
-
-	UPROPERTY()
-	UProgressBar* UnlockBar;
 	
 	FTimerHandle HitmarkTimerHandle;
 	FTimerHandle JetpackTimerHandle;
@@ -374,6 +362,7 @@ private:
 	UInputMappingContext* WeaponUpgradeMappingContext;
 
 	TSet<class UProgressBar*> BarsCurrentlyUpgrading;
+	TSet<class URadialSlider*> SlidersToUpdate;
 
 	UPROPERTY()
 	TMap<EWeaponType, UHorizontalBox*> WeaponBoxMap;

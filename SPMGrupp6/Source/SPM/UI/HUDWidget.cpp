@@ -47,10 +47,6 @@ void UHUDWidget::NativeConstruct()
 	{
 		CreateDashTimeline();
 	}
-	if (!UnlockTimeline)
-	{
-		CreateUnlockTimeline();
-	}
 
 	// Bind input actions for starting and stopping upgrades.
 	if (AShooterPlayerController* PC = Cast<AShooterPlayerController>(PlayerCharacter->GetController()))
@@ -67,8 +63,6 @@ void UHUDWidget::NativeConstruct()
 			Input->BindAction(StoppedUpgrade4Action, ETriggerEvent::Triggered, this, &UHUDWidget::StopUpgradeSniperRifle);
 		}
 	}
-
-	BarsCurrentlyUpgrading = TSet<UProgressBar*>();
 }
 
 void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -85,8 +79,14 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		UpdateWeaponBars(InDeltaTime);
 	}
+
+	if (!SlidersToUpdate.IsEmpty())
+	{
+		UpdateSliders();
+	}
 }
 
+// Add the key-value-pairs for weapon unlock bars.
 void UHUDWidget::InitializeWeaponBoxMap()
 {
 	WeaponBoxMap.Add(EWeaponType::Pistol, AutoPistolLevels);
@@ -123,17 +123,6 @@ void UHUDWidget::CreateDashTimeline()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Dash Timeline"));
-	}
-}
-
-void UHUDWidget::CreateUnlockTimeline()
-{
-	UnlockTimeline = NewObject<UTimelineComponent>(this, FName("UnlockTimeline"));
-
-	if (UnlockTimeline)
-	{
-		UnlockTimeline->CreationMethod = EComponentCreationMethod::Native;
-		UnlockTimeline->RegisterComponentWithWorld(GetWorld());
 	}
 }
 
@@ -695,101 +684,52 @@ void UHUDWidget::UpdateDashCooldownTimer(float Output)
 	}
 }
 
+// Reset indicator.
 void UHUDWidget::DashCooldownFinished()
 {
-	// Reset indicator.
 	DashCooldown->SetValue(0.f);
 }
 
 void UHUDWidget::StartUpgradeAutoPistol(const FInputActionInstance& Instance)
 {
-	// StartUnlockTimeline(EWeaponType::Pistol);
-	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::Pistol));
 	StartUpgrade(EWeaponType::Pistol);
 }
 
 void UHUDWidget::StartUpgradeShotgun(const FInputActionInstance& Instance)
 {
-	// StartUnlockTimeline(EWeaponType::Shotgun);
-	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::Shotgun));
 	StartUpgrade(EWeaponType::Shotgun);
 }
 
 void UHUDWidget::StartUpgradeAssaultRifle(const FInputActionInstance& Instance)
 {
-	// StartUnlockTimeline(EWeaponType::AssaultRifle);
-	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::AssaultRifle));
 	StartUpgrade(EWeaponType::AssaultRifle);
 }
 
 void UHUDWidget::StartUpgradeSniperRifle(const FInputActionInstance& Instance)
 {
-	// StartUnlockTimeline(EWeaponType::SniperRifle);
-	// BarsCurrentlyUpgrading.Add(GetUnlockBar(EWeaponType::SniperRifle));
 	StartUpgrade(EWeaponType::SniperRifle);
 }
 
+// Start updating progress bar value for the corresponding weapon.
 void UHUDWidget::StartUpgrade(EWeaponType Weapon)
 {
 	if (WeaponUnlocking->CanAffordUpgrade(Weapon))
 	{
+		// Start updating progress bar value each tick.
 		BarsCurrentlyUpgrading.Add(GetUnlockBar(Weapon));
 	}
 }
 
-void UHUDWidget::StartUnlockTimeline(EWeaponType Weapon)
-{
-	if (!UnlockTimeline || !UnlockCurve|| !WeaponUnlocking->CanAffordUpgrade(Weapon))
-	{
-		return;
-	}
-
-	UnlockBar = GetUnlockBar(Weapon);
-
-	UnlockOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateUnlockTimeline);
-	UnlockTimeline->AddInterpFloat(UnlockCurve, UnlockOnTimelineFloat);
-
-	UnlockTimeline->SetTimelineLength(.5f);
-	UnlockTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-
-	FOnTimelineEvent TimelineEvent;
-	TimelineEvent.BindUFunction(this, FName("UnlockTimelineFinished"));
-	UnlockTimeline->SetTimelineFinishedFunc(TimelineEvent);
-
-	if (IsValid(UnlockTimeline) && UnlockTimeline->IsRegistered())
-	{
-		UnlockTimeline->PlayFromStart();
-	}
-}
-
-// Set value for current unlock bar.
-void UHUDWidget::UpdateUnlockTimeline(float Output)
-{
-	float NormalizedValue = UnlockTimeline->GetPlaybackPosition() / UnlockTimeline->GetTimelineLength();
-	UnlockBar->SetPercent(FMath::Clamp(NormalizedValue, 0.f, 1.f));
-}
-
-// Reset unlock bar value.
-void UHUDWidget::UnlockTimelineFinished()
-{
-	if (UnlockBar)
-	{
-		UnlockTimeline->Stop();
-		UnlockBar->SetPercent(0.f);
-	}
-}
-
+// Update all progress bars for weapons currently being upgraded.
 void UHUDWidget::UpdateWeaponBars(float InDeltaTime)
 {
 	for (UProgressBar* Bar : BarsCurrentlyUpgrading)
 	{
+		// Update progress bar value.
 		Bar->SetPercent(FMath::Clamp(Bar->GetPercent() + InDeltaTime / .5f, 0.f, 1.f));
 
 		if (Bar->GetPercent() >= 1.f)
 		{
-			// Bar->SetPercent(0.f);
-			// BarsCurrentlyUpgrading.Remove(Bar);
-
 			// Remove the bar next tick to avoid stuttering issues.
 			GetWorld()->GetTimerManager().SetTimerForNextTick([this, Bar]()
 			{
@@ -802,38 +742,38 @@ void UHUDWidget::UpdateWeaponBars(float InDeltaTime)
 void UHUDWidget::StopUpgradeAutoPistol()
 {
 	UProgressBar* Bar = GetUnlockBar(EWeaponType::Pistol);
-	// Bar->SetPercent(0.f);
-	// BarsCurrentlyUpgrading.Remove(Bar);
 	StopUpgrade(Bar);
 }
 
 void UHUDWidget::StopUpgradeShotgun()
 {
 	UProgressBar* Bar = GetUnlockBar(EWeaponType::Shotgun);
-	// Bar->SetPercent(0.f);
-	// BarsCurrentlyUpgrading.Remove(Bar);
 	StopUpgrade(Bar);
 }
 
 void UHUDWidget::StopUpgradeAssaultRifle()
 {
 	UProgressBar* Bar = GetUnlockBar(EWeaponType::AssaultRifle);
-	// Bar->SetPercent(0.f);
-	// BarsCurrentlyUpgrading.Remove(Bar);
 	StopUpgrade(Bar);
 }
 
 void UHUDWidget::StopUpgradeSniperRifle()
 {
 	UProgressBar* Bar = GetUnlockBar(EWeaponType::SniperRifle);
-	// Bar->SetPercent(0.f);
-	// BarsCurrentlyUpgrading.Remove(Bar);
 	StopUpgrade(Bar);
 }
 
+// Reset progress bar percent to zero and stop updating it in tick.
 void UHUDWidget::StopUpgrade(UProgressBar* Bar)
 {
 	Bar->SetPercent(0.f);
 	BarsCurrentlyUpgrading.Remove(Bar);
 }
 
+void UHUDWidget::UpdateSliders()
+{
+	for (URadialSlider* Slider : SlidersToUpdate)
+	{
+		
+	}
+}
