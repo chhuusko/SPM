@@ -25,7 +25,7 @@ private:
 	
 	AShooterCharacter* PlayerCharacter;
 	FTimerHandle HideIndicatorTimer;
-	bool bShowIndicator;
+	bool bShowIndicator = false;
 	AActor* DamageCauser;
 
 	UPROPERTY(EditDefaultsOnly)

@@ -79,11 +79,6 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	{
 		UpdateWeaponBars(InDeltaTime);
 	}
-
-	if (!SlidersToUpdate.IsEmpty())
-	{
-		UpdateSliders();
-	}
 }
 
 // Add the key-value-pairs for weapon unlock bars.
@@ -768,12 +763,4 @@ void UHUDWidget::StopUpgrade(UProgressBar* Bar)
 {
 	Bar->SetPercent(0.f);
 	BarsCurrentlyUpgrading.Remove(Bar);
-}
-
-void UHUDWidget::UpdateSliders()
-{
-	for (URadialSlider* Slider : SlidersToUpdate)
-	{
-		
-	}
 }
