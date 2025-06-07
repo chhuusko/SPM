@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Game/ShooterGameInstance.h"
+#include "UObject/FastReferenceCollector.h"
 
 TSet<class AActor*> UHitDirectionWidget::DamageCausers = TSet<class AActor*>();
 
@@ -79,35 +80,58 @@ void UHitDirectionWidget::HideIndicator()
 	}
 
 	// Remove widget from player screen.
-	this->RemoveFromParent();
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+		this->RemoveFromParent();
+	});
 }
 
 // Updates the rotation of the indicator to show the damage causer's location.
 void UHitDirectionWidget::UpdateIndicator()
 {
-	if (DamageCauser == nullptr) return; 
+	if (bWidgetDestroyed)
+	{
+		return;
+	}
+	
+	if (!IsValid(PlayerCharacter) || !IsValid(DamageIcon))
+	{
+		return;
+	}
+	
 	if (!GameInstance || GameInstance->HasMatchEnded())
 	{
 		bShowIndicator = false;
 		return;
 	}
 
-	if (!DamageCauser || !PlayerCharacter)
+	FVector3d DamageLocation;
+	if (IsValid(DamageCauser))
 	{
+		DamageLocation = DamageCauser->GetActorLocation();
+	}
+	else
+	{
+		HideIndicator();
 		return;
 	}
 	
-	FVector3d DamageLocation = DamageCauser->GetActorLocation();
-	FVector3d PlayerLocation = PlayerCharacter->GetActorLocation();
+	FVector3d PlayerLocation;
+	if (IsValid(PlayerCharacter))
+	{
+		PlayerLocation = PlayerCharacter->GetActorLocation();
+	}
+	else
+	{
+		HideIndicator();
+		return;
+	}
 
 	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(PlayerLocation, DamageLocation);
 	FRotator ControlRotation = PlayerCharacter->GetControlRotation();
 
 	float Rotation = LookRotation.Yaw - ControlRotation.Yaw;
 
-	if (DamageIcon)
-	{
-		// Set the rotation.
-		DamageIcon->SetRenderTransformAngle(Rotation);
-	}
+	// Set the rotation.
+	DamageIcon->SetRenderTransformAngle(Rotation);
 }
