@@ -25,11 +25,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	static ADroneManager* GetInstance(UWorld* World){return Instance;};
-	
-	static TArray<AActor*> GetPlayers(); 
+	TArray<AActor*> Players;
+	static TArray<AActor*> GetPlayers();
+	UFUNCTION()
+	void SetDronePlayers();
 private:
 	static ADroneManager* Instance;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class ASVOGrid> Grid;
-	TArray<AActor*> Players;
+	
+	FTimerHandle GetPlayerTimerHandle;
 };

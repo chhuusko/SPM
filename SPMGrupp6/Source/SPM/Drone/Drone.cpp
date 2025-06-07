@@ -13,6 +13,7 @@
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Weapons/UpgradedPistol.h"
 
+TArray<AActor*> ADrone::Players = TArray<AActor*>();
 
 // Sets default values
 ADrone::ADrone()
@@ -45,14 +46,11 @@ void ADrone::BeginPlay()
 	Super::BeginPlay();
 	GetWorldTimerManager().SetTimer(FireRateTimerHandle, this, &ADrone::Shoot, FireRate, true);
 	
-	
 }
 // Called every frame
 void ADrone::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (Players.Num() < 2)
-		Players = ADroneManager::GetInstance(GetWorld())->GetPlayers();
 	if (State)
 	{
 		State->Move();
