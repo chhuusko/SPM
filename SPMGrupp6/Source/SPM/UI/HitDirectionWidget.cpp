@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Game/ShooterGameInstance.h"
+#include "UObject/FastReferenceCollector.h"
 
 TSet<class AActor*> UHitDirectionWidget::DamageCausers = TSet<class AActor*>();
 
@@ -93,7 +94,7 @@ void UHitDirectionWidget::UpdateIndicator()
 		return;
 	}
 	
-	if (!IsValid(DamageCauser) || !IsValid(PlayerCharacter) || !IsValid(DamageIcon))
+	if (!IsValid(PlayerCharacter) || !IsValid(DamageIcon))
 	{
 		return;
 	}
@@ -103,9 +104,28 @@ void UHitDirectionWidget::UpdateIndicator()
 		bShowIndicator = false;
 		return;
 	}
+
+	FVector3d DamageLocation;
+	if (IsValid(DamageCauser))
+	{
+		DamageLocation = DamageCauser->GetActorLocation();
+	}
+	else
+	{
+		HideIndicator();
+		return;
+	}
 	
-	FVector3d DamageLocation = DamageCauser->GetActorLocation();
-	FVector3d PlayerLocation = PlayerCharacter->GetActorLocation();
+	FVector3d PlayerLocation;
+	if (IsValid(PlayerCharacter))
+	{
+		PlayerLocation = PlayerCharacter->GetActorLocation();
+	}
+	else
+	{
+		HideIndicator();
+		return;
+	}
 
 	FRotator LookRotation = UKismetMathLibrary::FindLookAtRotation(PlayerLocation, DamageLocation);
 	FRotator ControlRotation = PlayerCharacter->GetControlRotation();
