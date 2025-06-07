@@ -79,21 +79,28 @@ void UHitDirectionWidget::HideIndicator()
 	}
 
 	// Remove widget from player screen.
-	this->RemoveFromParent();
+	GetWorld()->GetTimerManager().SetTimerForNextTick([this]()
+	{
+		this->RemoveFromParent();
+	});
 }
 
 // Updates the rotation of the indicator to show the damage causer's location.
 void UHitDirectionWidget::UpdateIndicator()
 {
-	if (DamageCauser == nullptr) return; 
+	if (bWidgetDestroyed)
+	{
+		return;
+	}
+	
+	if (!IsValid(DamageCauser) || !IsValid(PlayerCharacter) || !IsValid(DamageIcon))
+	{
+		return;
+	}
+	
 	if (!GameInstance || GameInstance->HasMatchEnded())
 	{
 		bShowIndicator = false;
-		return;
-	}
-
-	if (!DamageCauser || !PlayerCharacter)
-	{
 		return;
 	}
 	
@@ -105,9 +112,6 @@ void UHitDirectionWidget::UpdateIndicator()
 
 	float Rotation = LookRotation.Yaw - ControlRotation.Yaw;
 
-	if (DamageIcon)
-	{
-		// Set the rotation.
-		DamageIcon->SetRenderTransformAngle(Rotation);
-	}
+	// Set the rotation.
+	DamageIcon->SetRenderTransformAngle(Rotation);
 }
