@@ -85,7 +85,11 @@ void UShooterGameInstance::SetCombinedRadarEnabled(bool bCombinedRadarEnabled)
 void UShooterGameInstance::Init()
 {
 	Super::Init();
-	
+	if (GEngine)
+	{
+		GEngine->bEnableOnScreenDebugMessages = false;
+		GEngine->bEnableOnScreenDebugMessagesDisplay = false;
+	}
 	// Bind for future map loads
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UShooterGameInstance::OnPostLoadMap);
 	
