@@ -28,7 +28,7 @@ protected:
 	virtual void LostPlayer();
 	
 	//State // needed for heavy drone state
-	TArray<AActor*> Players;
+	static TArray<AActor*> Players;
 	AActor* Target;
 	ADroneSpawn* Spawner;
 	FDroneState* State;
@@ -64,6 +64,7 @@ public:
 	void ChangeState(FDroneState* newState);
 	virtual void SetSpawner(ADroneSpawn* Spawn);
 	void SetPathList(TArray<FVector> PathList){Path = PathList;};
+	static void SetPlayers(TArray<AActor*> NewPlayers) {Players = NewPlayers;};
 	void SetTarget(AActor* Target);
 
 	
