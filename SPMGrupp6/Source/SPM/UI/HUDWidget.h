@@ -8,6 +8,7 @@
 #include "SPM/Systems/WeaponUnlocking.h"
 #include "HUDWidget.generated.h"
 
+class UTickableRadialSlider;
 enum class EWeaponType : uint8;
 /**
  * 
@@ -51,8 +52,8 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* SniperRifleUnlockBar;
 
-	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* DashCooldown;
+	// UPROPERTY(meta = (BindWidget))
+	// class URadialSlider* DashCooldown;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
@@ -111,11 +112,17 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* Crosshair;
 
-	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* ReloadCooldown;
+	// UPROPERTY(meta = (BindWidget))
+	// class URadialSlider* ReloadCooldown;
 
 	UPROPERTY(meta = (BindWidget))
-	class URadialSlider* JetpackFuelSlider;
+	class UJetpackRadialSlider* JetpackFuelSlider;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTickableRadialSlider* ReloadSlider;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTickableRadialSlider* DashSlider;
 
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* PadlockTexture;
@@ -154,11 +161,11 @@ private:
 	UPROPERTY()
 	float TotalJetpackCooldownTime;
 
-	UFUNCTION()
-	void UpdateJetpackCooldown();
-
-	UFUNCTION()
-	void HideJetpackSlider();
+	// UFUNCTION()
+	// void UpdateJetpackCooldown();
+	//
+	// UFUNCTION()
+	// void HideJetpackSlider();
 
 	UFUNCTION()
 	void UpdateDashCooldownTimer(float Output);
@@ -262,6 +269,7 @@ private:
 	void CreateDashTimeline();
 
 	void UpdateWeaponBars(float InDeltaTime);
+	void UpdateSliders(float InDeltaTime);
 	
 	UPROPERTY()
 	float ElapsedDashTime;
@@ -361,6 +369,8 @@ private:
 	UInputMappingContext* WeaponUpgradeMappingContext;
 
 	TSet<class UProgressBar*> BarsCurrentlyUpgrading;
+	TSet<UTickableRadialSlider*> RadialSliders;
+	TSet<UTickableRadialSlider*> RadialSlidersToRemove;
 
 	UPROPERTY()
 	TMap<EWeaponType, UHorizontalBox*> WeaponBoxMap;

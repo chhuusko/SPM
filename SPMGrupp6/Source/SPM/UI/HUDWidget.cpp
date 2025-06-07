@@ -3,7 +3,9 @@
 
 #include "HUDWidget.h"
 #include "EnhancedInputComponent.h"
+#include "JetpackRadialSlider.h"
 #include "OptionsMenuWidget.h"
+#include "TickableRadialSlider.h"
 #include "Components/HorizontalBox.h"
 #include "SPM/Characters/ShooterCharacter.h"
 #include "SPM/Systems/WeaponUnlocking.h"
@@ -72,12 +74,17 @@ void UHUDWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	// Only update when the fuel is currently being used or is recharging.
 	if (!bJetpackFuelFull)
 	{
-		UpdateJetpackCooldown();
+		// UpdateJetpackCooldown();
 	}
 
 	if (!BarsCurrentlyUpgrading.IsEmpty())
 	{
 		UpdateWeaponBars(InDeltaTime);
+	}
+
+	if (!RadialSliders.IsEmpty())
+	{
+		UpdateSliders(InDeltaTime);
 	}
 }
 
@@ -135,6 +142,7 @@ void UHUDWidget::GetPlayerCharacter()
 	{
 		PlayerCharacter->OnUsedJetpack.AddDynamic(this, &UHUDWidget::StartJetpackUpdate);
 		PlayerCharacter->OnHealthUpdated.AddDynamic(this, &UHUDWidget::UpdateHealth);
+		JetpackFuelSlider->SetPlayerCharacter(PlayerCharacter);
 	}
 	else
 	{
@@ -279,34 +287,36 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 
 void UHUDWidget::StartJetpackUpdate()
 {
-	bJetpackFuelFull = false;
-	JetpackFuelSlider->SetSliderBarColor(FLinearColor(.2f, .2f, .2f, .7f));
+	// bJetpackFuelFull = false;
+	// JetpackFuelSlider->SetSliderBarColor(FLinearColor(.2f, .2f, .2f, .7f));
+	RadialSliders.Add(Cast<UTickableRadialSlider>(JetpackFuelSlider));
+	JetpackFuelSlider->StartUpdate(0.f);
 }
 
 // Set the jetpack fuel bar in HUD.
-void UHUDWidget::UpdateJetpackCooldown()
-{
-	float FuelPercent = PlayerCharacter->GetJetpackPercentage();
-	JetpackFuelSlider->SetValue(FuelPercent);
-
-	SetSliderColor(JetpackFuelSlider, FuelPercent, FLinearColor::White);
-
-	// The jetpack has full fuel, so there's no need to update the fuel bar.
-	if (FuelPercent >= 1.f)
-	{
-		bJetpackFuelFull = true;
-		
-		// Hide the HUD after a small delay.
-		GetWorld()->GetTimerManager().SetTimer(JetpackTimerHandle, this, &UHUDWidget::HideJetpackSlider, 0.2f);
-	}
-}
+// void UHUDWidget::UpdateJetpackCooldown()
+// {
+// 	float FuelPercent = PlayerCharacter->GetJetpackPercentage();
+// 	JetpackFuelSlider->SetValue(FuelPercent);
+//
+// 	SetSliderColor(JetpackFuelSlider, FuelPercent, FLinearColor::White);
+//
+// 	// The jetpack has full fuel, so there's no need to update the fuel bar.
+// 	if (FuelPercent >= 1.f)
+// 	{
+// 		bJetpackFuelFull = true;
+// 		
+// 		// Hide the HUD after a small delay.
+// 		GetWorld()->GetTimerManager().SetTimer(JetpackTimerHandle, this, &UHUDWidget::HideJetpackSlider, 0.2f);
+// 	}
+// }
 
 // Hides the jetpack slider from the HUD.
-void UHUDWidget::HideJetpackSlider()
-{
-	JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
-	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
-}
+// void UHUDWidget::HideJetpackSlider()
+// {
+// 	JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
+// 	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
+// }
 
 // Set progress bar color.
 void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor)
@@ -348,10 +358,15 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	UpdateCrosshairVisibility(Weapon);
 
 	// Stop reload if it is interrupted by swapping weapons.
-	if (ReloadTimeline->IsPlaying())
+	// if (ReloadTimeline->IsPlaying())
+	// {
+	// 	ReloadTimeline->Stop();
+	// 	ReloadCooldown->SetValue(0.f);
+	// }
+
+	if (ReloadSlider->GetValue() > 0.f)
 	{
-		ReloadTimeline->Stop();
-		ReloadCooldown->SetValue(0.f);
+		ReloadSlider->FinishUpdate();
 	}
 	
 	UProgressBar* NextWeaponBar = GetUnlockBar(Weapon);
@@ -593,96 +608,103 @@ void UHUDWidget::UpdateCrosshairColor(FLinearColor Color)
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)
 {
-	if (!ReloadTimeline)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Timeline is null!"));
-		return;
-	}
-	if (!ReloadCurve)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
-	}
+	// if (!ReloadTimeline)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("Timeline is null!"));
+	// 	return;
+	// }
+	// if (!ReloadCurve)
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
+	// }
+	//
+	// // Bind function for updating reload slider.
+	// ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
+	// ReloadTimeline->AddInterpFloat(ReloadCurve, ReloadOnTimelineFloat);
+	//
+	// // Set timeline length.
+	// ReloadTimeline->SetTimelineLength(Cooldown);
+	// ReloadTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	//
+	// // Bind function for when timeline is finished.
+	// FOnTimelineEvent TimelineEvent;
+	// TimelineEvent.BindUFunction(this, FName("ReloadCooldownCompleted"));
+	// ReloadTimeline->SetTimelineFinishedFunc(TimelineEvent);
+	//
+	// if (IsValid(ReloadTimeline) && ReloadTimeline->IsRegistered())
+	// {
+	// 	ReloadTimeline->PlayFromStart();
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
+	// }
+
+	RadialSliders.Add(ReloadSlider);
+	ReloadSlider->StartUpdate(Cooldown);
 	
-	// Bind function for updating reload slider.
-	ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
-	ReloadTimeline->AddInterpFloat(ReloadCurve, ReloadOnTimelineFloat);
-
-	// Set timeline length.
-	ReloadTimeline->SetTimelineLength(Cooldown);
-	ReloadTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-
-	// Bind function for when timeline is finished.
-	FOnTimelineEvent TimelineEvent;
-	TimelineEvent.BindUFunction(this, FName("ReloadCooldownCompleted"));
-	ReloadTimeline->SetTimelineFinishedFunc(TimelineEvent);
-
-	if (IsValid(ReloadTimeline) && ReloadTimeline->IsRegistered())
-	{
-		ReloadTimeline->PlayFromStart();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
-	}
 }
 
 // Updates cooldown indicator.
 void UHUDWidget::UpdateReloadCooldown(float Output)
 {
-	if (ReloadCooldown && ReloadTimeline)
-	{
-		float PlaybackPosition = ReloadTimeline->GetPlaybackPosition();
-		float NormalizedValue = FMath::Clamp(PlaybackPosition / ReloadTimeline->GetTimelineLength(), 0.f, 1.f);
-		ReloadCooldown->SetValue(NormalizedValue);
-	}
+	// if (ReloadCooldown && ReloadTimeline)
+	// {
+	// 	float PlaybackPosition = ReloadTimeline->GetPlaybackPosition();
+	// 	float NormalizedValue = FMath::Clamp(PlaybackPosition / ReloadTimeline->GetTimelineLength(), 0.f, 1.f);
+	// 	ReloadCooldown->SetValue(NormalizedValue);
+	// }
 }
 
 // Finishes reload cooldown.
 void UHUDWidget::ReloadCooldownCompleted()
 {
-	// Resets cooldown slider.
-	if (ReloadCooldown)
-	{
-		ReloadCooldown->SetValue(0.f);
-	}
+	// // Resets cooldown slider.
+	// if (ReloadCooldown)
+	// {
+	// 	ReloadCooldown->SetValue(0.f);
+	// }
 }
 
 void UHUDWidget::StartDashTimer(float CooldownTime)
 {
-	if (!DashTimeline || !DashCurve)
-	{
-		return;
-	}
+	// if (!DashTimeline || !DashCurve)
+	// {
+	// 	return;
+	// }
+	//
+	// DashOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateDashCooldownTimer);
+	// DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
+	//
+	// DashTimeline->SetTimelineLength(CooldownTime);
+	// DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
+	//
+	// FOnTimelineEvent TimelineEvent;
+	// TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
+	// DashTimeline->SetTimelineFinishedFunc(TimelineEvent);
+	//
+	// if (IsValid(DashTimeline) && DashTimeline->IsRegistered())
+	// {
+	// 	DashTimeline->PlayFromStart();
+	// }
 
-	DashOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateDashCooldownTimer);
-	DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
-
-	DashTimeline->SetTimelineLength(CooldownTime);
-	DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-
-	FOnTimelineEvent TimelineEvent;
-	TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
-	DashTimeline->SetTimelineFinishedFunc(TimelineEvent);
-
-	if (IsValid(DashTimeline) && DashTimeline->IsRegistered())
-	{
-		DashTimeline->PlayFromStart();
-	}
+	RadialSliders.Add(DashSlider);
+	DashSlider->StartUpdate(CooldownTime);
 }
 
 void UHUDWidget::UpdateDashCooldownTimer(float Output)
 {
-	if (DashCooldown && DashTimeline)
-	{
-		float NormalizedValue = DashTimeline->GetPlaybackPosition() / DashTimeline->GetTimelineLength();
-		DashCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
-	}
+	// if (DashCooldown && DashTimeline)
+	// {
+	// 	float NormalizedValue = DashTimeline->GetPlaybackPosition() / DashTimeline->GetTimelineLength();
+	// 	DashCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
+	// }
 }
 
 // Reset indicator.
 void UHUDWidget::DashCooldownFinished()
 {
-	DashCooldown->SetValue(0.f);
+	// DashCooldown->SetValue(0.f);
 }
 
 void UHUDWidget::StartUpgradeAutoPistol(const FInputActionInstance& Instance)
@@ -732,6 +754,24 @@ void UHUDWidget::UpdateWeaponBars(float InDeltaTime)
 			});
 		}
 	}
+}
+
+void UHUDWidget::UpdateSliders(float InDeltaTime)
+{
+	for (UTickableRadialSlider* Slider : RadialSliders)
+	{
+		Slider->UpdateSlider(InDeltaTime);
+		if (!Slider->IsUpdating())
+		{
+			RadialSlidersToRemove.Add(Slider);
+		}
+	}
+
+	for (UTickableRadialSlider* Slider : RadialSlidersToRemove)
+	{
+		RadialSliders.Remove(Slider);
+	}
+	RadialSlidersToRemove.Empty();
 }
 
 void UHUDWidget::StopUpgradeAutoPistol()
