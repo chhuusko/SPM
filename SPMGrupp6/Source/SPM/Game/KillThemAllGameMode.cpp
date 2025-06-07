@@ -82,6 +82,11 @@ void AKillThemAllGameMode::CheckGameWon()
 
 void AKillThemAllGameMode::LoadMainMenu()
 {
+	if (GEngine)
+	{
+		GEngine->bEnableOnScreenDebugMessages = false;
+		GEngine->bEnableOnScreenDebugMessagesDisplay = false;
+	}
 	UGameplayStatics::OpenLevel(this, FName("MainMenuMap"));
 }
 
