@@ -150,11 +150,8 @@ void ADrone::SetTarget(AActor* NewTarget)
 
 void ADrone::MoveTo(FVector Location)
 {
-	FVector CurrentLocation = GetActorLocation();
-	float Speed = 300.f; 
-	float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
-	FVector Direction = (Location - CurrentLocation).GetSafeNormal();
-	FVector TargetLocation = CurrentLocation + Direction * Speed * DeltaTime;
+	FVector Direction = (Location - GetActorLocation()).GetSafeNormal();
+	FVector TargetLocation = GetActorLocation() + Direction * MoveSpeed * UGameplayStatics::GetWorldDeltaSeconds(this);
 	
 	if (FVector::Dist(GetActorLocation(), Location) < MoveSpeed * UGameplayStatics::GetWorldDeltaSeconds(this))
 	{
