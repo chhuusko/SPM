@@ -248,12 +248,15 @@ protected:
 
 	float GetAbilityCooldown() const { return AbilityCooldown; }
 	void SetAbilityCooldown(float Cooldown) {AbilityCooldown = Cooldown; }
-
 	bool IsAbilityOnCooldown() const { return bIsAbilityOnCooldown; }
 	void SetAbilityCooldown(bool Cooldown) { bIsAbilityOnCooldown = Cooldown; }
 	FString WhichBodyPartWasHit(FHitResult& HitResult);
 	virtual float CalculateDamageHitLocation(FHitResult& HitResult, float OriginalDamage);
 	void ReloadAutomatically();
+	float CalculateDamageFalloff(float TraceLength);
+	void HandleNextAutoFire();
+	void StopAutoFire();
+	void EnableCanPlayEmptyMagSound();
 	
 	UPROPERTY(EditAnywhere)
 	float HeadShotMultiplier = 1.25; 
@@ -269,14 +272,12 @@ private:
 	int32 CooldownUpdateAmount = 10;
 
 	float RemainingAbilityCooldown;
-	
 	bool bIsAbilityOnCooldown = false;
 	FTimerHandle AbilityCooldownTimerHandle;
-	
-
 
 	void StartAutomaticFireSequence();
 	void SaveGunMaterials();
+	void ResetCanFire();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -288,17 +289,12 @@ public:
 	virtual void ApplyUpgrade(int NewLevel);
 	void UpdateAmmoText();
 	void UpdateWeaponAbilityCooldown();
-	void ResetCanFire();
 	void ReleaseTrigger();
 	void Reload();
 	void StopReload();
-	float CalculateDamageFalloff(float TraceLength);
     int32 GetUpgradeCost(int Level) const;
 	void StopPendingActions();
 	void SetWeaponEquipped(const bool bIsEquipped);
-	void EnableCanPlayEmptyMagSound();
-	void HandleNextAutoFire();
-	void StopAutoFire();
 	int32 GetBulletsLeft() const;
 	
 };
