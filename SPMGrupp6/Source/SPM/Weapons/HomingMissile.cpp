@@ -159,7 +159,6 @@ void AHomingMissile::Explode()
 					APlayerController* PlayerController = Cast<APlayerController>(HitPawn->GetController());
 					if (PlayerController)
 					{
-						// Would be nice to get more camera shake the closer you are to explosion
 						PlayerController->ClientStartCameraShake(ExplosionCameraShake);
 					}
 				}

@@ -300,5 +300,4 @@ public:
 	void HandleNextAutoFire();
 	void StopAutoFire();
 	int32 GetBulletsLeft() const;
-	
 };
