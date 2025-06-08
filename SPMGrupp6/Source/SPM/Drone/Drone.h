@@ -40,6 +40,8 @@ protected:
     TSubclassOf<class AHealthPickUp> HealthPickUpClass;
     UPROPERTY(EditDefaultsOnly, Category="PickUp")
     TSubclassOf<class AResourcePickUp> ResourcePickUpClass;
+
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -65,7 +67,7 @@ public:
 	virtual void SetSpawner(ADroneSpawn* Spawn);
 	void SetPathList(TArray<FVector> PathList){Path = PathList;};
 	void SetTarget(AActor* Target);
-
+	
 	
 	//Get
 	UNiagaraSystem* GetShotMuzzle(){return MuzzleEffect;};
@@ -126,5 +128,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 NumberOfLootDrops = 1;
 
+	float MoveSpeed = 300.f; 
 	TArray<ADroneBullet*> BulletPool;
 };

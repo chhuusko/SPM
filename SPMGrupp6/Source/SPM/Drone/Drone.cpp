@@ -156,14 +156,11 @@ void ADrone::MoveTo(FVector Location)
 	FVector Direction = (Location - CurrentLocation).GetSafeNormal();
 	FVector TargetLocation = CurrentLocation + Direction * Speed * DeltaTime;
 	
-	if (FVector::Dist(CurrentLocation, Location) < Speed * DeltaTime)
+	if (FVector::Dist(GetActorLocation(), Location) < MoveSpeed * UGameplayStatics::GetWorldDeltaSeconds(this))
 	{
 		TargetLocation = Location;
 	}
-
-	FVector Delta = TargetLocation - CurrentLocation;
-
-	AddActorWorldOffset(Delta, true);
+	AddActorWorldOffset(TargetLocation - GetActorLocation(), true);
 }
 
 void ADrone::FollowPath()
