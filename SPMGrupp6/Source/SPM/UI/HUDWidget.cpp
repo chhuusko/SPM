@@ -40,16 +40,6 @@ void UHUDWidget::NativeConstruct()
 
 	GetShooterGameInstance();
 
-	// Create timelines if they don't exist.
-	if (!ReloadTimeline)
-	{
-		CreateReloadTimeline();
-	}
-	if (!DashTimeline)
-	{
-		CreateDashTimeline();
-	}
-
 	// Bind input actions for starting and stopping upgrades.
 	if (AShooterPlayerController* PC = Cast<AShooterPlayerController>(PlayerCharacter->GetController()))
 	{
@@ -95,37 +85,6 @@ void UHUDWidget::InitializeWeaponBoxMap()
 	WeaponBoxMap.Add(EWeaponType::Shotgun, ShotgunLevels);
 	WeaponBoxMap.Add(EWeaponType::AssaultRifle, AssaultRifleLevels);
 	WeaponBoxMap.Add(EWeaponType::SniperRifle, SniperRifleLevels);
-}
-
-void UHUDWidget::CreateReloadTimeline()
-{
-	// Have to use NewObject since we're in a UI context. CreateDefaultSubObject won't work.
-	ReloadTimeline = NewObject<UTimelineComponent>(this, FName("ReloadCooldownTimeline"));
-
-	if (ReloadTimeline)
-	{
-		ReloadTimeline->CreationMethod = EComponentCreationMethod::Native;
-		ReloadTimeline->RegisterComponentWithWorld(GetWorld());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Reload Timeline"));
-	}
-}
-
-void UHUDWidget::CreateDashTimeline()
-{
-	DashTimeline = NewObject<UTimelineComponent>(this, FName("DashCooldownTimeline"));
-
-	if (DashTimeline)
-	{
-		DashTimeline->CreationMethod = EComponentCreationMethod::Native;
-		DashTimeline->RegisterComponentWithWorld(GetWorld());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Dash Timeline"));
-	}
 }
 
 // Initialize player character variable.
@@ -287,36 +246,9 @@ void UHUDWidget::UpdateWeaponUpgradeUI()
 
 void UHUDWidget::StartJetpackUpdate()
 {
-	// bJetpackFuelFull = false;
-	// JetpackFuelSlider->SetSliderBarColor(FLinearColor(.2f, .2f, .2f, .7f));
 	RadialSliders.Add(Cast<UTickableRadialSlider>(JetpackFuelSlider));
 	JetpackFuelSlider->StartUpdate(0.f);
 }
-
-// Set the jetpack fuel bar in HUD.
-// void UHUDWidget::UpdateJetpackCooldown()
-// {
-// 	float FuelPercent = PlayerCharacter->GetJetpackPercentage();
-// 	JetpackFuelSlider->SetValue(FuelPercent);
-//
-// 	SetSliderColor(JetpackFuelSlider, FuelPercent, FLinearColor::White);
-//
-// 	// The jetpack has full fuel, so there's no need to update the fuel bar.
-// 	if (FuelPercent >= 1.f)
-// 	{
-// 		bJetpackFuelFull = true;
-// 		
-// 		// Hide the HUD after a small delay.
-// 		GetWorld()->GetTimerManager().SetTimer(JetpackTimerHandle, this, &UHUDWidget::HideJetpackSlider, 0.2f);
-// 	}
-// }
-
-// Hides the jetpack slider from the HUD.
-// void UHUDWidget::HideJetpackSlider()
-// {
-// 	JetpackFuelSlider->SetSliderBarColor(FLinearColor(0,0,0,0));
-// 	JetpackFuelSlider->SetSliderProgressColor(FLinearColor(0,0,0,0));
-// }
 
 // Set progress bar color.
 void UHUDWidget::SetBarColor(UProgressBar* Bar, float Percent, FLinearColor StartColor)
@@ -358,12 +290,6 @@ void UHUDWidget::UpdateEquippedWeapon(EWeaponType Weapon)
 	UpdateCrosshairVisibility(Weapon);
 
 	// Stop reload if it is interrupted by swapping weapons.
-	// if (ReloadTimeline->IsPlaying())
-	// {
-	// 	ReloadTimeline->Stop();
-	// 	ReloadCooldown->SetValue(0.f);
-	// }
-
 	if (ReloadSlider->GetValue() > 0.f)
 	{
 		ReloadSlider->FinishUpdate();
@@ -608,103 +534,14 @@ void UHUDWidget::UpdateCrosshairColor(FLinearColor Color)
 
 void UHUDWidget::StartReloadCooldown(float Cooldown)
 {
-	// if (!ReloadTimeline)
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("Timeline is null!"));
-	// 	return;
-	// }
-	// if (!ReloadCurve)
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("ReloadCurve is null!"));
-	// }
-	//
-	// // Bind function for updating reload slider.
-	// ReloadOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateReloadCooldown);
-	// ReloadTimeline->AddInterpFloat(ReloadCurve, ReloadOnTimelineFloat);
-	//
-	// // Set timeline length.
-	// ReloadTimeline->SetTimelineLength(Cooldown);
-	// ReloadTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-	//
-	// // Bind function for when timeline is finished.
-	// FOnTimelineEvent TimelineEvent;
-	// TimelineEvent.BindUFunction(this, FName("ReloadCooldownCompleted"));
-	// ReloadTimeline->SetTimelineFinishedFunc(TimelineEvent);
-	//
-	// if (IsValid(ReloadTimeline) && ReloadTimeline->IsRegistered())
-	// {
-	// 	ReloadTimeline->PlayFromStart();
-	// }
-	// else
-	// {
-	// 	UE_LOG(LogTemp, Warning, TEXT("No Timeline"));
-	// }
-
 	RadialSliders.Add(ReloadSlider);
 	ReloadSlider->StartUpdate(Cooldown);
-	
-}
-
-// Updates cooldown indicator.
-void UHUDWidget::UpdateReloadCooldown(float Output)
-{
-	// if (ReloadCooldown && ReloadTimeline)
-	// {
-	// 	float PlaybackPosition = ReloadTimeline->GetPlaybackPosition();
-	// 	float NormalizedValue = FMath::Clamp(PlaybackPosition / ReloadTimeline->GetTimelineLength(), 0.f, 1.f);
-	// 	ReloadCooldown->SetValue(NormalizedValue);
-	// }
-}
-
-// Finishes reload cooldown.
-void UHUDWidget::ReloadCooldownCompleted()
-{
-	// // Resets cooldown slider.
-	// if (ReloadCooldown)
-	// {
-	// 	ReloadCooldown->SetValue(0.f);
-	// }
 }
 
 void UHUDWidget::StartDashTimer(float CooldownTime)
 {
-	// if (!DashTimeline || !DashCurve)
-	// {
-	// 	return;
-	// }
-	//
-	// DashOnTimelineFloat.BindDynamic(this, &UHUDWidget::UpdateDashCooldownTimer);
-	// DashTimeline->AddInterpFloat(DashCurve, DashOnTimelineFloat);
-	//
-	// DashTimeline->SetTimelineLength(CooldownTime);
-	// DashTimeline->SetTimelineLengthMode(ETimelineLengthMode::TL_TimelineLength);
-	//
-	// FOnTimelineEvent TimelineEvent;
-	// TimelineEvent.BindUFunction(this, FName("DashCooldownFinished"));
-	// DashTimeline->SetTimelineFinishedFunc(TimelineEvent);
-	//
-	// if (IsValid(DashTimeline) && DashTimeline->IsRegistered())
-	// {
-	// 	DashTimeline->PlayFromStart();
-	// }
-
 	RadialSliders.Add(DashSlider);
 	DashSlider->StartUpdate(CooldownTime);
-}
-
-void UHUDWidget::UpdateDashCooldownTimer(float Output)
-{
-	// if (DashCooldown && DashTimeline)
-	// {
-	// 	float NormalizedValue = DashTimeline->GetPlaybackPosition() / DashTimeline->GetTimelineLength();
-	// 	DashCooldown->SetValue(FMath::Clamp(NormalizedValue, 0.f, 1.f));
-	// }
-}
-
-// Reset indicator.
-void UHUDWidget::DashCooldownFinished()
-{
-	// DashCooldown->SetValue(0.f);
 }
 
 void UHUDWidget::StartUpgradeAutoPistol(const FInputActionInstance& Instance)

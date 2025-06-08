@@ -112,9 +112,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* Crosshair;
 
-	// UPROPERTY(meta = (BindWidget))
-	// class URadialSlider* ReloadCooldown;
-
 	UPROPERTY(meta = (BindWidget))
 	class UJetpackRadialSlider* JetpackFuelSlider;
 
@@ -160,18 +157,6 @@ private:
 
 	UPROPERTY()
 	float TotalJetpackCooldownTime;
-
-	// UFUNCTION()
-	// void UpdateJetpackCooldown();
-	//
-	// UFUNCTION()
-	// void HideJetpackSlider();
-
-	UFUNCTION()
-	void UpdateDashCooldownTimer(float Output);
-
-	UFUNCTION()
-	void DashCooldownFinished();
 
 	UFUNCTION()
 	void StartUpgradeAutoPistol(const FInputActionInstance& Instance);
@@ -259,15 +244,6 @@ private:
 	UFUNCTION()
 	void StartReloadCooldown(float Cooldown);
 
-	UFUNCTION()
-	void UpdateReloadCooldown(float Output);
-
-	UFUNCTION()
-	void ReloadCooldownCompleted();
-
-	void CreateReloadTimeline();
-	void CreateDashTimeline();
-
 	void UpdateWeaponBars(float InDeltaTime);
 	void UpdateSliders(float InDeltaTime);
 	
@@ -313,7 +289,9 @@ private:
 	bool bHasDashCooldown;
 	bool bJetpackFuelFull = true;
 
+	UPROPERTY()
 	UProgressBar* EquippedWeaponBar;
+	UPROPERTY()
 	UImage* EquippedWeaponImage;
 	
 	FTimerHandle HitmarkTimerHandle;
@@ -321,24 +299,6 @@ private:
 	FTimerHandle AbilityUnlockedHandle;
 
 	EWeaponType CurrentWeapon;
-
-	UPROPERTY()
-	class UTimelineComponent* ReloadTimeline;
-
-	UPROPERTY()
-	FOnTimelineFloat ReloadOnTimelineFloat;
-
-	UPROPERTY(EditDefaultsOnly)
-	UCurveFloat* ReloadCurve;
-
-	UPROPERTY()
-	class UTimelineComponent* DashTimeline;
-
-	UPROPERTY()
-	FOnTimelineFloat DashOnTimelineFloat;
-
-	UPROPERTY(EditDefaultsOnly)
-	UCurveFloat* DashCurve;
 
 	UPROPERTY()
 	class UTimelineComponent* UnlockTimeline;
