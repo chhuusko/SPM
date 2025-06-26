@@ -423,29 +423,6 @@ void UHUDWidget::UpdateCooldownBarColor(EWeaponType Weapon)
 	}
 }
 
-// Update weapon cooldown in the corresponding slider.
-void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage)
-{
-	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
-	EWeaponType Weapon = EWeaponType::Pistol;
-
-	// Get the WeaponType for weapon on cooldown.
-	for (const TPair Pair : Guns)
-	{
-		if (Pair.Value == GunOnCooldown)
-		{
-			Weapon = Pair.Key;
-		}
-	}
-
-	// Set the value in corresponding cooldown bar.
-	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
-	if (CooldownBar)
-	{
-		CooldownBar->SetPercent(1.f - CooldownPercentage);
-	}
-}
-
 void UHUDWidget::ShowAbilityUnlockedPrompt()
 {
 	AbilityUnlockedPrompt->SetVisibility(ESlateVisibility::Visible);
@@ -593,24 +570,6 @@ void UHUDWidget::UpdateWeaponBars(float InDeltaTime)
 	}
 }
 
-void UHUDWidget::UpdateSliders(float InDeltaTime)
-{
-	for (UTickableRadialSlider* Slider : RadialSliders)
-	{
-		Slider->UpdateSlider(InDeltaTime);
-		if (!Slider->IsUpdating())
-		{
-			RadialSlidersToRemove.Add(Slider);
-		}
-	}
-
-	for (UTickableRadialSlider* Slider : RadialSlidersToRemove)
-	{
-		RadialSliders.Remove(Slider);
-	}
-	RadialSlidersToRemove.Empty();
-}
-
 void UHUDWidget::StopUpgradeAutoPistol()
 {
 	UProgressBar* Bar = GetUnlockBar(EWeaponType::Pistol);
@@ -640,4 +599,45 @@ void UHUDWidget::StopUpgrade(UProgressBar* Bar)
 {
 	Bar->SetPercent(0.f);
 	BarsCurrentlyUpgrading.Remove(Bar);
+}
+
+void UHUDWidget::UpdateSliders(float InDeltaTime)
+{
+	for (UTickableRadialSlider* Slider : RadialSliders)
+	{
+		Slider->UpdateSlider(InDeltaTime);
+		if (!Slider->IsUpdating())
+		{
+			RadialSlidersToRemove.Add(Slider);
+		}
+	}
+
+	for (UTickableRadialSlider* Slider : RadialSlidersToRemove)
+	{
+		RadialSliders.Remove(Slider);
+	}
+	RadialSlidersToRemove.Empty();
+}
+
+// Update weapon cooldown in the corresponding slider.
+void UHUDWidget::UpdateWeaponCooldown(AGun* GunOnCooldown, float CooldownPercentage)
+{
+	TMap<EWeaponType, AGun*> Guns = WeaponUnlocking->GetWeaponPool();
+	EWeaponType Weapon = EWeaponType::Pistol;
+
+	// Get the WeaponType for weapon on cooldown.
+	for (const TPair Pair : Guns)
+	{
+		if (Pair.Value == GunOnCooldown)
+		{
+			Weapon = Pair.Key;
+		}
+	}
+
+	// Set the value in corresponding cooldown bar.
+	UProgressBar* CooldownBar = GetAbilityBar(Weapon);
+	if (CooldownBar)
+	{
+		CooldownBar->SetPercent(1.f - CooldownPercentage);
+	}
 }
