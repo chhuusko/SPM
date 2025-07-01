@@ -50,6 +50,7 @@ public:
 	
 	//bool
 	virtual bool SeeTarget();
+	virtual bool CanMoveToTarget(FVector Location);
 
 	//Timehandlers
 	void StartAggroTimeHandler();

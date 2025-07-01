@@ -208,8 +208,12 @@ bool ADrone::SeeTarget()
         }
 	}
 	return false;
-	
 }
+bool ADrone::CanMoveToTarget(FVector Location)
+{
+	return true;
+}
+
 
 
 

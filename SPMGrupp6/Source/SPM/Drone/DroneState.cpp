@@ -151,7 +151,5 @@ void FDroneStateTest::Move()
 		//UE_LOG(LogTemp, Error, TEXT("DroneStateTest::Move %s"), *Drone->GetPathList()[0].ToString());
 		Drone->FollowPath();	
 	}
-	
-	
 }
 
