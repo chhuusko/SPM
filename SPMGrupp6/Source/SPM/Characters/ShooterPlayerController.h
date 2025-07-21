@@ -40,6 +40,9 @@ protected:
 private:
 	void InitializeUI();
 
+	UFUNCTION(BlueprintCallable)
+	void RemoveHUD();
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> GameOverScreenClass;
 

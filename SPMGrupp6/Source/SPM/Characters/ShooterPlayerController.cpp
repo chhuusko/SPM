@@ -104,6 +104,11 @@ void AShooterPlayerController::InitializeUI()
 	}
 }
 
+void AShooterPlayerController::RemoveHUD()
+{
+	HUDWidget->RemoveFromParent();
+}
+
 void AShooterPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
