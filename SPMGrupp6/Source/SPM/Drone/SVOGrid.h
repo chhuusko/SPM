@@ -51,7 +51,7 @@ private:
 	FOctNode* RootNode;
 	UPROPERTY(EditDefaultsOnly)
 	int GridLength = 32;
-	
+	bool IsWithin(FVector Position);
 	bool HasObjectWithin(FNode* Node);
 	UPROPERTY(EditAnywhere)
 	FVector AreaPosition;

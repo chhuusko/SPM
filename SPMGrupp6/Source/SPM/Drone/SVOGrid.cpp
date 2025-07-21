@@ -94,9 +94,11 @@ TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 	// get all 6 directions if clear and not visited
 	
 	//UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
-	if (Position.X > GridArray.Num() || Position.X < 0) return TArray<FVector>();
-	if (Position.Y > GridArray.Num() || Position.Y < 0) return TArray<FVector>();
-	if (Position.Z > GridArray.Num() || Position.Z < 0) return TArray<FVector>();
+	if (!IsWithin(Position))
+	{
+		return TArray<FVector>();
+	}
+	
 	
 	GridArray[Position.X][Position.Y][Position.Z]->IsVisited=true;
 	VisitedNodesArray.Add(Position);
@@ -176,7 +178,7 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 	
 	TArray<FVector> Path;
 	FVector PathNode = ConvertToGrid(From);
-	
+	if (!IsWithin(PathNode)) return TArray<FVector>();
 	Path.Add((GetLowestHPosition(GetPossibleDirections(PathNode), To)));
 	while (!PathFound && attempts < maxAttempts)
 	{
@@ -187,13 +189,25 @@ TArray<FVector> ASVOGrid::GetPath(FVector From, FVector To)
 	
 	for (FVector Position : VisitedNodesArray)
 	{
-		GridArray[Position.X][Position.Y][Position.Z]->IsVisited = false;
+		if (IsWithin(Position))
+		{
+			GridArray[Position.X][Position.Y][Position.Z]->IsVisited = false;
+		}
+		
 	}
 	VisitedNodesArray.Empty();
+
 	
 	return Path;
 }
+bool ASVOGrid::IsWithin(FVector Position)
+{
+	if (Position.X > GridArray.Num() || Position.X < 0) return false;
+	if (Position.Y > GridArray.Num() || Position.Y < 0) return false;
+	if (Position.Z > GridArray.Num() || Position.Z < 0) return false;
 
+	return true;
+}
 bool ASVOGrid::HasObjectWithin(FNode* Node)
 {
 	bool bHit = GetWorld()->OverlapBlockingTestByChannel(
