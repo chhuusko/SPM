@@ -17,11 +17,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b441fb19-a1f3-4497-9424-896203807a4e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.SPM/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/Drone/DroneBullet.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/Drone/DroneBullet.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/SPM/SPM.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/SPM/SPM.Build.cs" afterDir="false" />
-    </list>
+    <list default="true" id="b441fb19-a1f3-4497-9424-896203807a4e" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -206,6 +202,7 @@
       <workItem from="1753101274962" duration="1327000" />
       <workItem from="1753102689897" duration="630000" />
       <workItem from="1753103405429" duration="2028000" />
+      <workItem from="1753106312880" duration="140000" />
     </task>
     <servers />
   </component>

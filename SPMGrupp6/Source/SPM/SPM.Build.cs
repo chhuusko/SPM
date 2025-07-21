@@ -8,7 +8,7 @@ public class SPM : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput","TakesCore","TakeRecorderSources", "UMG", "Niagara", "TakeRecorder" ,"TakeRecorderEditor", "LevelSequence", "MovieScene", "MovieSceneCapture"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput","TakesCore","TakeRecorderSources", "UMG", "Niagara", "TakeRecorder" , "LevelSequence", "MovieScene", "MovieSceneCapture"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { "AIModule", "AdvancedWidgets", "AdvancedWidgets", "Paper2D", "Niagara", "TakesCore",});
 
