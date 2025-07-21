@@ -90,13 +90,16 @@ FVector ASVOGrid::GetNearestGridPosition(FVector Position)
 
 TArray<FVector> ASVOGrid::GetPossibleDirections(FVector Position)
 {
+	
 	// get all 6 directions if clear and not visited
+	
+	//UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
+	if (Position.X > GridArray.Num() || Position.X < 0) return TArray<FVector>();
+	if (Position.Y > GridArray.Num() || Position.Y < 0) return TArray<FVector>();
+	if (Position.Z > GridArray.Num() || Position.Z < 0) return TArray<FVector>();
+	
 	GridArray[Position.X][Position.Y][Position.Z]->IsVisited=true;
 	VisitedNodesArray.Add(Position);
-	//UE_LOG(LogTemp, Warning, TEXT("GridLocation: %s"), *Position.ToString());
-	if (Position.X > GridArray.Num()) return TArray<FVector>();
-	if (Position.Y > GridArray.Num()) return TArray<FVector>();
-	if (Position.Z> GridArray.Num()) return TArray<FVector>();
 	
 	TArray<FVector> Directions;
 	if (GridArray[Position.X+1][Position.Y][Position.Z]->IsClearAndNotVisited()) Directions.Add(GridArray[Position.X+1][Position.Y][Position.Z]->Position);

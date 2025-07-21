@@ -56,7 +56,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	FVector AreaPosition;
 	UPROPERTY(EditAnywhere)
-	FVector AreaSize;
+	FVector AreaSize = FVector::ZeroVector;
 	UPROPERTY(EditDefaultsOnly)
 	int MaxDepth;
 	UPROPERTY(EditDefaultsOnly)
